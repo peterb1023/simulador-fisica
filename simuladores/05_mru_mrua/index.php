@@ -9,7 +9,7 @@ require_once __DIR__ . '/php/config.php';
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="css/sim.css">
 </head>
-<body>
+<body data-sim-id="05">
 <div id="app">
   <header class="sim-header">
     <div class="sim-badge">SIM #<?= SIM_VERSION ?></div>
@@ -178,5 +178,8 @@ require_once __DIR__ . '/php/config.php';
 <script src="js/ui.js"></script>
 <link rel="stylesheet" href="../../css/accessibility.css">
 <script src="../../js/accessibility.js"></script>
+<link rel="stylesheet" href="../../css/registry.css">
+<script src="../../js/sim-registry.js"></script>
+<script src="../../js/sim-records-ui.js"></script>
 </body>
 </html>

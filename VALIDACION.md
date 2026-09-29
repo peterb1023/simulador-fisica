@@ -39,3 +39,8 @@ Archivos de motor/render/UI de la raíz y renderer heredado de SIM 03 no se carg
 Baseline original: `e166ddf`. Fases 0–7: `0e93e53`, `154390a`, `0b9193d`, `7450f03`, `4126906`, `19d77b7`, `9c2e6b0`, `54e2ad8`. Esta evidencia se incorpora al commit de fase 8, junto con limpieza, README, plan y portal.
 
 Los residuos `files (3).zip` y `Nuevo documento de texto.html` se retiraron únicamente en fase 8; ambos son recuperables desde el baseline.
+
+## Rescate A — registros locales
+- Capturas manuales unificadas en los doce simuladores; máximo 100 por simulador. No se guardan frames ni se duplica el historial temporal.
+- JSON validado, snapshots independientes, almacenamiento bloqueado/corrupto tolerado, borrado individual y limpieza. Render con textContent.
+- GREEN: numerical.cjs, registry.cjs y http-smoke.cjs (15 páginas, 73 recursos). Captura por teclado verificada en los doce simuladores; sin overflow del documento en 390/1024/1440 px.

@@ -14,7 +14,7 @@ $lim    = $cfg['limites'];
 <link rel="stylesheet" href="css/sim.css">
 <link rel="stylesheet" href="../../css/timeline.css">
 </head>
-<body>
+<body data-sim-id="09">
 <div id="app">
 
   <!-- HEADER -->
@@ -218,5 +218,8 @@ $lim    = $cfg['limites'];
 <script src="../../js/timeline.js"></script>
 <link rel="stylesheet" href="../../css/accessibility.css">
 <script src="../../js/accessibility.js"></script>
+<link rel="stylesheet" href="../../css/registry.css">
+<script src="../../js/sim-registry.js"></script>
+<script src="../../js/sim-records-ui.js"></script>
 </body>
 </html>

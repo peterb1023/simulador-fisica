@@ -12,7 +12,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/sim.css">
 </head>
-<body>
+<body data-sim-id="02">
 
 <div id="app">
 
@@ -133,5 +133,8 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 <script src="js/ui.js"></script>
 <link rel="stylesheet" href="../../css/accessibility.css">
 <script src="../../js/accessibility.js"></script>
+<link rel="stylesheet" href="../../css/registry.css">
+<script src="../../js/sim-registry.js"></script>
+<script src="../../js/sim-records-ui.js"></script>
 </body>
 </html>
