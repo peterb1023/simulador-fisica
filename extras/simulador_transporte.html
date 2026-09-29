@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador ABS — Rutas de Transporte</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f0f;
+  --surface: #181818;
+  --surface2: #222222;
+  --border: #2a2a2a;
+  --accent: #f5c842;
+  --accent2: #3ecfcf;
+  --accent3: #f06a6a;
+  --text: #f0ede8;
+  --muted: #888;
+  --route1: #f5c842;
+  --route2: #3ecfcf;
+  --route3: #f06a6a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans', sans-serif; min-height:100vh; }
+
+/* HERO */
+.hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 2rem 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(245,200,66,0.03) 40px, rgba(245,200,66,0.03) 41px),
+              repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(245,200,66,0.03) 40px, rgba(245,200,66,0.03) 41px);
+  pointer-events:none;
+}
+.hero-tag { font-family:'Space Mono', monospace; font-size:10px; color:var(--accent); letter-spacing:3px; text-transform:uppercase; margin-bottom:0.75rem; }
+.hero-title { font-size:clamp(1.6rem,4vw,2.4rem); font-weight:600; line-height:1.2; margin-bottom:0.5rem; }
+.hero-title span { color:var(--accent); }
+.hero-sub { font-size:14px; color:var(--muted); max-width:600px; line-height:1.6; }
+
+/* LAYOUT */
+.main { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; padding:1.5rem; max-width:1400px; margin:0 auto; }
+@media(max-width:900px){ .main { grid-template-columns:1fr; } }
+
+/* PANEL */
+.panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.panel-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.panel-icon { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.panel-title { font-family:'Space Mono', monospace; font-size:12px; letter-spacing:1px; color:var(--text); }
+.panel-body { padding:1.25rem; }
+
+/* MAP SVG */
+#map-svg { width:100%; height:260px; }
+
+/* SLIDERS */
+.slider-group { margin-bottom:1rem; }
+.slider-label { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.slider-label span { font-size:13px; color:var(--muted); }
+.slider-label strong { font-family:'Space Mono', monospace; font-size:13px; }
+input[type=range] { width:100%; height:4px; border-radius:2px; outline:none; border:none; cursor:pointer; -webkit-appearance:none; background:var(--border); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; cursor:pointer; }
+.r1 input[type=range]::-webkit-slider-thumb { background:var(--route1); }
+.r2 input[type=range]::-webkit-slider-thumb { background:var(--route2); }
+.r3 input[type=range]::-webkit-slider-thumb { background:var(--route3); }
+
+/* SYSTEM DISPLAY */
+.sys-box { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:1rem; margin-bottom:1rem; font-family:'Space Mono', monospace; font-size:12px; line-height:2; }
+.sys-eq { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.coef { color:var(--accent); font-weight:700; }
+.var1 { color:var(--route1); }
+.var2 { color:var(--route2); }
+.var3 { color:var(--route3); }
+.rhs { color:var(--text); }
+.eq-sep { color:var(--muted); margin:0 2px; }
+
+/* TABS */
+.tabs { display:flex; border-bottom:1px solid var(--border); }
+.tab { flex:1; padding:0.75rem; font-size:12px; font-family:'Space Mono', monospace; letter-spacing:0.5px; background:transparent; border:none; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab-content { display:none; padding:1.25rem; }
+.tab-content.active { display:block; }
+
+/* MATRIX */
+.matrix-wrap { overflow-x:auto; margin:0.75rem 0; }
+.matrix-container { display:inline-flex; align-items:center; gap:8px; font-family:'Space Mono', monospace; font-size:12px; }
+.matrix { display:inline-grid; gap:0; position:relative; }
+.matrix::before, .matrix::after { content:''; position:absolute; top:0; bottom:0; width:3px; border:2px solid var(--muted); }
+.matrix::before { left:-6px; border-right:none; border-radius:3px 0 0 3px; }
+.matrix::after { right:-6px; border-left:none; border-radius:0 3px 3px 0; }
+.m-row { display:contents; }
+.m-cell { padding:4px 10px; text-align:right; min-width:44px; }
+.m-cell.hi { color:var(--accent); font-weight:700; }
+.m-times, .m-eq-sign { font-size:16px; color:var(--muted); padding:0 4px; }
+.m-label { font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+
+/* STEPS */
+.step { margin-bottom:1rem; }
+.step-title { font-family:'Space Mono', monospace; font-size:11px; color:var(--accent2); letter-spacing:1px; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.step-num { background:var(--accent2); color:#000; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+.step-body { background:var(--surface2); border-left:3px solid var(--accent2); border-radius:0 6px 6px 0; padding:0.75rem 1rem; font-size:12px; line-height:1.8; color:var(--muted); }
+.step-body .hi { color:var(--text); }
+.step-body .acc { color:var(--accent); font-family:'Space Mono', monospace; font-weight:700; }
+.step-body .acc2 { color:var(--accent2); font-family:'Space Mono', monospace; }
+.step-body .acc3 { color:var(--accent3); font-family:'Space Mono', monospace; }
+
+/* RESULT BOX */
+.result-box { background:var(--surface2); border:1px solid var(--accent); border-radius:8px; padding:1rem; margin-top:1rem; }
+.result-title { font-family:'Space Mono', monospace; font-size:10px; color:var(--accent); letter-spacing:2px; margin-bottom:0.75rem; }
+.result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.result-card { background:var(--surface); border-radius:8px; padding:0.75rem; text-align:center; }
+.result-card .label { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.result-card .value { font-family:'Space Mono', monospace; font-size:18px; font-weight:700; }
+.v1 { color:var(--route1); }
+.v2 { color:var(--route2); }
+.v3 { color:var(--route3); }
+
+/* VERIFY badge */
+.verify { display:inline-flex; align-items:center; gap:6px; font-size:12px; margin-top:0.75rem; padding:6px 12px; border-radius:20px; background:rgba(62,207,207,0.1); color:var(--accent2); font-family:'Space Mono', monospace; }
+
+/* LEGEND */
+.legend { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
+.leg-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+.leg-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* ROUTE BADGE */
+.route-badge { display:inline-block; font-family:'Space Mono', monospace; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
+.rb1 { background:rgba(245,200,66,0.15); color:var(--route1); }
+.rb2 { background:rgba(62,207,207,0.15); color:var(--route2); }
+.rb3 { background:rgba(240,106,106,0.15); color:var(--route3); }
+
+.full-row { grid-column: 1 / -1; }
+.note { font-size:12px; color:var(--muted); line-height:1.7; padding:0.75rem; background:var(--surface2); border-radius:6px; margin-bottom:1rem; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Matemática III — Proyecto de Investigación 2</div>
+  <h1 class="hero-title">Rutas de <span>Transporte Público</span><br>y Métodos Matriciales</h1>
+  <p class="hero-sub">Tres rutas de bus comparten paradas en San Salvador. Con los pasajeros contados en cada parada, determinamos cuántos lleva cada ruta — usando tres métodos matriciales.</p>
+</div>
+
+<div class="main">
+
+  <!-- MAPA Y CONTEXTO -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-icon" style="background:rgba(245,200,66,0.1);">🗺️</div>
+      <span class="panel-title">MAPA DE RUTAS</span>
+    </div>
+    <div class="panel-body">
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--route1)"></div> Ruta 30 (Centro–Soyapango)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--route2)"></div> Ruta 44 (Centro–Mejicanos)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--route3)"></div> Ruta 52 (Centro–Apopa)</div>
+      </div>
+      <svg id="map-svg" viewBox="0 0 500 240">
+        <!-- Grid lines -->
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="500" height="240" fill="url(#grid)"/>
+
+        <!-- Roads background -->
+        <line x1="80" y1="120" x2="420" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="20"/>
+        <line x1="250" y1="30" x2="250" y2="210" stroke="rgba(255,255,255,0.06)" stroke-width="20"/>
+        <line x1="80" y1="120" x2="380" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="14"/>
+
+        <!-- Ruta 30 -->
+        <path d="M 80,120 Q 180,120 250,120 Q 320,120 420,120" fill="none" stroke="var(--route1)" stroke-width="3" stroke-dasharray="8,4" opacity="0.8"/>
+        <!-- Ruta 44 -->
+        <path d="M 250,210 Q 250,165 250,120 Q 250,75 250,30" fill="none" stroke="var(--route2)" stroke-width="3" stroke-dasharray="8,4" opacity="0.8"/>
+        <!-- Ruta 52 -->
+        <path d="M 80,120 Q 165,80 250,120 Q 335,80 420,40" fill="none" stroke="var(--route3)" stroke-width="3" stroke-dasharray="8,4" opacity="0.8"/>
+
+        <!-- Parada A — Centro Histórico (las 3 rutas) -->
+        <circle cx="250" cy="120" r="14" fill="var(--surface)" stroke="white" stroke-width="2"/>
+        <text x="250" y="124" text-anchor="middle" font-family="Space Mono" font-size="10" fill="white" font-weight="700">A</text>
+        <text x="250" y="148" text-anchor="middle" font-family="DM Sans" font-size="9" fill="var(--muted)">Centro</text>
+        <circle cx="236" cy="120" r="4" fill="var(--route1)" opacity="0.9"/>
+        <circle cx="250" cy="106" r="4" fill="var(--route2)" opacity="0.9"/>
+        <circle cx="264" cy="120" r="4" fill="var(--route3)" opacity="0.9"/>
+
+        <!-- Parada B — Mercado Central (Ruta 30 + 52) -->
+        <circle cx="130" cy="120" r="12" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5"/>
+        <text x="130" y="124" text-anchor="middle" font-family="Space Mono" font-size="10" fill="var(--muted)" font-weight="700">B</text>
+        <text x="130" y="144" text-anchor="middle" font-family="DM Sans" font-size="9" fill="var(--muted)">Mercado</text>
+        <circle cx="122" cy="120" r="3.5" fill="var(--route1)" opacity="0.9"/>
+        <circle cx="138" cy="120" r="3.5" fill="var(--route3)" opacity="0.9"/>
+
+        <!-- Parada C — Metrocentro (Ruta 44 + 52) -->
+        <circle cx="250" cy="60" r="12" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5"/>
+        <text x="250" y="64" text-anchor="middle" font-family="Space Mono" font-size="10" fill="var(--muted)" font-weight="700">C</text>
+        <text x="280" y="64" text-anchor="middle" font-family="DM Sans" font-size="9" fill="var(--muted)">Metro</text>
+        <circle cx="242" cy="60" r="3.5" fill="var(--route2)" opacity="0.9"/>
+        <circle cx="258" cy="60" r="3.5" fill="var(--route3)" opacity="0.9"/>
+
+        <!-- Terminales -->
+        <rect x="60" y="108" width="12" height="24" rx="3" fill="var(--route1)" opacity="0.6"/>
+        <text x="66" y="142" text-anchor="middle" font-family="DM Sans" font-size="8" fill="var(--route1)">Soya.</text>
+
+        <rect x="394" y="108" width="12" height="24" rx="3" fill="var(--route1)" opacity="0.6"/>
+        <text x="400" y="142" text-anchor="middle" font-family="DM Sans" font-size="8" fill="var(--route1)">term.</text>
+
+        <rect x="244" y="195" width="12" height="20" rx="3" fill="var(--route2)" opacity="0.6"/>
+        <text x="250" y="225" text-anchor="middle" font-family="DM Sans" font-size="8" fill="var(--route2)">Mejic.</text>
+
+        <rect x="406" y="28" width="12" height="20" rx="3" fill="var(--route3)" opacity="0.6"/>
+        <text x="412" y="22" text-anchor="middle" font-family="DM Sans" font-size="8" fill="var(--route3)">Apopa</text>
+
+        <!-- Leyenda paradas -->
+        <text x="10" y="220" font-family="DM Sans" font-size="9" fill="var(--muted)">A: pasan las 3 rutas · B: pasan R30 + R52 · C: pasan R44 + R52</text>
+      </svg>
+
+      <div class="note">
+        <strong style="color:var(--text)">Contexto del problema:</strong> En tres paradas de San Salvador se cuentan los pasajeros que abordaron. Cada parada es atendida por distintas combinaciones de rutas. Con esos totales, resolvemos cuántos pasajeros lleva exclusivamente cada ruta.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIGURAR PARÁMETROS -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-icon" style="background:rgba(62,207,207,0.1);">⚙️</div>
+      <span class="panel-title">PARÁMETROS DEL SISTEMA</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:1rem;">Ajusta los pasajeros contados en cada parada. El sistema se recalcula en tiempo real.</p>
+
+      <div class="slider-group r1">
+        <div class="slider-label">
+          <span>Parada <strong style="color:var(--route1)">A</strong> — Centro (R30 + R44 + R52)</span>
+          <strong id="lA">120</strong>
+        </div>
+        <input type="range" id="sA" min="60" max="300" value="120" oninput="update()">
+      </div>
+      <div class="slider-group r2">
+        <div class="slider-label">
+          <span>Parada <strong style="color:var(--route2)">B</strong> — Mercado (R30 + R52)</span>
+          <strong id="lB">80</strong>
+        </div>
+        <input type="range" id="sB" min="30" max="200" value="80" oninput="update()">
+      </div>
+      <div class="slider-group r3">
+        <div class="slider-label">
+          <span>Parada <strong style="color:var(--accent3)">C</strong> — Metro (R44 + R52)</span>
+          <strong id="lC">70</strong>
+        </div>
+        <input type="range" id="sC" min="30" max="200" value="70" oninput="update()">
+      </div>
+
+      <div style="margin-top:1.25rem;">
+        <div class="m-label">Sistema de ecuaciones generado</div>
+        <div class="sys-box">
+          <div class="sys-eq">
+            <span class="coef" id="c11">1</span><span class="var1">x</span>
+            <span class="eq-sep">+</span>
+            <span class="coef" id="c12">1</span><span class="var2">y</span>
+            <span class="eq-sep">+</span>
+            <span class="coef" id="c13">1</span><span class="var3">z</span>
+            <span class="eq-sep">=</span>
+            <span class="rhs" id="b1">120</span>
+            <span style="font-size:10px;color:var(--muted);margin-left:8px">(Parada A)</span>
+          </div>
+          <div class="sys-eq">
+            <span class="coef" id="c21">1</span><span class="var1">x</span>
+            <span class="eq-sep">+</span>
+            <span class="coef" id="c22">0</span><span class="var2">y</span>
+            <span class="eq-sep">+</span>
+            <span class="coef" id="c23">1</span><span class="var3">z</span>
+            <span class="eq-sep">=</span>
+            <span class="rhs" id="b2">80</span>
+            <span style="font-size:10px;color:var(--muted);margin-left:8px">(Parada B)</span>
+          </div>
+          <div class="sys-eq">
+            <span class="coef" id="c31">0</span><span class="var1">x</span>
+            <span class="eq-sep">+</span>
+            <span class="coef" id="c32">1</span><span class="var2">y</span>
+            <span class="eq-sep">+</span>
+            <span class="coef" id="c33">1</span><span class="var3">z</span>
+            <span class="eq-sep">=</span>
+            <span class="rhs" id="b3">70</span>
+            <span style="font-size:10px;color:var(--muted);margin-left:8px">(Parada C)</span>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);">
+          <span class="var1">x</span> = pasajeros Ruta 30 &nbsp;·&nbsp;
+          <span class="var2">y</span> = pasajeros Ruta 44 &nbsp;·&nbsp;
+          <span class="var3">z</span> = pasajeros Ruta 52
+        </p>
+      </div>
+
+      <!-- Determinante -->
+      <div style="margin-top:1rem;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:12px;color:var(--muted);">det(A) =</span>
+        <span id="det-val" style="font-family:'Space Mono',monospace;font-size:14px;color:var(--accent);font-weight:700;">1</span>
+        <span id="det-status" style="font-size:11px;padding:2px 10px;border-radius:20px;background:rgba(62,207,207,0.1);color:var(--accent2);">Sistema compatible determinado</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÉTODOS -->
+  <div class="panel full-row">
+    <div class="panel-header">
+      <div class="panel-icon" style="background:rgba(245,200,66,0.1);">📐</div>
+      <span class="panel-title">RESOLUCIÓN POR LOS TRES MÉTODOS</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('t1',this)">Matriz Aumentada</button>
+      <button class="tab" onclick="showTab('t2',this)">Ecuaciones Matriciales</button>
+      <button class="tab" onclick="showTab('t3',this)">Regla de Cramer</button>
+    </div>
+
+    <!-- TAB 1: MATRIZ AUMENTADA -->
+    <div class="tab-content active" id="t1">
+      <div class="step">
+        <div class="step-title"><span class="step-num">1</span>PLANTEAR LA MATRIZ AUMENTADA [A|b]</div>
+        <div class="step-body">
+          Escribimos los coeficientes del sistema junto con el vector de términos independientes.<br><br>
+          <div class="matrix-wrap">
+            <div class="matrix-container">
+              <div>
+                <div class="m-label">[A | b]</div>
+                <div class="matrix" id="aug-matrix" style="grid-template-columns:repeat(4,1fr)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-title"><span class="step-num">2</span>OPERACIONES ELEMENTALES DE FILA</div>
+        <div class="step-body" id="gauss-steps">...</div>
+      </div>
+      <div class="step">
+        <div class="step-title"><span class="step-num">3</span>SUSTITUCIÓN HACIA ATRÁS</div>
+        <div class="step-body" id="back-sub">...</div>
+      </div>
+      <div class="result-box" id="result1"></div>
+    </div>
+
+    <!-- TAB 2: MATRIZ INVERSA -->
+    <div class="tab-content" id="t2">
+      <div class="step">
+        <div class="step-title"><span class="step-num">1</span>FORMA MATRICIAL Ax = b</div>
+        <div class="step-body">
+          El sistema se expresa como el producto de la matriz de coeficientes A, el vector de incógnitas x y el vector de términos independientes b.<br><br>
+          <div class="matrix-wrap">
+            <div class="matrix-container">
+              <div>
+                <div class="m-label">A</div>
+                <div class="matrix" id="mat-A" style="grid-template-columns:repeat(3,1fr)"></div>
+              </div>
+              <span class="m-times">·</span>
+              <div>
+                <div class="m-label">x</div>
+                <div class="matrix" id="mat-x" style="grid-template-columns:1fr"></div>
+              </div>
+              <span class="m-eq-sign">=</span>
+              <div>
+                <div class="m-label">b</div>
+                <div class="matrix" id="mat-b" style="grid-template-columns:1fr"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-title"><span class="step-num">2</span>CALCULAR LA INVERSA A⁻¹</div>
+        <div class="step-body" id="inv-steps">...</div>
+      </div>
+      <div class="step">
+        <div class="step-title"><span class="step-num">3</span>SOLUCIÓN: x = A⁻¹ · b</div>
+        <div class="step-body" id="inv-solution">...</div>
+      </div>
+      <div class="result-box" id="result2"></div>
+    </div>
+
+    <!-- TAB 3: CRAMER -->
+    <div class="tab-content" id="t3">
+      <div class="step">
+        <div class="step-title"><span class="step-num">1</span>CALCULAR det(A)</div>
+        <div class="step-body" id="cramer-det">...</div>
+      </div>
+      <div class="step">
+        <div class="step-title"><span class="step-num">2</span>CALCULAR det(A₁), det(A₂), det(A₃)</div>
+        <div class="step-body" id="cramer-dets">...</div>
+      </div>
+      <div class="step">
+        <div class="step-title"><span class="step-num">3</span>APLICAR LA REGLA: xᵢ = det(Aᵢ) / det(A)</div>
+        <div class="step-body" id="cramer-solution">...</div>
+      </div>
+      <div class="result-box" id="result3"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ─── HELPERS ──────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+function det3(m) {
+  return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+        -m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+        +m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+}
+
+function inv3(m, d) {
+  const inv = [
+    [(m[1][1]*m[2][2]-m[1][2]*m[2][1])/d, -(m[0][1]*m[2][2]-m[0][2]*m[2][1])/d, (m[0][1]*m[1][2]-m[0][2]*m[1][1])/d],
+    [-(m[1][0]*m[2][2]-m[1][2]*m[2][0])/d, (m[0][0]*m[2][2]-m[0][2]*m[2][0])/d, -(m[0][0]*m[1][2]-m[0][2]*m[1][0])/d],
+    [(m[1][0]*m[2][1]-m[1][1]*m[2][0])/d, -(m[0][0]*m[2][1]-m[0][1]*m[2][0])/d, (m[0][0]*m[1][1]-m[0][1]*m[1][0])/d]
+  ];
+  return inv;
+}
+
+function fr(n) { return Number.isInteger(n) ? n : parseFloat(n.toFixed(2)); }
+
+function renderMatrix(id, data, cols, highlights) {
+  const el = $(id);
+  el.innerHTML = '';
+  el.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  data.forEach((row,r) => row.forEach((val,c) => {
+    const cell = document.createElement('div');
+    cell.className = 'm-cell';
+    if(highlights && highlights[r] && highlights[r][c]) cell.classList.add('hi');
+    cell.textContent = fr(val);
+    el.appendChild(cell);
+  }));
+}
+
+function resultHTML(x, y, z) {
+  return `<div class="result-title">// SOLUCIÓN ENCONTRADA</div>
+  <div class="result-grid">
+    <div class="result-card"><div class="label">Ruta 30</div><div class="value v1">${fr(x)}</div><div class="label">pasajeros</div></div>
+    <div class="result-card"><div class="label">Ruta 44</div><div class="value v2">${fr(y)}</div><div class="label">pasajeros</div></div>
+    <div class="result-card"><div class="label">Ruta 52</div><div class="value v3">${fr(z)}</div><div class="label">pasajeros</div></div>
+  </div>
+  <div class="verify">✓ Verificación: ${fr(x)}+${fr(y)}+${fr(z)} = ${fr(x+y+z)} · Parada A = <span id="chkA" style="margin-left:4px"></span></div>`;
+}
+
+// ─── SISTEMA FIJO (coeficientes estructurales) ────────────
+// A: pasan R30(x) + R44(y) + R52(z)
+// B: pasan R30(x) + R52(z)
+// C: pasan R44(y) + R52(z)
+const A = [[1,1,1],[1,0,1],[0,1,1]];
+
+// ─── MAIN UPDATE ──────────────────────────────────────────
+function update() {
+  const bA = parseInt($('sA').value);
+  const bB = parseInt($('sB').value);
+  const bC = parseInt($('sC').value);
+  $('lA').textContent = bA;
+  $('lB').textContent = bB;
+  $('lC').textContent = bC;
+  $('b1').textContent = bA;
+  $('b2').textContent = bB;
+  $('b3').textContent = bC;
+
+  const b = [bA, bB, bC];
+  const d = det3(A);
+  $('det-val').textContent = fr(d);
+
+  if(Math.abs(d) < 0.001) {
+    $('det-status').textContent = 'Sistema sin solución única';
+    $('det-status').style.background = 'rgba(240,106,106,0.1)';
+    $('det-status').style.color = 'var(--accent3)';
+    return;
+  } else {
+    $('det-status').textContent = 'Sistema compatible determinado';
+    $('det-status').style.background = 'rgba(62,207,207,0.1)';
+    $('det-status').style.color = 'var(--accent2)';
+  }
+
+  // Solución real
+  const Inv = inv3(A, d);
+  const x = Inv[0][0]*b[0]+Inv[0][1]*b[1]+Inv[0][2]*b[2];
+  const y = Inv[1][0]*b[0]+Inv[1][1]*b[1]+Inv[1][2]*b[2];
+  const z = Inv[2][0]*b[0]+Inv[2][1]*b[1]+Inv[2][2]*b[2];
+
+  buildAugmented(b, x, y, z);
+  buildInverse(b, d, Inv, x, y, z);
+  buildCramer(b, d, x, y, z);
+
+  ['result1','result2','result3'].forEach(id => {
+    $(id).innerHTML = resultHTML(x, y, z);
+  });
+}
+
+// ─── MÉTODO 1: GAUSS ──────────────────────────────────────
+function buildAugmented(b, x, y, z) {
+  const aug = A.map((r,i) => [...r, b[i]]);
+  renderMatrix('aug-matrix', aug, 4);
+
+  // Pasos: para este sistema fijo la reducción es directa
+  // F2 = F2 - F1 → [0,-1,0 | b2-b1]  pero A[1]=[1,0,1], A[0]=[1,1,1]
+  // Paso 1: F2 ← F2 - F1
+  const r2b = b[1]-b[0]; // coef de y queda -1, z queda 0, x queda 0
+  // Fila 2: [1,0,1|bB] - [1,1,1|bA] = [0,-1,0|bB-bA]
+  // Fila 3 ya tiene [0,1,1|bC] — OK
+  // Paso 2: F3 ← F3 + F2' → [0,0,1| bC+(bB-bA)]
+  const r3b = bC + (bB - bA); // esto da -z coeff trick, recalculate properly
+
+  // Recalcular correctamente paso a paso
+  // M aumentada inicial
+  let M = [[1,1,1,b[0]],[1,0,1,b[1]],[0,1,1,b[2]]];
+  const steps = [];
+
+  // F2 ← F2 - F1
+  M[1] = M[1].map((v,i) => v - M[0][i]);
+  steps.push({
+    label: `F₂ ← F₂ − F₁`,
+    desc: `Eliminamos x de la segunda ecuación. F₂ queda: [${M[1].map(fr).join(', ')}]`,
+    matrix: M.map(r=>[...r])
+  });
+
+  // F3 ← F3 + F2 (porque M[1][1] = -1)
+  M[2] = M[2].map((v,i) => v + M[1][i]);
+  steps.push({
+    label: `F₃ ← F₃ + F₂`,
+    desc: `Eliminamos y de la tercera ecuación usando la nueva F₂. F₃ queda: [${M[2].map(fr).join(', ')}]`,
+    matrix: M.map(r=>[...r])
+  });
+
+  // F2 ← F2 * (-1)
+  M[1] = M[1].map(v => -v);
+  steps.push({
+    label: `F₂ ← −F₂`,
+    desc: `Hacemos positivo el pivote de y. F₂ queda: [${M[1].map(fr).join(', ')}]`,
+    matrix: M.map(r=>[...r])
+  });
+
+  // F2 ← F2 / M[1][1] y F3 ← F3/M[2][2]
+  const piv2 = M[1][1]; const piv3 = M[2][2];
+  if(Math.abs(piv2)>0.001) { M[1] = M[1].map(v=>v/piv2); }
+  if(Math.abs(piv3)>0.001) { M[2] = M[2].map(v=>v/piv3); }
+  steps.push({
+    label: `Normalizar pivotes`,
+    desc: `Dividimos F₂ entre ${fr(piv2)} y F₃ entre ${fr(piv3)} para obtener pivotes = 1. Forma escalonada reducida lista para sustitución.`,
+    matrix: M.map(r=>[...r])
+  });
+
+  let html = '';
+  steps.forEach((s,i) => {
+    html += `<div style="margin-bottom:1rem;">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:4px;">${s.label}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${s.desc}</div>
+      <div class="matrix-wrap"><div class="matrix-container">
+        <div class="matrix" style="grid-template-columns:repeat(4,1fr)">
+          ${s.matrix.map((row,r)=>row.map((v,c)=>`<div class="m-cell ${c===3?'hi':''}">${fr(v)}</div>`).join('')).join('')}
+        </div>
+      </div></div>
+    </div>`;
+  });
+  $('gauss-steps').innerHTML = html;
+
+  $('back-sub').innerHTML = `
+    <span class="hi">De F₃:</span> <span class="acc3">z = ${fr(z)}</span> pasajeros en Ruta 52<br>
+    <span class="hi">De F₂:</span> y = ${fr(M[1][3])} → sustituyendo z: <span class="acc2">y = ${fr(y)}</span> pasajeros en Ruta 44<br>
+    <span class="hi">De F₁:</span> x = ${fr(b[0])} − y − z = ${fr(b[0])} − ${fr(y)} − ${fr(z)} = <span class="acc">x = ${fr(x)}</span> pasajeros en Ruta 30
+  `;
+}
+
+// ─── MÉTODO 2: INVERSA ────────────────────────────────────
+function buildInverse(b, d, Inv, x, y, z) {
+  renderMatrix('mat-A', A, 3);
+  renderMatrix('mat-x', [['x'],['y'],['z']], 1);
+  renderMatrix('mat-b', [[b[0]],[b[1]],[b[2]]], 1);
+
+  $('inv-steps').innerHTML = `
+    <span class="hi">det(A) = ${fr(d)}</span> ≠ 0, por lo tanto A es invertible.<br><br>
+    Calculamos la matriz de cofactores C y transponemos para obtener la adjunta, luego dividimos entre det(A):<br><br>
+    <div class="matrix-wrap"><div class="matrix-container">
+      <div><div class="m-label">A⁻¹ = (1/${fr(d)}) · adj(A)</div>
+      <div class="matrix" style="grid-template-columns:repeat(3,1fr)">
+        ${Inv.map(row=>row.map(v=>`<div class="m-cell hi">${fr(v)}</div>`).join('')).join('')}
+      </div></div>
+    </div></div>
+  `;
+
+  $('inv-solution').innerHTML = `
+    Multiplicamos A⁻¹ · b:<br><br>
+    <span class="acc">x</span> = (${fr(Inv[0][0])})·${b[0]} + (${fr(Inv[0][1])})·${b[1]} + (${fr(Inv[0][2])})·${b[2]} = <span class="acc">${fr(x)}</span><br>
+    <span class="acc2">y</span> = (${fr(Inv[1][0])})·${b[0]} + (${fr(Inv[1][1])})·${b[1]} + (${fr(Inv[1][2])})·${b[2]} = <span class="acc2">${fr(y)}</span><br>
+    <span class="acc3">z</span> = (${fr(Inv[2][0])})·${b[0]} + (${fr(Inv[2][1])})·${b[1]} + (${fr(Inv[2][2])})·${b[2]} = <span class="acc3">${fr(z)}</span>
+  `;
+}
+
+// ─── MÉTODO 3: CRAMER ─────────────────────────────────────
+function buildCramer(b, d, x, y, z) {
+  // A1: col 0 reemplazada por b
+  const A1 = A.map((r,i)=>[b[i],r[1],r[2]]);
+  const A2 = A.map((r,i)=>[r[0],b[i],r[2]]);
+  const A3 = A.map((r,i)=>[r[0],r[1],b[i]]);
+  const d1=det3(A1), d2=det3(A2), d3=det3(A3);
+
+  $('cramer-det').innerHTML = `
+    Expandiendo por la primera fila:<br><br>
+    det(A) = ${A[0][0]}·(${A[1][1]}·${A[2][2]} − ${A[1][2]}·${A[2][1]})
+           − ${A[0][1]}·(${A[1][0]}·${A[2][2]} − ${A[1][2]}·${A[2][0]})
+           + ${A[0][2]}·(${A[1][0]}·${A[2][1]} − ${A[1][1]}·${A[2][0]})<br><br>
+    det(A) = ${A[0][0]}·(${A[1][1]*A[2][2]-A[1][2]*A[2][1]})
+           − ${A[0][1]}·(${A[1][0]*A[2][2]-A[1][2]*A[2][0]})
+           + ${A[0][2]}·(${A[1][0]*A[2][1]-A[1][1]*A[2][0]})<br><br>
+    <span class="acc">det(A) = ${fr(d)}</span>
+  `;
+
+  $('cramer-dets').innerHTML = `
+    <div style="margin-bottom:1rem;">
+    <span class="hi">A₁</span> — reemplazar columna 1 con b:<br>
+    <div class="matrix-wrap"><div class="matrix-container">
+      <div class="matrix" style="grid-template-columns:repeat(3,1fr)">
+        ${A1.map((row,r)=>row.map((v,c)=>`<div class="m-cell ${c===0?'hi':''}">${fr(v)}</div>`).join('')).join('')}
+      </div>
+    </div></div>
+    <span class="acc">det(A₁) = ${fr(d1)}</span>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+    <span class="hi">A₂</span> — reemplazar columna 2 con b:<br>
+    <div class="matrix-wrap"><div class="matrix-container">
+      <div class="matrix" style="grid-template-columns:repeat(3,1fr)">
+        ${A2.map((row,r)=>row.map((v,c)=>`<div class="m-cell ${c===1?'hi':''}">${fr(v)}</div>`).join('')).join('')}
+      </div>
+    </div></div>
+    <span class="acc2">det(A₂) = ${fr(d2)}</span>
+    </div>
+
+    <div>
+    <span class="hi">A₃</span> — reemplazar columna 3 con b:<br>
+    <div class="matrix-wrap"><div class="matrix-container">
+      <div class="matrix" style="grid-template-columns:repeat(3,1fr)">
+        ${A3.map((row,r)=>row.map((v,c)=>`<div class="m-cell ${c===2?'hi':''}">${fr(v)}</div>`).join('')).join('')}
+      </div>
+    </div></div>
+    <span class="acc3">det(A₃) = ${fr(d3)}</span>
+    </div>
+  `;
+
+  $('cramer-solution').innerHTML = `
+    <span class="acc">x = det(A₁)/det(A) = ${fr(d1)}/${fr(d)} = ${fr(x)}</span> → Ruta 30<br>
+    <span class="acc2">y = det(A₂)/det(A) = ${fr(d2)}/${fr(d)} = ${fr(y)}</span> → Ruta 44<br>
+    <span class="acc3">z = det(A₃)/det(A) = ${fr(d3)}/${fr(d)} = ${fr(z)}</span> → Ruta 52
+  `;
+}
+
+// ─── TABS ────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  $(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── INIT ────────────────────────────────────────────────
+update();
+</script>
+</body>
+</html>

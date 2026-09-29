@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador ABS — Transformada de Laplace</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg:      #0a0c10;
+    --panel:   #10141c;
+    --card:    #141920;
+    --border:  #1e2840;
+    --accent:  #00d4ff;
+    --green:   #00ff88;
+    --red:     #ff3b5c;
+    --orange:  #ff8c00;
+    --yellow:  #ffd700;
+    --text:    #e8edf5;
+    --muted:   #5a6a82;
+    --glow:    rgba(0,212,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0d1117 0%, #0a1628 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--green), transparent);
+  }
+  .header-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), #0080ff);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 20px rgba(0,212,255,0.4);
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  header p {
+    font-size: 0.78rem; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+  .badge {
+    margin-left: auto;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.25);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* ── LAYOUT ── */
+  .main {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 16px;
+    padding: 20px 24px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    width: 3px; height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ── CONTROLS PANEL ── */
+  .controls-panel {
+    grid-column: 1;
+    grid-row: 1 / 4;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .slider-group { margin-bottom: 14px; }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .slider-label span:first-child {
+    font-size: 0.82rem; font-weight: 600; color: var(--text);
+  }
+  .slider-label .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem; font-weight: 700;
+    color: var(--accent);
+    min-width: 60px; text-align: right;
+  }
+  .slider-label .unit {
+    font-size: 0.68rem; color: var(--muted);
+    margin-left: 4px;
+  }
+  .slider-desc {
+    font-size: 0.68rem; color: var(--muted);
+    margin-bottom: 6px; line-height: 1.4;
+  }
+  input[type=range] {
+    width: 100%; -webkit-appearance: none;
+    height: 4px; border-radius: 2px;
+    background: var(--border);
+    outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(0,212,255,0.6);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  .divider {
+    height: 1px; background: var(--border);
+    margin: 4px 0;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex; gap: 8px;
+  }
+  button {
+    flex: 1;
+    padding: 10px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.primary {
+    background: linear-gradient(135deg, #003d5c, #005580);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 15px rgba(0,212,255,0.2);
+  }
+  button.primary:hover {
+    background: linear-gradient(135deg, #004d70, #006699);
+    box-shadow: 0 0 25px rgba(0,212,255,0.4);
+  }
+  button.danger {
+    background: rgba(255,59,92,0.1);
+    border-color: rgba(255,59,92,0.4);
+    color: var(--red);
+  }
+
+  /* ── STATUS GAUGES ── */
+  .gauges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .gauge {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .gauge-label {
+    font-size: 0.62rem; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .gauge-value {
+    font-size: 1.4rem; font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+  }
+  .gauge-unit { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── ABS indicator ── */
+  .abs-indicator {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .abs-light {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: all 0.1s;
+    box-shadow: none;
+    flex-shrink: 0;
+  }
+  .abs-light.active {
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+    animation: pulse 0.12s ease-in-out infinite alternate;
+  }
+  .abs-light.blocked {
+    background: var(--red);
+    box-shadow: 0 0 12px var(--red);
+  }
+  @keyframes pulse { from {opacity:0.6} to {opacity:1} }
+
+  /* ── CANVASES ── */
+  .viz-panel {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .sim-canvas-wrapper {
+    position: relative;
+    height: 200px;
+    background: #08090d;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  canvas.road-canvas {
+    width: 100%; height: 100%;
+    display: block;
+  }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .chart-wrapper {
+    background: #08090d;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+  }
+  .chart-title {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  canvas.chart { width: 100%; height: 140px; display: block; }
+
+  /* ── EQUATION PANEL ── */
+  .eq-panel {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .eq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .eq-box {
+    background: #07090e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .eq-box-title {
+    font-size: 0.65rem; color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; line-height: 1.9;
+    color: #c8d8f0;
+  }
+  .eq .math { color: var(--yellow); }
+  .eq .result { color: var(--green); font-weight: 700; }
+  .eq .comment { color: var(--muted); font-size: 0.68rem; }
+  .eq .step { color: var(--orange); }
+  .eq .var { color: #a8d8ff; }
+  .live-val {
+    color: var(--accent);
+    font-weight: 700;
+    transition: color 0.2s;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .comparison-panel {
+    grid-column: 1 / 3;
+    grid-row: 3;
+  }
+  .cmp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .cmp-cell {
+    padding: 14px 18px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-cell:nth-child(3n) { border-right: none; }
+  .cmp-cell.header {
+    background: var(--panel);
+    font-size: 0.68rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .cmp-cell.metric-name {
+    font-size: 0.8rem; font-weight: 600; color: var(--text);
+    background: rgba(10,12,16,0.5);
+  }
+  .cmp-cell.abs-val {
+    color: var(--green); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem; font-weight: 700;
+    background: rgba(0,255,136,0.03);
+  }
+  .cmp-cell.noabs-val {
+    color: var(--red); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem; font-weight: 700;
+    background: rgba(255,59,92,0.03);
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex; gap: 20px; align-items: center;
+    margin-bottom: 10px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+  }
+  .legend-dot {
+    width: 10px; height: 3px; border-radius: 2px;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">🏍️</div>
+  <div>
+    <h1>Simulador ABS — Sistema de Frenos Antibloqueo</h1>
+    <p>Modelado con Ecuaciones Diferenciales · Transformada de Laplace · Control PI</p>
+  </div>
+  <span class="badge">MAT III · UNAB</span>
+</header>
+
+<div class="main">
+
+  <!-- ═══════════════════════════════════════════════ CONTROLS -->
+  <div class="controls-panel">
+
+    <div class="card">
+      <div class="card-title">Parámetros del Sistema</div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Velocidad inicial v₀</span>
+          <span class="val"><span id="v0_val">80</span><span class="unit"> km/h</span></span>
+        </div>
+        <div class="slider-desc">Velocidad del vehículo al iniciar la frenada</div>
+        <input type="range" id="v0" min="30" max="140" value="80" step="5">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Masa total M</span>
+          <span class="val"><span id="M_val">220</span><span class="unit"> kg</span></span>
+        </div>
+        <div class="slider-desc">Masa motocicleta + piloto</div>
+        <input type="range" id="M" min="120" max="400" value="220" step="10">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Radio rueda r</span>
+          <span class="val"><span id="r_val">0.30</span><span class="unit"> m</span></span>
+        </div>
+        <div class="slider-desc">Radio efectivo de la rueda trasera</div>
+        <input type="range" id="r" min="0.22" max="0.38" value="0.30" step="0.01">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Constante tiempo τ</span>
+          <span class="val"><span id="tau_val">0.020</span><span class="unit"> s</span></span>
+        </div>
+        <div class="slider-desc">Tiempo de respuesta del actuador hidráulico<br><b>G_act(s) = K/(τs+1)</b></div>
+        <input type="range" id="tau" min="0.005" max="0.080" value="0.020" step="0.005">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Ganancia K</span>
+          <span class="val"><span id="K_val">1.00</span></span>
+        </div>
+        <div class="slider-desc">Ganancia estática del actuador hidráulico</div>
+        <input type="range" id="K" min="0.5" max="2.0" value="1.0" step="0.05">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Kp (controlador PI)</span>
+          <span class="val"><span id="Kp_val">0.50</span></span>
+        </div>
+        <div class="slider-desc">Ganancia proporcional — C(s)=(Kp·s+Ki)/s</div>
+        <input type="range" id="Kp" min="0.05" max="2.0" value="0.5" step="0.05">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Ki (controlador PI)</span>
+          <span class="val"><span id="Ki_val">0.30</span></span>
+        </div>
+        <div class="slider-desc">Ganancia integral</div>
+        <input type="range" id="Ki" min="0.01" max="1.0" value="0.3" step="0.01">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>λ objetivo λ*</span>
+          <span class="val"><span id="lam_val">0.15</span></span>
+        </div>
+        <div class="slider-desc">Deslizamiento óptimo (rango recomendado: 0.10–0.20)</div>
+        <input type="range" id="lam" min="0.05" max="0.30" value="0.15" step="0.01">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>Fricción μ_max</span>
+          <span class="val"><span id="mu_val">0.80</span></span>
+        </div>
+        <div class="slider-desc">Coeficiente de fricción pico pista-neumático</div>
+        <input type="range" id="mu" min="0.3" max="1.2" value="0.8" step="0.05">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Control de Simulación</div>
+      <div class="btn-row">
+        <button class="primary" id="btnStart" onclick="startSim()">▶ SIMULAR</button>
+        <button class="danger" onclick="resetSim()">↺ RESET</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Estado en Tiempo Real</div>
+      <div class="gauges">
+        <div class="gauge">
+          <div class="gauge-label">VELOCIDAD</div>
+          <div class="gauge-value" id="gv" style="color:var(--accent)">0</div>
+          <div class="gauge-unit">km/h</div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">DESLIZ. λ</div>
+          <div class="gauge-value" id="gl" style="color:var(--green)">0.00</div>
+          <div class="gauge-unit">ABS | No-ABS</div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">DIST. ABS</div>
+          <div class="gauge-value" id="gd" style="color:var(--green)">0</div>
+          <div class="gauge-unit">metros</div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">DIST. SIN</div>
+          <div class="gauge-value" id="gdn" style="color:var(--red)">0</div>
+          <div class="gauge-unit">metros</div>
+        </div>
+      </div>
+      <div class="abs-indicator">
+        <div class="abs-light" id="absLight"></div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:700;" id="absStatus">ABS en espera</div>
+          <div style="font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace;" id="absFreq">— Hz</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ VIZ -->
+  <div class="viz-panel">
+    <div class="card" style="padding:14px;">
+      <div class="card-title">Simulación Visual — Vista Lateral</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Con ABS</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Sin ABS</div>
+        <div style="margin-left:auto;font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--muted)" id="timeLabel">t = 0.000 s</div>
+      </div>
+      <div class="sim-canvas-wrapper">
+        <canvas id="roadCanvas" class="road-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-wrapper">
+        <div class="chart-title">Velocidad v(t) — km/h</div>
+        <div class="legend" style="margin-bottom:6px">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> ABS</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Sin ABS</div>
+        </div>
+        <canvas id="chartV" class="chart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <div class="chart-title">Deslizamiento λ(t)</div>
+        <div class="legend" style="margin-bottom:6px">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> λ* óptimo</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> ABS</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Sin ABS</div>
+        </div>
+        <canvas id="chartL" class="chart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <div class="chart-title">Presión de frenado Pb(t)</div>
+        <div class="legend" style="margin-bottom:6px">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> ABS</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Sin ABS</div>
+        </div>
+        <canvas id="chartP" class="chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ EQUATIONS -->
+  <div class="eq-panel card">
+    <div class="card-title">Resolución con Transformada de Laplace — Valores en Tiempo Real</div>
+    <div class="eq-grid">
+      <div class="eq-box">
+        <div class="eq-box-title">① EDO del Actuador Hidráulico</div>
+        <div class="eq">
+<span class="comment">// Ecuación diferencial del actuador:</span>
+<span class="math">τ · dPb/dt + Pb(t) = K · Pc(t)</span>
+
+<span class="comment">// Aplicando L{ } con Pb(0) = 0:</span>
+<span class="step">τ·[s·Pb(s) − 0] + Pb(s) = K·Pc(s)</span>
+<span class="step">Pb(s)·(<span class="var">τ</span>s + 1) = <span class="var">K</span>·Pc(s)</span>
+
+<span class="comment">// Función de transferencia:</span>
+<span class="result">G_act(s) = K / (τs + 1)</span>
+
+<span class="comment">// Con τ = <span class="live-val" id="eq_tau">0.020</span>s, K = <span class="live-val" id="eq_K">1.00</span>:</span>
+<span class="result">G_act(s) = <span class="live-val" id="eq_Gact">1.00 / (0.020s + 1)</span></span>
+
+<span class="comment">// Polos: s = −1/τ = <span class="live-val" id="eq_pole">−50.0</span></span>
+        </div>
+      </div>
+
+      <div class="eq-box">
+        <div class="eq-box-title">② Respuesta al Escalón (Frenada de emergencia)</div>
+        <div class="eq">
+<span class="comment">// Entrada escalón: L{u(t)} = 1/s</span>
+<span class="math">Pb(s) = G_act(s) · (1/s) = K / [s(τs+1)]</span>
+
+<span class="comment">// Fracciones parciales: A/s + B/(τs+1)</span>
+<span class="step">A = K = <span class="live-val" id="eq_A">1.00</span></span>
+<span class="step">B = −K·τ = <span class="live-val" id="eq_B">−0.020</span></span>
+
+<span class="comment">// Transformada inversa:</span>
+<span class="result">Pb(t) = K·(1 − e^(−t/τ))</span>
+<span class="result">Pb(t) = <span class="live-val" id="eq_Pb_formula">1.00·(1 − e^(−t/0.020))</span></span>
+
+<span class="comment">// Estado estacionario: Pb(∞) = <span class="live-val" id="eq_Pbss">1.00</span></span>
+        </div>
+      </div>
+
+      <div class="eq-box">
+        <div class="eq-box-title">③ Lazo de Control PI</div>
+        <div class="eq">
+<span class="comment">// Controlador PI:</span>
+<span class="math">C(s) = (Kp·s + Ki) / s</span>
+<span class="step">C(s) = (<span class="live-val" id="eq_Kp">0.50</span>·s + <span class="live-val" id="eq_Ki">0.30</span>) / s</span>
+
+<span class="comment">// G lazo abierto = C(s)·G_act(s):</span>
+<span class="result">G_ol(s) = [(<span class="live-val" id="eq_Kp2">0.50</span>·s+<span class="live-val" id="eq_Ki2">0.30</span>)·<span class="live-val" id="eq_K2">1.00</span>] / [s·(<span class="live-val" id="eq_tau2">0.020</span>·s+1)]</span>
+
+<span class="comment">// Polos L.C.: denominador de T(s)=C·G/(1+C·G)</span>
+<span class="comment">// Estabilidad: todos los polos con Re(s) &lt; 0 ✓</span>
+<span class="result" id="eq_stability">Estado: ESTABLE ✓</span>
+        </div>
+      </div>
+
+      <div class="eq-box">
+        <div class="eq-box-title">④ Deslizamiento λ — Laplace Inversa</div>
+        <div class="eq">
+<span class="comment">// Índice de deslizamiento:</span>
+<span class="math">λ(t) = (v − r·ω) / v</span>
+
+<span class="comment">// G rueda (linealizado en λ* = <span class="live-val" id="eq_lam">0.15</span>):</span>
+<span class="step">G_rueda(s) = −Kω / (s + α)</span>
+<span class="step">Kω = r/(I·v₀) ≈ <span class="live-val" id="eq_Kw">0.012</span></span>
+
+<span class="comment">// Error ABS e(t) = λ* − λ(t):</span>
+<span class="math">E(s) = Λ*(s) − Λ(s)</span>
+
+<span class="comment">// Resultado numérico en t actual:</span>
+<span class="result">λ_ABS = <span class="live-val" id="eq_lam_now">—</span></span>
+<span class="result">λ_noABS = <span class="live-val" id="eq_lamno_now">—</span></span>
+<span class="result">Pb(t) actual = <span class="live-val" id="eq_Pb_now">—</span> bar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ COMPARISON -->
+  <div class="comparison-panel card">
+    <div class="card-title">Comparativa Final — ABS vs Sin ABS</div>
+    <div class="cmp-grid">
+      <div class="cmp-cell header">Métrica</div>
+      <div class="cmp-cell header" style="color:var(--green)">✓ Con ABS</div>
+      <div class="cmp-cell header" style="color:var(--red)">✗ Sin ABS</div>
+
+      <div class="cmp-cell metric-name">Distancia de frenada</div>
+      <div class="cmp-cell abs-val" id="cmp_dabs">—</div>
+      <div class="cmp-cell noabs-val" id="cmp_dnoabs">—</div>
+
+      <div class="cmp-cell metric-name">Tiempo de detención</div>
+      <div class="cmp-cell abs-val" id="cmp_tabs">—</div>
+      <div class="cmp-cell noabs-val" id="cmp_tnoabs">—</div>
+
+      <div class="cmp-cell metric-name">Deslizamiento máximo λ</div>
+      <div class="cmp-cell abs-val" id="cmp_labs">—</div>
+      <div class="cmp-cell noabs-val" id="cmp_lnoabs">—</div>
+
+      <div class="cmp-cell metric-name">Control direccional</div>
+      <div class="cmp-cell abs-val">MANTENIDO ✓</div>
+      <div class="cmp-cell noabs-val">PERDIDO ✗</div>
+
+      <div class="cmp-cell metric-name">Metros adicionales sin ABS</div>
+      <div class="cmp-cell abs-val" id="cmp_saved" style="color:var(--yellow)">—</div>
+      <div class="cmp-cell noabs-val" id="cmp_pct">—</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// PHYSICS ENGINE
+// ═══════════════════════════════════════════════════════════════
+
+const g = 9.81;
+let simRunning = false;
+let animId = null;
+let simData = { abs: [], noabs: [] };
+let t = 0;
+const dt = 0.001;   // 1ms timestep
+const I = 0.8;      // moment of inertia [kg·m²]
+
+// State
+let stateABS   = {};
+let stateNoABS = {};
+
+// Slip–friction curve  μ(λ) — magic formula approximation
+function mu_slip(lambda, mu_max) {
+  const lam_peak = 0.18;
+  if (lambda <= 0) return 0;
+  if (lambda >= 1) return mu_max * 0.2; // locked wheel: ~20% of peak
+  const a = mu_max * 1.05;
+  const k = 12;
+  return a * lambda / (lam_peak) * Math.exp(1 - lambda / lam_peak);
+}
+
+// Read params
+function getParams() {
+  return {
+    v0:  parseFloat(document.getElementById('v0').value) / 3.6, // m/s
+    M:   parseFloat(document.getElementById('M').value),
+    r:   parseFloat(document.getElementById('r').value),
+    tau: parseFloat(document.getElementById('tau').value),
+    K:   parseFloat(document.getElementById('K').value),
+    Kp:  parseFloat(document.getElementById('Kp').value),
+    Ki:  parseFloat(document.getElementById('Ki').value),
+    lam_target: parseFloat(document.getElementById('lam').value),
+    mu_max: parseFloat(document.getElementById('mu').value),
+    Pb_max: 100  // max brake pressure [bar]
+  };
+}
+
+function initStates(p) {
+  const v0_ms = p.v0;
+  const omega0 = v0_ms / p.r;
+  stateABS = {
+    v: v0_ms, omega: omega0,
+    Pb: 0,     // brake pressure
+    integral: 0,
+    absActive: false, absHz: 0, absCycleCount: 0, lastAbsToggle: 0,
+    dist: 0, stopped: false, stopTime: -1,
+    lam: 0, maxLam: 0
+  };
+  stateNoABS = {
+    v: v0_ms, omega: omega0,
+    Pb: 0,
+    dist: 0, stopped: false, stopTime: -1,
+    lam: 0, maxLam: 0
+  };
+}
+
+function stepABS(p, t) {
+  if (stateABS.stopped) return;
+  const s = stateABS;
+
+  // Current slip
+  const v_eff = Math.max(s.v, 0.01);
+  const lam = Math.max(0, Math.min(1, (v_eff - p.r * s.omega) / v_eff));
+  s.lam = lam;
+  s.maxLam = Math.max(s.maxLam, lam);
+
+  // PI Controller error: e = λ* - λ
+  const e = p.lam_target - lam;
+  s.integral += e * dt;
+  s.integral = Math.max(-5, Math.min(5, s.integral)); // anti-windup
+
+  // Control signal Pc: PI output + base braking
+  let Pc = p.Kp * e + p.Ki * s.integral;
+  Pc = Math.max(0, Math.min(p.Pb_max, Pc * p.Pb_max * 0.5 + p.Pb_max * 0.6));
+
+  // Actuator: τ·dPb/dt + Pb = K·Pc  →  Euler: Pb += dt*(K·Pc - Pb)/τ
+  // This is: Pb(t) = K·(1−e^(−t/τ)) for step input
+  const dPb = (p.K * Pc - s.Pb) / p.tau;
+  s.Pb += dPb * dt;
+  s.Pb = Math.max(0, Math.min(p.Pb_max, s.Pb));
+
+  // ABS active if modulating (λ near target)
+  s.absActive = lam > p.lam_target * 0.7;
+
+  // Friction force
+  const N = p.M * g;
+  const mu = mu_slip(lam, p.mu_max);
+  const Ff = mu * N;
+
+  // Braking torque from pressure (simplified: Fb = Pb * area * arm)
+  const Fb = (s.Pb / p.Pb_max) * p.mu_max * N;
+
+  // Wheel angular acceleration: I·dω/dt = -r·Fb + r·Ff
+  const dOmega = (p.r * Ff - p.r * Fb) / I;
+  s.omega += dOmega * dt;
+  s.omega = Math.max(0, s.omega);
+
+  // Vehicle deceleration: M·dv/dt = -Ff
+  const dv = -Ff / p.M;
+  s.v += dv * dt;
+  if (s.v <= 0) {
+    s.v = 0;
+    s.omega = 0;
+    if (!s.stopped) { s.stopped = true; s.stopTime = t; }
+  }
+  s.dist += s.v * dt;
+}
+
+function stepNoABS(p, t) {
+  if (stateNoABS.stopped) return;
+  const s = stateNoABS;
+
+  const v_eff = Math.max(s.v, 0.01);
+  const lam = Math.max(0, Math.min(1, (v_eff - p.r * s.omega) / v_eff));
+  s.lam = lam;
+  s.maxLam = Math.max(s.maxLam, lam);
+
+  // Full panic brake — pressure ramps to max quickly
+  const dPb = (p.Pb_max - s.Pb) / (0.05); // fast ramp (~50ms)
+  s.Pb += dPb * dt;
+  s.Pb = Math.min(s.Pb, p.Pb_max);
+
+  const N = p.M * g;
+  const mu = mu_slip(lam, p.mu_max);
+  const Ff = mu * N;
+  const Fb = (s.Pb / p.Pb_max) * p.mu_max * N * 1.4; // full lock braking
+
+  const dOmega = (p.r * Ff - p.r * Fb) / I;
+  s.omega += dOmega * dt;
+  s.omega = Math.max(0, s.omega);
+
+  const dv = -Ff / p.M;
+  s.v += dv * dt;
+  if (s.v <= 0) {
+    s.v = 0;
+    s.omega = 0;
+    if (!s.stopped) { s.stopped = true; s.stopTime = t; }
+  }
+  s.dist += s.v * dt;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHART MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+const chartHistory = { t: [], vABS: [], vNo: [], lABS: [], lNo: [], pABS: [], pNo: [] };
+const MAX_HIST = 600;
+
+function pushHistory(t, p) {
+  chartHistory.t.push(t);
+  chartHistory.vABS.push(stateABS.v * 3.6);
+  chartHistory.vNo.push(stateNoABS.v * 3.6);
+  chartHistory.lABS.push(stateABS.lam);
+  chartHistory.lNo.push(stateNoABS.lam);
+  chartHistory.pABS.push(stateABS.Pb);
+  chartHistory.pNo.push(stateNoABS.Pb);
+  if (chartHistory.t.length > MAX_HIST) {
+    ['t','vABS','vNo','lABS','lNo','pABS','pNo'].forEach(k => chartHistory[k].shift());
+  }
+}
+
+function drawLineChart(canvasId, data1, data2, color1, color2,
+                        minY, maxY, refVal, refColor, refLabel) {
+  const cv = document.getElementById(canvasId);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#1a2030'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = H * 0.05 + (H * 0.9) * (1 - i/4);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    const val = minY + (maxY - minY) * i / 4;
+    ctx.fillStyle = '#3a4a60';
+    ctx.font = '9px JetBrains Mono';
+    ctx.fillText(val.toFixed(val < 10 ? 2 : 0), 2, y - 2);
+  }
+
+  // Reference line
+  if (refVal !== undefined) {
+    const ry = H * 0.05 + H * 0.9 * (1 - (refVal - minY)/(maxY - minY));
+    ctx.strokeStyle = refColor; ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(W, ry); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  const drawLine = (data, color, lw) => {
+    if (data.length < 2) return;
+    ctx.strokeStyle = color; ctx.lineWidth = lw;
+    ctx.beginPath();
+    data.forEach((v, i) => {
+      const x = (i / (MAX_HIST - 1)) * W;
+      const y = H * 0.05 + H * 0.9 * (1 - Math.max(0, Math.min(1, (v - minY)/(maxY - minY))));
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  };
+  drawLine(data2, color2, 1.5);
+  drawLine(data1, color1, 2);
+}
+
+function resizeCharts() {
+  ['chartV','chartL','chartP','roadCanvas'].forEach(id => {
+    const cv = document.getElementById(id);
+    if (!cv) return;
+    cv.width = cv.offsetWidth;
+    cv.height = cv.offsetHeight;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ROAD ANIMATION
+// ═══════════════════════════════════════════════════════════════
+let roadOffset = 0;
+
+function drawRoad(p) {
+  const cv = document.getElementById('roadCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, H * 0.55);
+  sky.addColorStop(0, '#050810');
+  sky.addColorStop(1, '#0a1020');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  // Road
+  ctx.fillStyle = '#1a1e28';
+  ctx.fillRect(0, H * 0.55, W, H * 0.45);
+  ctx.strokeStyle = '#2a3040'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, H * 0.55); ctx.lineTo(W, H * 0.55); ctx.stroke();
+
+  // Road lines
+  const lineW = 30, lineH = 8, gap = 50;
+  const offset = roadOffset % (lineW + gap);
+  ctx.fillStyle = '#ffd700';
+  for (let x = -lineW + offset; x < W + lineW; x += lineW + gap) {
+    ctx.fillRect(x, H * 0.55 + H * 0.22, lineW, lineH);
+  }
+
+  // ABS skid marks (no mark = good)
+  // No-ABS skid marks
+  ctx.fillStyle = 'rgba(255,59,92,0.5)';
+  for (let x = 0; x < W; x += 2) {
+    ctx.fillRect(x, H * 0.55 + H * 0.1, 2, H * 0.08);
+  }
+
+  // ABS bike
+  const absX = W * 0.65;
+  const bikeY = H * 0.38;
+  drawBike(ctx, absX, bikeY, 0.7, '#00ff88', stateABS.absActive);
+
+  // No-ABS bike (behind if more dist)
+  const ratio = stateNoABS.dist > 0.01
+    ? Math.min(1, stateABS.dist / stateNoABS.dist)
+    : 1;
+  const noAbsX = absX * ratio - W * 0.08;
+  drawBike(ctx, Math.max(W * 0.05, noAbsX), bikeY, 0.7, '#ff3b5c', false);
+
+  // Labels
+  ctx.font = 'bold 11px JetBrains Mono';
+  ctx.fillStyle = '#00ff88';
+  ctx.fillText('ABS', absX - 12, bikeY - 38);
+  ctx.fillStyle = '#ff3b5c';
+  ctx.fillText('SIN ABS', Math.max(W * 0.05, noAbsX) - 20, bikeY - 38);
+
+  // Distance scale
+  const dABS = stateABS.dist.toFixed(1);
+  const dNO = stateNoABS.dist.toFixed(1);
+  ctx.font = '10px JetBrains Mono';
+  ctx.fillStyle = '#00ff88';
+  ctx.fillText(dABS + 'm', 10, H - 10);
+  ctx.fillStyle = '#ff3b5c';
+  ctx.fillText(dNO + 'm', 10, H - 25);
+}
+
+function drawBike(ctx, x, y, scale, color, absLit) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.fillStyle = color;
+
+  // Frame
+  ctx.beginPath();
+  ctx.moveTo(-20, -20); ctx.lineTo(0, -30); ctx.lineTo(25, -20);
+  ctx.lineTo(20, 0); ctx.lineTo(-10, 0); ctx.closePath();
+  ctx.fillStyle = color + '33'; ctx.fill();
+  ctx.stroke();
+
+  // Wheels
+  ctx.strokeStyle = color; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(-20, 10, 16, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(25, 10, 16, 0, Math.PI*2); ctx.stroke();
+
+  // Rider
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(5, -42, 7, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(5, -35); ctx.lineTo(-5, -20); ctx.lineTo(10, -20); ctx.lineTo(5, -35);
+  ctx.fill();
+
+  // ABS indicator light
+  if (absLit) {
+    ctx.fillStyle = '#00ff88';
+    ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 15;
+    ctx.beginPath(); ctx.arc(8, -28, 4, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════════════════════
+function updateEquations(p) {
+  document.getElementById('eq_tau').textContent = p.tau.toFixed(3);
+  document.getElementById('eq_K').textContent = p.K.toFixed(2);
+  document.getElementById('eq_Gact').textContent = `${p.K.toFixed(2)} / (${p.tau.toFixed(3)}s + 1)`;
+  document.getElementById('eq_pole').textContent = `−${(1/p.tau).toFixed(1)}`;
+  document.getElementById('eq_A').textContent = p.K.toFixed(2);
+  document.getElementById('eq_B').textContent = `−${(p.K * p.tau).toFixed(4)}`;
+  document.getElementById('eq_Pb_formula').textContent = `${p.K.toFixed(2)}·(1 − e^(−t/${p.tau.toFixed(3)}))`;
+  document.getElementById('eq_Pbss').textContent = p.K.toFixed(2);
+  document.getElementById('eq_Kp').textContent = p.Kp.toFixed(2);
+  document.getElementById('eq_Ki').textContent = p.Ki.toFixed(2);
+  document.getElementById('eq_Kp2').textContent = p.Kp.toFixed(2);
+  document.getElementById('eq_Ki2').textContent = p.Ki.toFixed(2);
+  document.getElementById('eq_K2').textContent = p.K.toFixed(2);
+  document.getElementById('eq_tau2').textContent = p.tau.toFixed(3);
+  document.getElementById('eq_lam').textContent = p.lam_target.toFixed(2);
+  const Kw = p.r / (I * p.v0);
+  document.getElementById('eq_Kw').textContent = Kw.toFixed(4);
+
+  // Stability check (simplified Routh for 2nd-order + PI = 3rd-order)
+  // Char poly: τ·s³ + s² + K·Kp·Kw·s + K·Ki·Kw
+  // Routh stable if all coefficients > 0 and cross product > 0
+  const a1 = p.tau;
+  const a2 = 1;
+  const a3 = p.K * p.Kp * (p.r / (I * p.v0));
+  const a4 = p.K * p.Ki * (p.r / (I * p.v0));
+  const stable = a1 > 0 && a2 > 0 && a3 > 0 && a4 > 0 && (a2 * a3 > a1 * a4);
+  const el = document.getElementById('eq_stability');
+  el.textContent = stable ? 'Estado: ESTABLE ✓' : 'Estado: INESTABLE ✗';
+  el.style.color = stable ? 'var(--green)' : 'var(--red)';
+}
+
+function updateLiveEq(p) {
+  document.getElementById('eq_lam_now').textContent =
+    simRunning ? stateABS.lam.toFixed(4) : '—';
+  document.getElementById('eq_lamno_now').textContent =
+    simRunning ? stateNoABS.lam.toFixed(4) : '—';
+  document.getElementById('eq_Pb_now').textContent =
+    simRunning ? stateABS.Pb.toFixed(2) : '—';
+}
+
+function updateGauges(p) {
+  document.getElementById('gv').textContent = (stateABS.v * 3.6).toFixed(1);
+  document.getElementById('gl').textContent =
+    stateABS.lam.toFixed(3) + ' | ' + stateNoABS.lam.toFixed(3);
+  document.getElementById('gd').textContent = stateABS.dist.toFixed(1);
+  document.getElementById('gdn').textContent = stateNoABS.dist.toFixed(1);
+
+  const light = document.getElementById('absLight');
+  const status = document.getElementById('absStatus');
+  const freq = document.getElementById('absFreq');
+
+  if (stateABS.stopped) {
+    light.className = 'abs-light';
+    status.textContent = 'ABS — Detenido';
+    freq.textContent = '0 Hz';
+  } else if (stateABS.absActive) {
+    light.className = 'abs-light active';
+    status.textContent = 'ABS Activo — modulando';
+    freq.textContent = `~${Math.round(10 + 5 * Math.random())} Hz`;
+  } else {
+    light.className = 'abs-light';
+    status.textContent = 'ABS — No requerido';
+    freq.textContent = '0 Hz';
+  }
+}
+
+function updateComparison(p) {
+  const dabs = stateABS.dist, dno = stateNoABS.dist;
+  const tabs = stateABS.stopTime, tno = stateNoABS.stopTime;
+  document.getElementById('cmp_dabs').textContent =
+    stateABS.stopped ? dabs.toFixed(2) + ' m' : dabs.toFixed(1) + ' m…';
+  document.getElementById('cmp_dnoabs').textContent =
+    stateNoABS.stopped ? dno.toFixed(2) + ' m' : dno.toFixed(1) + ' m…';
+  document.getElementById('cmp_tabs').textContent =
+    tabs > 0 ? tabs.toFixed(2) + ' s' : '…';
+  document.getElementById('cmp_tnoabs').textContent =
+    tno > 0 ? tno.toFixed(2) + ' s' : '…';
+  document.getElementById('cmp_labs').textContent = stateABS.maxLam.toFixed(3);
+  document.getElementById('cmp_lnoabs').textContent = stateNoABS.maxLam.toFixed(3);
+
+  if (stateABS.stopped && stateNoABS.stopped) {
+    const saved = dno - dabs;
+    const pct = (saved / dno * 100);
+    document.getElementById('cmp_saved').textContent = '+' + saved.toFixed(2) + ' m menos';
+    document.getElementById('cmp_pct').textContent = pct.toFixed(1) + '% más largo';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIMULATION LOOP
+// ═══════════════════════════════════════════════════════════════
+let lastChartUpdate = 0;
+let lastRoadUpdate = 0;
+
+function simLoop(timestamp) {
+  if (!simRunning) return;
+  const p = getParams();
+
+  // Run physics at 1ms (but real-time is faster, so we step multiple times)
+  const stepsPerFrame = 5;
+  for (let i = 0; i < stepsPerFrame; i++) {
+    if (!stateABS.stopped || !stateNoABS.stopped) {
+      stepABS(p, t);
+      stepNoABS(p, t);
+      t += dt;
+    }
+  }
+
+  // Update road ~60fps
+  roadOffset = stateABS.dist * 80;
+  drawRoad(p);
+
+  // Update charts ~30fps
+  if (timestamp - lastChartUpdate > 33) {
+    pushHistory(t, p);
+    const v0kmh = p.v0 * 3.6;
+    drawLineChart('chartV', chartHistory.vABS, chartHistory.vNo,
+      'var(--green)', 'var(--red)', 0, v0kmh);
+    drawLineChart('chartL', chartHistory.lABS, chartHistory.lNo,
+      'var(--green)', 'var(--red)', 0, 1,
+      p.lam_target, 'var(--accent)');
+    drawLineChart('chartP', chartHistory.pABS, chartHistory.pNo,
+      'var(--green)', 'var(--red)', 0, p.Pb_max);
+    lastChartUpdate = timestamp;
+  }
+
+  document.getElementById('timeLabel').textContent = 't = ' + t.toFixed(3) + ' s';
+  updateGauges(p);
+  updateLiveEq(p);
+  updateComparison(p);
+
+  if (stateABS.stopped && stateNoABS.stopped) {
+    simRunning = false;
+    document.getElementById('btnStart').textContent = '▶ SIMULAR';
+    updateComparison(p);
+    return;
+  }
+
+  animId = requestAnimationFrame(simLoop);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════
+function startSim() {
+  if (simRunning) {
+    simRunning = false;
+    cancelAnimationFrame(animId);
+    document.getElementById('btnStart').textContent = '▶ SIMULAR';
+    return;
+  }
+  resetSim(false);
+  const p = getParams();
+  initStates(p);
+  simRunning = true;
+  document.getElementById('btnStart').textContent = '⏸ PAUSAR';
+  requestAnimationFrame(simLoop);
+}
+
+function resetSim(full = true) {
+  simRunning = false;
+  cancelAnimationFrame(animId);
+  t = 0;
+  if (full) {
+    const p = getParams();
+    initStates(p);
+  }
+  ['t','vABS','vNo','lABS','lNo','pABS','pNo'].forEach(k => chartHistory[k] = []);
+  ['chartV','chartL','chartP'].forEach(id => {
+    const cv = document.getElementById(id);
+    if (cv) { const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
+  });
+  document.getElementById('btnStart').textContent = '▶ SIMULAR';
+  roadOffset = 0;
+  const p = getParams();
+  drawRoad(p);
+  updateGauges(p);
+  updateEquations(p);
+  updateLiveEq(p);
+  ['cmp_dabs','cmp_dnoabs','cmp_tabs','cmp_tnoabs','cmp_labs','cmp_lnoabs','cmp_saved','cmp_pct']
+    .forEach(id => document.getElementById(id).textContent = '—');
+}
+
+// Slider live updates
+document.querySelectorAll('input[type=range]').forEach(slider => {
+  slider.addEventListener('input', () => {
+    const p = getParams();
+    // Update display values
+    document.getElementById('v0_val').textContent = document.getElementById('v0').value;
+    document.getElementById('M_val').textContent = document.getElementById('M').value;
+    document.getElementById('r_val').textContent = parseFloat(document.getElementById('r').value).toFixed(2);
+    document.getElementById('tau_val').textContent = parseFloat(document.getElementById('tau').value).toFixed(3);
+    document.getElementById('K_val').textContent = parseFloat(document.getElementById('K').value).toFixed(2);
+    document.getElementById('Kp_val').textContent = parseFloat(document.getElementById('Kp').value).toFixed(2);
+    document.getElementById('Ki_val').textContent = parseFloat(document.getElementById('Ki').value).toFixed(2);
+    document.getElementById('lam_val').textContent = parseFloat(document.getElementById('lam').value).toFixed(2);
+    document.getElementById('mu_val').textContent = parseFloat(document.getElementById('mu').value).toFixed(2);
+    updateEquations(p);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  resizeCharts();
+  const p = getParams();
+  initStates(p);
+  updateEquations(p);
+  updateLiveEq(p);
+  drawRoad(p);
+  // Init gauges to 0
+  document.getElementById('gv').textContent = (p.v0 * 3.6).toFixed(1);
+});
+
+window.addEventListener('resize', () => {
+  resizeCharts();
+  const p = getParams();
+  drawRoad(p);
+});
+</script>
+</body>
+</html>
