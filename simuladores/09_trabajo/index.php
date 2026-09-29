@@ -44,7 +44,7 @@ $lim    = $cfg['limites'];
           <div class="ps-label">Modo</div>
           <div class="modo-btns">
             <button class="modo-btn active" id="btn-modo-fuerza" onclick="setModo('fuerza')">Fuerza</button>
-            <button class="modo-btn"        id="btn-modo-resorte" onclick="setModo('resorte')">Resorte</button>
+            <button class="modo-btn"        id="btn-modo-resorte" onclick="setModo('resorte')">Resorte: trabajo externo</button>
           </div>
         </div>
 

@@ -53,9 +53,7 @@ const Engine = (() => {
     } else {
       // Resorte: x1 = 0, x2 = state.x
       const W  = 0.5 * state.k * state.x * state.x;
-      const K1 = 0.5 * state.m * state.v0 * state.v0;
-      const K2 = Math.max(0, K1 + W);
-      const v2 = Math.sqrt(2 * K2 / state.m);
+      const K1 = 0, K2 = 0, v2 = 0; // Estiramiento cuasiestático: ΔK=0, Wext=ΔU.
 
       return { Fcomp: state.k * state.x, W, K1, K2, v2, phiRad: 0, cosPhi: 1 };
     }
@@ -120,19 +118,19 @@ const Engine = (() => {
     } else {
       return {
         comp: {
-          formula: 'F = k·x  (Ley de Hooke)',
+          formula: 'F_ext = k·x; F_resorte = −k·x',
           sust:    `F = ${fmt(state.k)}·${fmt(state.x)}`,
           res:     `F = ${fmt(state.k * state.x)} N`,
         },
         work: {
-          formula: 'W = ½·k·x²',
+          formula: 'W_ext = ΔU = ½·k·x²',
           sust:    `W = ½·${fmt(state.k)}·${fmt(state.x)}²`,
           res:     `W = ${fmt(c.W)} J  [AGREGADA]`,
         },
         energia: {
-          formula: 'W_tot = K₂ − K₁',
-          sust:    `${fmt(c.W)} = ½·${fmt(state.m)}·v² − ½·${fmt(state.m)}·${fmt(state.v0)}²`,
-          res:     `v₂ = ${fmt(c.v2)} m/s`,
+          formula: 'W_resorte = −ΔU; W_ext + W_resorte = 0',
+          sust: `ΔU = ${fmt(c.W)} J; ΔK = 0 (cuasiestático)`,
+          res: `W_resorte = ${fmt(-c.W)} J`,
         },
       };
     }

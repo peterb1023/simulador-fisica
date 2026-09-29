@@ -67,19 +67,19 @@
         <span><b>m</b> — masa (kg)</span>
         <span><b>v</b> — rapidez (m/s)</span>
       </div>
-      <div class="fp-note">Energía asociada al movimiento de un objeto. Siempre positiva. Se duplica si v se duplica (relación cuadrática).</div>
+      <div class="fp-note">Energía asociada al movimiento de un objeto. Siempre positiva. Se cuadruplica si v se duplica (relación cuadrática).</div>
     </div>
 
     <!-- Resorte [AGREGADA] -->
     <div class="fp-card" style="--accent-card:#e3b341">
-      <div class="fp-card-tag">Trabajo del resorte <span style="font-size:9px;background:rgba(227,179,65,.15);padding:2px 6px;border-radius:4px;margin-left:4px">[AGREGADA]</span></div>
-      <div class="fp-eq" style="font-size:16px">W = ½kx₂² − ½kx₁²</div>
+      <div class="fp-card-tag">Trabajo externo sobre el resorte <span style="font-size:9px;background:rgba(227,179,65,.15);padding:2px 6px;border-radius:4px;margin-left:4px">[AGREGADA]</span></div>
+      <div class="fp-eq" style="font-size:16px">W_ext = ΔU = ½kx₂² − ½kx₁²</div>
       <div class="fp-vars">
-        <span><b>W</b> — trabajo del resorte (J)</span>
+        <span><b>W</b> — trabajo externo cuasiestático (J)</span>
         <span><b>k</b> — constante del resorte (N/m)</span>
         <span><b>x₁, x₂</b> — elongaciones inicial y final (m)</span>
       </div>
-      <div class="fp-note">Ley de Hooke. El trabajo es el área del triángulo bajo F(x) = kx. Si x₁ = 0 → W = ½kx².</div>
+      <div class="fp-note">Estiramiento cuasiestático: F_ext=kx y F_resorte=−kx. W_ext=ΔU; W_resorte=−ΔU y ΔK=0. La animación ilustra el desplazamiento, no una aceleración.</div>
     </div>
 
     <!-- Trabajo de la gravedad [AGREGADA referencia] -->

@@ -55,7 +55,7 @@ const Engine = (() => {
     state.xMax = state.v0x * state.tMax;
 
     // Altura máxima: t_top = v0y/g
-    const t_top = state.v0y / G;
+    const t_top = Math.max(0, state.v0y / G);
     state.yMax  = state.y0 + state.v0y * t_top - 0.5 * G * t_top * t_top;
   }
 
@@ -116,7 +116,7 @@ const Engine = (() => {
   function yOfX(x) {
     const a = state.alpha * Math.PI / 180;
     const cosA = Math.cos(a);
-    if (Math.abs(cosA) < 1e-9) return state.y0;
+    if (Math.abs(state.v0 * cosA) < 1e-9) return null;
     return Math.tan(a) * x - (G / (2 * state.v0 * state.v0 * cosA * cosA)) * x * x + state.y0;
   }
 

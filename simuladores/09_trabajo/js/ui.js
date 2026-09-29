@@ -53,7 +53,10 @@ const UI = (() => {
     const W  = st.calc.W;
     const badge = document.getElementById('signo-badge');
     if (badge) {
-      if (W > 0.01) {
+      if (st.modo === 'resorte') {
+        badge.textContent = 'W_ext = ΔU; ΔK = 0 (cuasiestático)';
+        badge.className = 'signo-badge pos';
+      } else if (W > 0.01) {
         badge.textContent = 'W > 0 — objeto acelera';
         badge.className = 'signo-badge pos';
       } else if (W < -0.01) {

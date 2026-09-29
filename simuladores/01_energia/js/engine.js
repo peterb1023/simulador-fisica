@@ -19,7 +19,7 @@ const Engine = (() => {
     // posición del objeto en la pista: ángulo normalizado [-1, 1]
     // -1 = extremo izquierdo (h=h0), 0 = fondo (h=0), 1 = extremo derecho
     pos:     -1,      // arranca en el extremo izq
-    vel:     0,       // velocidad angular en la pista
+    vel:     0,       // d(pos)/dt; x = 5·pos metros
     dir:     1,       // dirección: +1 derecha, -1 izquierda
 
     // energías actuales
@@ -60,8 +60,9 @@ const Engine = (() => {
     // U = m · g · h
     state.Ep = state.masa * state.g * h;
 
-    // K = E_total - U - E_térmica  (conservación)
-    state.Ec = Math.max(0, state.Et - state.Ep - state.Eth);
+    // Una sola velocidad: ds/dt = sqrt(5² + (dh/dpos)²)·dpos/dt.
+    const metric = 25 + (2 * state.h0 * state.pos) ** 2;
+    state.Ec = 0.5 * state.masa * metric * state.vel ** 2;
   }
 
   // ── Velocidad actual (derivada de K = ½mv²) ─────────────
@@ -75,34 +76,26 @@ const Engine = (() => {
   function step(dt) {
     if (state.paused || !state.started) return;
 
-    // Aceleración proporcional a la pendiente de la pista
-    // (derivada de h = h0·pos² → dh/dpos = 2·h0·pos)
-    // a_tangencial ∝ -g · sin(θ) ≈ -g · (2·h0·pos) / pista_escala
-    const slope = 2 * state.h0 * state.pos;
-    const acc   = -state.g * slope * 0.04; // factor escala para animación fluida
-
-    state.vel += acc * dt;
-
-    // Fricción: disipa energía lentamente
-    if (state.friction) {
-      const diss  = 0.012 * state.masa * state.g * Math.abs(state.vel) * dt;
-      state.Eth   = Math.min(state.Eth + diss, state.Et * 0.98);
-      // amortiguación de velocidad
-      state.vel  *= (1 - 0.018 * dt * 60);
+    if (!Number.isFinite(dt) || dt <= 0) return;
+    // Pista física x=5q, y=h0·q². RK4 con subpasos de hasta 1/240 s.
+    // Rozamiento viscoso tangencial: F=-m·gamma·v; calor = integral m·gamma·v² dt.
+    const gamma = state.friction ? 0.35 : 0;
+    const deriv = ([q, u, heat]) => {
+      const hp = 2 * state.h0 * q, metric = 25 + hp * hp;
+      return [u, (-state.g * hp - hp * 2 * state.h0 * u * u) / metric - gamma * u,
+        state.masa * gamma * metric * u * u];
+    };
+    const n = Math.ceil(dt * 240), h = dt / n;
+    let y = [state.pos, state.vel, state.Eth];
+    for (let i = 0; i < n; i++) {
+      const k1 = deriv(y);
+      const k2 = deriv(y.map((v,j) => v + h*k1[j]/2));
+      const k3 = deriv(y.map((v,j) => v + h*k2[j]/2));
+      const k4 = deriv(y.map((v,j) => v + h*k3[j]));
+      y = y.map((v,j) => v + h*(k1[j]+2*k2[j]+2*k3[j]+k4[j])/6);
     }
-
-    state.pos += state.vel * dt;
-
-    // Rebote en los extremos
-    const posMax = 1.0;
-    if (state.pos >= posMax) {
-      state.pos = posMax;
-      state.vel = -Math.abs(state.vel) * (state.friction ? 0.97 : 1);
-    }
-    if (state.pos <= -posMax) {
-      state.pos = -posMax;
-      state.vel = Math.abs(state.vel) * (state.friction ? 0.97 : 1);
-    }
+    [state.pos, state.vel, state.Eth] = y;
+    state.dir = Math.sign(state.vel) || state.dir;
 
     computeEnergies();
   }
@@ -118,7 +111,7 @@ const Engine = (() => {
     setMasa(v)     { state.masa = v;    state.Et = state.masa * state.g * state.h0; init(); },
     setGravity(v)  { state.g = v;       state.Et = state.masa * state.g * state.h0; init(); },
     setAltura(v)   { state.h0 = v;      state.Et = state.masa * state.g * state.h0; init(); },
-    setFriction(v) { state.friction = v; state.Eth = 0; computeEnergies(); },
+    setFriction(v) { state.friction = !!v; init(); },
     pause()        { state.paused = true; },
     resume()       { state.paused = false; },
     isPaused()     { return state.paused; },

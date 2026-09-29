@@ -125,7 +125,8 @@ const Engine = (() => {
 
     // Teorema ejes paralelos: I_P = I_cm + M·d²
     // Solo aplica si el cuerpo usa el cm como eje natural
-    state.I_P = state.I + state.M * state.d * state.d;
+    const Icm = c.id === 'varilla_ext' ? state.M * state.dim ** 2 / 12 : state.I;
+    state.I_P = Icm + state.M * state.d * state.d;
 
     // K = ½·I·ω²
     state.K   = 0.5 * state.I   * state.omega * state.omega;
@@ -152,7 +153,7 @@ const Engine = (() => {
       },
       ejes_par: {
         formula: 'I_P = I_cm + M · d²',
-        sust:    `I_P = ${f(state.I)} + ${f(state.M)} · ${f(state.d)}²`,
+        sust:    `I_P = ${f(state.I_P - state.M * state.d ** 2)} + ${f(state.M)} · ${f(state.d)}²`,
         res:     `I_P = ${f(state.I_P)} kg·m²`,
       },
       energia: {

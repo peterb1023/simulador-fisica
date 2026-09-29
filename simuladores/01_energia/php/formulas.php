@@ -10,6 +10,7 @@
     <p>Trabajo, Potencia y Energía — solo las fórmulas de tu profesor</p>
   </div>
 
+  <p class="fp-note">Pista: x = 5q m, h = h₀q²; rapidez v = √(25 + (2h₀q)²)·|dq/dt|. Con fricción se modela F = −0.35mv y su trabajo se convierte en calor.</p>
   <div class="fp-grid">
 
     <div class="fp-card" style="--accent-card: #388bfd">

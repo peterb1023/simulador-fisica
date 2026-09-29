@@ -194,7 +194,7 @@ const Renderer = (() => {
     ctx.font = 'bold 11px Space Mono, monospace';
     ctx.fillStyle = C.work;
     ctx.textAlign = 'center';
-    ctx.fillText(`W = ${Engine.fmt(Wactual)} J`, objCX, objY - 26);
+    ctx.fillText(`W_ext = ΔU = ${Engine.fmt(Wactual)} J`, objCX, objY - 26);
 
     ctx.font = '10px Space Mono, monospace';
     ctx.fillStyle = C.tx2;
@@ -214,7 +214,7 @@ const Renderer = (() => {
     const floorY  = H * 0.65;
     const restX   = wallX + 60;   // posición natural del extremo del resorte
     const maxStretch = W * 0.5;
-    const stretchPx  = (st.sActual / st.x) * maxStretch * (st.x / 2);
+    const stretchPx  = st.sActual * maxStretch / 2;
 
     ctx.fillStyle = '#161b22';
     ctx.fillRect(0, floorY, W, H - floorY);
@@ -240,7 +240,7 @@ const Renderer = (() => {
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
-    ctx.moveTo(restX + maxStretch * (st.x / 2) / st.x * 0, floorY - H * 0.3);
+    ctx.moveTo(restX, floorY - H * 0.3);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -276,7 +276,7 @@ const Renderer = (() => {
       drawArrow(ctx, objX + objSz + arrowLen, springY, objX + objSz, springY, C.fuerza, 2, 9);
       ctx.font = 'bold 10px Space Mono, monospace';
       ctx.fillStyle = C.fuerza;
-      ctx.fillText(`F = ${Engine.fmt(fSpring)} N`, objX + objSz + 6, springY - 10);
+      ctx.fillText(`F_resorte = −${Engine.fmt(fSpring)} N`, objX + objSz + 6, springY - 10);
     }
 
     // Labels
@@ -284,7 +284,7 @@ const Renderer = (() => {
     ctx.font = 'bold 11px Space Mono, monospace';
     ctx.fillStyle = C.spring;
     ctx.textAlign = 'center';
-    ctx.fillText(`W = ${Engine.fmt(Wactual)} J`, objX + objSz / 2, objY - 24);
+    ctx.fillText(`W_ext = ΔU = ${Engine.fmt(Wactual)} J`, objX + objSz / 2, objY - 24);
     ctx.font = '10px Space Mono, monospace';
     ctx.fillStyle = C.tx2;
     ctx.fillText(`x = ${Engine.fmt(st.sActual)} m`, objX + objSz / 2, objY - 10);
