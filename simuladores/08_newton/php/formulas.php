@@ -620,4 +620,4 @@
   max-width: 480px;
   height: auto;
 }
-</style>
+</style><section class="fp-card"><h3>Plano inclinado y transición de fricción</h3><p>Eje x ascendente sobre el plano: mg∥=−mg sen θ; mg⊥=−mg cos θ. φ se mide desde el plano. N=max(0,mg cos θ−F sen φ).</p><p>Desde reposo, D=F cos φ−mg sen θ. Si |D|≤μsN, fs=−D y a=0. Al deslizar: fk=−sign(v)μkN. Al detenerse se evalúa otra vez el umbral estático; puede quedarse en reposo o invertir el sentido.</p><p>ΣFx=D+f; a=ΣFx/m. Se requiere m&gt;0 y 0≤μk≤μs. Si F sen φ&gt;mg cos θ el bloque se separa: N=f=0 y se muestra aceleración normal.</p></section>

@@ -97,6 +97,10 @@ const Engine = (() => {
     state.pasos     = pasos;
   }
 
+  function efficiency(useful,input) {
+    if(!Number.isFinite(+useful)||!Number.isFinite(+input)||+input<=0||+useful<0||+useful>+input)return null;
+    return +useful/+input;
+  }
   // ── Setters ───────────────────────────────────────────────
   function setModo(m) { state.modo = m; calcular(); }
   function setW(v)    { state.W = +v;   calcular(); }
@@ -114,6 +118,6 @@ const Engine = (() => {
   // Calcular al arrancar
   calcular();
 
-  return { setModo, setW, setP, setT, setF, setV, getState, calcular, fmt };
+  return { efficiency, setModo, setW, setP, setT, setF, setV, getState, calcular, fmt };
 
 })();

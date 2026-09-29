@@ -66,7 +66,7 @@ const Engine = (() => {
   function setCartesian(id, vx, vy) {
     const v = vectors.find(v => v.id === id);
     if (!v) return;
-    v.vx = vx; v.vy = vy;
+    v.vx = +vx; v.vy = +vy;
     recompute(v);
   }
 
@@ -118,6 +118,10 @@ const Engine = (() => {
     setCartesian,
     setPolar,
     getResultant,
+    products(a=vectors[0],b=vectors[1]) {
+      if(!a||!b) return null;
+      return {dot:a.vx*b.vx+a.vy*b.vy,crossZ:a.vx*b.vy-a.vy*b.vx};
+    },
     getVectors: () => vectors.map(v => ({ ...v })),
     getVector:  (id) => { const v = vectors.find(v => v.id === id); return v ? { ...v } : null; },
     fmt2,

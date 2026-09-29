@@ -15,10 +15,13 @@ const UI = (() => {
   }
 
   function bindControls() {
+    bind('sl-mus',v=>{Engine.setMus(v);syncAll();});
+    bind('sl-theta',v=>{Engine.setTheta(v);syncAll();});
+    bind('sl-v0',v=>{Engine.setV0(v);syncAll();});
     bind('sl-m',   v => { Engine.setM(+v);   syncVal('val-m',   v, 'kg');   });
     bind('sl-F',   v => { Engine.setF(+v);   syncVal('val-F',   v, 'N');    });
     bind('sl-phi', v => { Engine.setPhi(+v); syncVal('val-phi', v, '°');    });
-    bind('sl-muk', v => { Engine.setMuk(+v); syncVal('val-muk', v, '');     });
+    bind('sl-muk', v => { Engine.setMuk(+v); syncAll();     });
   }
 
   function bind(id, fn) {
@@ -28,6 +31,7 @@ const UI = (() => {
 
   function syncAll() {
     const st = Engine.getState();
+    sv('sl-mus',st.mus,'val-mus','');sv('sl-theta',st.theta,'val-theta','°');sv('sl-v0',st.v0,'val-v0','m/s');
     sv('sl-m',   st.m,   'val-m',   'kg');
     sv('sl-F',   st.F,   'val-F',   'N');
     sv('sl-phi', st.phi, 'val-phi', '°');
@@ -73,7 +77,7 @@ const UI = (() => {
     if (!sust) return;
     setHTML('sust-peso',    buildStep(sust.peso));
     if (sust.normal) setHTML('sust-normal',  buildStep(sust.normal));
-    if (sust.fric)   setHTML('sust-fric',    buildStep(sust.fric, true));
+    setHTML('sust-fric',sust.fric?buildStep(sust.fric,true):'Sin contacto: no hay fricción.');
     if (sust.tension)setHTML('sust-normal',  buildStep(sust.tension));
     setHTML('sust-segunda', buildStep(sust.segunda));
     updateStats();

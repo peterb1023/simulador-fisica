@@ -102,134 +102,26 @@ const Renderer = (() => {
   //  MODO PLANO
   // ══════════════════════════════════════════════════════════
   function drawPlano(st) {
-    const W  = canvas.width;
-    const H  = canvas.height;
-    const groundY = H * 0.65;
-
-    // Suelo
-    ctx.fillStyle = C.sueloFill;
-    ctx.fillRect(0, groundY, W, H - groundY);
-    ctx.strokeStyle = C.suelo;
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(W, groundY); ctx.stroke();
-
-    // Marcas de suelo (hatching)
-    ctx.strokeStyle = 'rgba(88,166,255,0.12)';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < W; x += 18) {
-      ctx.beginPath();
-      ctx.moveTo(x, groundY);
-      ctx.lineTo(x - 10, groundY + 12);
-      ctx.stroke();
-    }
-
-    // Posición del bloque en canvas (mapeo: 1m ≈ 35px, centrado en W/2)
-    const scale  = 35;
-    const bx     = W / 2 + st.x * scale - BW / 2;
-    const by     = groundY - BH;
-
-    // Centro del bloque
-    const bcx = bx + BW / 2;
-    const bcy = by + BH / 2;
-
-    // ── Fricción (si activa) — AGREGADA ──────────────────
-    // Dirección opuesta a vx (o a F si vx == 0)
-    if (st.fric > 0) {
-      const fricDir = st.vx >= 0 ? -1 : 1;
-      const fricLen = Math.min(st.fric * 0.8, 90);
-      const fricX2  = bcx + fricDir * fricLen;
-      arrow(bcx, groundY - BH / 2, fricX2, groundY - BH / 2, C.fric, 2.5);
-      label(`fk=${Engine.fmt(st.fric)}N`, fricX2 + (fricDir > 0 ? 6 : -6), groundY - BH / 2 - 8,
-            C.fric, fricDir > 0 ? 'left' : 'right');
-
-      // Badge [AGREGADA]
-      ctx.save();
-      ctx.font      = '8px Space Mono, monospace';
-      ctx.fillStyle = C.fric;
-      ctx.textAlign = fricDir > 0 ? 'left' : 'right';
-      ctx.fillText('[AGREGADA]', fricX2 + (fricDir > 0 ? 6 : -6), groundY - BH / 2 + 4);
-      ctx.restore();
-    }
-
-    // ── Peso W (hacia abajo) ──────────────────────────────
-    const wLen = Math.min(st.w * 0.5, 100);
-    arrow(bcx, by + BH, bcx, by + BH + wLen, C.peso, 2.5);
-    label(`W=${Engine.fmt(st.w)}N`, bcx + 6, by + BH + wLen * 0.55, C.peso);
-
-    // ── Normal N (hacia arriba) ───────────────────────────
-    const nLen = Math.min(st.n * 0.5, 100);
-    arrow(bcx, by, bcx, by - nLen, C.normal, 2.5);
-    label(`N=${Engine.fmt(st.n)}N`, bcx + 6, by - nLen * 0.5, C.normal);
-
-    // ── F aplicada (con ángulo φ) ─────────────────────────
-    const phi_rad = st.phi * Math.PI / 180;
-    const fLen    = Math.min(st.F * 0.7, 110);
-    const fTipX   = bcx + Math.cos(phi_rad) * fLen;
-    const fTipY   = bcy - Math.sin(phi_rad) * fLen;
-    arrow(bcx, bcy, fTipX, fTipY, C.fApp, 3);
-    label(`F=${Engine.fmt(st.F)}N`, fTipX + 8, fTipY - 4, C.fApp);
-
-    // Arco del ángulo φ
-    if (st.phi > 1) {
-      ctx.save();
-      ctx.strokeStyle = 'rgba(227,179,65,0.5)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(bcx, bcy, 22, -phi_rad, 0);
-      ctx.stroke();
-      ctx.font      = '9px Space Mono, monospace';
-      ctx.fillStyle = C.fApp;
-      ctx.textAlign = 'left';
-      ctx.fillText(`${st.phi}°`, bcx + 26, bcy + 4);
-      ctx.restore();
-    }
-
-    // ── ΣF resultante (si ax ≠ 0) ────────────────────────
-    if (Math.abs(st.ax) > 0.05) {
-      const sumLen = Math.min(Math.abs(st.sumFx) * 0.7, 100);
-      const sumDir = st.sumFx >= 0 ? 1 : -1;
-      arrow(bcx, bcy + BH * 0.1, bcx + sumDir * sumLen, bcy + BH * 0.1, C.sumF, 3);
-      label(`ΣF=${Engine.fmt(st.sumFx)}N`, bcx + sumDir * (sumLen + 8), bcy + BH * 0.1 + 4,
-            C.sumF, sumDir > 0 ? 'left' : 'right');
-    }
-
-    // ── Bloque ────────────────────────────────────────────
-    // Sombra
-    ctx.shadowColor = 'rgba(88,166,255,0.15)';
-    ctx.shadowBlur  = 12;
-    ctx.fillStyle   = C.bloque;
-    ctx.strokeStyle = C.bloqueB;
-    ctx.lineWidth   = 2;
-    ctx.beginPath();
-    ctx.roundRect(bx, by, BW, BH, 5);
-    ctx.fill();
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Masa dentro del bloque
-    ctx.font      = 'bold 13px Syne, sans-serif';
-    ctx.fillStyle = C.tx1;
-    ctx.textAlign = 'center';
-    ctx.fillText(`${Engine.fmt(st.m)} kg`, bcx, bcy + 5);
-
-    // ── Indicador de aceleración (texto debajo del bloque) ─
-    const aText = Math.abs(st.ax) < 0.01
-      ? '⚖ Equilibrio  a = 0'
-      : `a = ${Engine.fmt(st.ax)} m/s²  ${st.ax > 0 ? '→' : '←'}`;
-    ctx.font      = 'bold 12px Space Mono, monospace';
-    ctx.fillStyle = Math.abs(st.ax) < 0.01 ? C.normal : C.sumF;
-    ctx.textAlign = 'center';
-    ctx.fillText(aText, W / 2, groundY + 30);
-
-    // ── Velocidad actual ──────────────────────────────────
-    ctx.font      = '10px Space Mono, monospace';
-    ctx.fillStyle = C.tx2;
-    ctx.fillText(`v = ${Engine.fmt(st.vx)} m/s`, W / 2, groundY + 46);
+    const W=canvas.width,H=canvas.height,th=st.theta*Math.PI/180;
+    const tx=Math.cos(th),ty=-Math.sin(th),nx=-Math.sin(th),ny=-Math.cos(th);
+    const cx=W/2,cy=H*0.58;
+    ctx.strokeStyle=C.suelo;ctx.lineWidth=2;ctx.beginPath();
+    ctx.moveTo(cx-tx*W,cy-ty*W);ctx.lineTo(cx+tx*W,cy+ty*W);ctx.stroke();
+    // Cámara sigue al bloque: x e y físicos se muestran, nunca se recortan en el motor.
+    const lift=30+Math.min(st.y*10,H*0.2),bx=cx+nx*lift,by=cy+ny*lift;
+    ctx.save();ctx.translate(bx,by);ctx.rotate(-th);ctx.fillStyle=C.bloque;ctx.fillRect(-25,-25,50,50);ctx.restore();
+    const scale=Math.min(W,H)*0.2/Math.max(st.w,st.F,st.n,Math.abs(st.sumFx),1);
+    const vector=(x,y,name,color)=>{const ex=bx+x*scale,ey=by+y*scale;arrow(bx,by,ex,ey,color,2.5);label(name,ex+5,ey-5,color);};
+    vector(0,st.w,`mg=${Engine.fmt(st.w)} N`,C.peso);
+    vector(nx*st.n,ny*st.n,`N=${Engine.fmt(st.n)} N`,C.normal);
+    vector(tx*st.Fx+nx*st.Fy,ty*st.Fx+ny*st.Fy,`F=${Engine.fmt(st.F)} N`,C.fApp);
+    vector(tx*st.fricSigned,ty*st.fricSigned,`f=${Engine.fmt(st.fricSigned)} N (${st.regime})`,C.fric);
+    vector(tx*st.sumFx+nx*st.sumFy,ty*st.sumFx+ny*st.sumFy,'ΣF',C.sumF);
+    label(`mg∥=${Engine.fmt(st.weightParallel)} N; mg⊥=${Engine.fmt(st.weightNormal)} N`,12,24,C.tx1);
+    label(`x=${Engine.fmt(st.x)} m; v=${Engine.fmt(st.vx)} m/s; a=${Engine.fmt(st.ax)} m/s²`,12,H-40,C.tx1);
+    label(st.y>0?'Sin contacto: N=0, fricción=0':'Cámara de seguimiento; fuerzas a escala común',12,H-20,C.tx2);
   }
 
-  // ══════════════════════════════════════════════════════════
-  //  MODO ELEVADOR
-  // ══════════════════════════════════════════════════════════
   function drawElevador(st) {
     const W  = canvas.width;
     const H  = canvas.height;

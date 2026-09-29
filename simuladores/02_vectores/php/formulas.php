@@ -83,3 +83,4 @@
 
   </div>
 </div>
+<section class="fp-card"><h3>Productos en 2D</h3><p>A·B = AxBx + AyBy = |A||B|cos θ (escalar).</p><p>A×B = (0,0,AxBy−AyBx). Se muestra su componente z; orientación según la regla de la mano derecha. Si A y B tienen unidades u, ambos productos tienen unidades u²; en general se multiplican las unidades de cada vector.</p></section>

@@ -50,3 +50,15 @@ for(const id of ['01','04','05','06','07','08','09']){
  e.seekTo(e.getState().tMax);assert.ok(e.getState().ended,id+' end');
 }
 const long=engine('04');long.setTMax(1e6);long.seekTo(1e6);assert.ok(long.getState().histX.length<=242);
+
+const vec=engine('02');near(vec.createVector(3,4).r,5);near(vec.createVector(-3,4).theta,126.86989764584402);near(vec.products().dot,7);near(vec.products().crossZ,24);
+const newton=engine('08');newton.setM(5);newton.setF(30);near(newton.getState().ax,6);
+newton.setMus(0.8);newton.setMuk(0.5);near(newton.getState().ax,0);newton.setF(50);near(newton.getState().ax,5.1);
+newton.setF(0);newton.setTheta(30);near(newton.getState().ax,0);newton.setMus(0.4);newton.setMuk(0.2);assert.ok(newton.getState().ax<0);assert.ok(newton.getState().fricSigned>0);
+newton.setTheta(0);newton.setV0(4);newton.seekTo(10);near(newton.getState().vx,0);near(newton.getState().x,16/(2*0.2*9.8));
+assert.throws(()=>newton.setM(0));assert.throws(()=>newton.setMuk(-1));
+const power=engine('10');power.setW(1000);power.setT(5);near(power.getState().resultado,200);near(power.efficiency(800,1000),0.8);assert.equal(power.efficiency(1,0),null);assert.equal(power.efficiency(2,1),null);
+for(const hz of [30,60,120]){
+ const rotation=engine('11');rotation.setW0(2);rotation.setAlpha(3);for(let i=0;i<hz*4;i++)rotation.step(1/hz);near(rotation.getState().omega,14);near(rotation.getState().theta,32);rotation.step(10);near(rotation.getState().omega,44);
+ const circular=engine('07');circular.setR(2);circular.setV0(4);near(circular.getState().omega,2);near(circular.getState().arad,8);near(circular.getState().T,Math.PI);circular.setAtan(-2);for(let i=0;i<hz*4;i++)circular.step(1/hz);near(circular.getState().theta,0);near(circular.getState().v,-4);
+}

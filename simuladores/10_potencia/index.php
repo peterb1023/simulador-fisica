@@ -118,6 +118,7 @@ $js_cfg = json_encode($cfg);
           </div>
         </div>
 
+        <section class="ps"><h3>Eficiencia</h3><label for="eff-kind">Magnitud</label><select id="eff-kind"><option value="W">Potencia (W)</option><option value="J">Energía (J, mismo intervalo)</option></select><label for="eff-in">Entrada</label><input id="eff-in" type="number" min="0" value="1000"><label for="eff-out">Salida útil</label><input id="eff-out" type="number" min="0" value="800"><output id="eff-result" aria-live="polite"></output></section>
         <!-- Conversiones rápidas de referencia -->
         <div class="ps conv-ref">
           <div class="ps-label">Conversiones</div>

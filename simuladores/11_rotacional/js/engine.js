@@ -69,19 +69,11 @@ const Engine = (() => {
   function step(dt) {
     if (state.paused) return;
 
-    // Ecuaciones con α constante:
-    // ω = ω₀ + α·t  →  ω += α·dt
-    state.omega += state.alpha * dt;
-
-    // Límite de velocidad angular para evitar desborde visual
-    const MAX_W = 25;
-    if (state.omega >  MAX_W) state.omega =  MAX_W;
-    if (state.omega < -MAX_W) state.omega = -MAX_W;
-
-    // θ = θ + ω·dt  (Euler simpléctico)
-    state.theta       += state.omega * dt;
-    state.punto_theta += state.omega * dt;
-    state.t           += dt;
+    if(!Number.isFinite(dt)||dt<=0)return;
+    state.t += dt;
+    state.omega = state.w0 + state.alpha * state.t;
+    state.theta = state.w0 * state.t + 0.5 * state.alpha * state.t ** 2;
+    state.punto_theta = state.theta;
 
     calcular();
   }
@@ -125,8 +117,8 @@ const Engine = (() => {
 
   // ── Setters ───────────────────────────────────────────────
   function setR(v)     { state.R     = +v; calcular(); }
-  function setAlpha(v) { state.alpha = +v; calcular(); }
-  function setW0(v)    { state.w0    = +v; state.omega = +v; calcular(); }
+  function setAlpha(v) { state.alpha = +v; init(); }
+  function setW0(v)    { state.w0    = +v; init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }
   function fmt(n)        { return Math.round(n * 100) / 100; }

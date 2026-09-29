@@ -88,6 +88,11 @@ $js_cfg = json_encode($cfg);
           </div>
         </div>
 
+        <div class="ps" id="incline-controls">
+<label for="sl-mus">μs (sin unidades; μs ≥ μk)</label><input id="sl-mus" type="range" min="0" max="2" step="0.05" value="0"><output id="val-mus">0</output>
+<label for="sl-theta">Inclinación θ (°)</label><input id="sl-theta" type="range" min="-60" max="60" step="1" value="0"><output id="val-theta">0°</output>
+<label for="sl-v0">Velocidad inicial sobre el plano (m/s)</label><input id="sl-v0" type="range" min="-10" max="10" step="0.5" value="0"><output id="val-v0">0 m/s</output>
+<p>φ se mide desde el plano. x positivo sube hacia la derecha. Cambiar parámetros reinicia el experimento.</p></div>
         <!-- Fuerzas resultantes -->
         <div class="ps">
           <div class="ps-label">Fuerzas</div>
@@ -101,7 +106,7 @@ $js_cfg = json_encode($cfg);
               <div class="stat-val accent-green" id="stat-n">—</div>
             </div>
             <div class="stat-cell">
-              <div class="stat-label">fk <span class="badge-agr-sm">[+]</span></div>
+              <div class="stat-label">f (estática/cinética) <span class="badge-agr-sm">[+]</span></div>
               <div class="stat-val accent-purple" id="stat-fric">—</div>
             </div>
             <div class="stat-cell">

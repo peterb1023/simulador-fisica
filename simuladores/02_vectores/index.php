@@ -96,6 +96,7 @@ $js_cfg = json_encode($cfg);
           </div>
         </div>
 
+        <section class="res-section"><div class="res-title">Productos A y B (primeros dos vectores)</div><p id="vector-products">Añade dos vectores.</p><p>Componentes en unidades genéricas u. A·B es escalar (u²); (A×B)z es la componente z (u²), perpendicular al plano. Signo positivo: hacia fuera del plano.</p></section>
         <!-- Resolución paso a paso -->
         <div class="res-section">
           <div class="res-title">Resolución en vivo</div>

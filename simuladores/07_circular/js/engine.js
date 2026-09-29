@@ -127,12 +127,12 @@ const Engine = (() => {
         res:     `arad = ${fmt((4 * Math.PI * Math.PI * state.R) / (state.T * state.T))} m/s²`,
       },
       vel: {
-        formula: 'v = 2πR / T',
+        formula: '|v_t| = 2πR / T (T instantáneo si a_t≠0)',
         sust:    `v = 2π·${R} / ${T}`,
         res:     `v = ${fmt((2 * Math.PI * state.R) / state.T)} m/s`,
       },
       atan: {
-        formula: 'atan = d|v|/dt',
+        formula: 'a_t = dv_t/dt; v_t = v₀ + a_t·t',
         sust:    `atan = ${fmt(state.atan)} m/s²`,
         res:     state.atan === 0 ? 'MCU — rapidez constante' : `MCUV — v cambia ${state.atan > 0 ? '↑' : '↓'}`,
       },

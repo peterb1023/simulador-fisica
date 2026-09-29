@@ -29,6 +29,7 @@ const Engine = (() => {
     m:    5,      // masa (kg)
     F:    30,     // fuerza aplicada (N)
     phi:  0,      // ángulo de F respecto a la horizontal (°)
+    mus: 0, theta: 0, v0: 0,
     muk:  0,      // coeficiente de fricción cinética [AGREGADA]
     modo: 'plano',
 
@@ -54,48 +55,33 @@ const Engine = (() => {
   };
 
   // ── Calcular todas las fuerzas ────────────────────────────
-  function calcular() {
-    const phi_rad = state.phi * Math.PI / 180;
-
-    // Peso: w = m·g
-    state.w  = state.m * G;
-
-    if (state.modo === 'plano') {
-      // Componentes de F
-      state.Fx = state.F * Math.cos(phi_rad);
-      state.Fy = state.F * Math.sin(phi_rad);
-
-      // Normal: ΣFy = 0 en y (superficie) → n = w − Fy
-      state.n  = Math.max(0, state.w - state.Fy);
-
-      // Fricción cinética: fk = μk·n  [AGREGADA]
-      state.fric = state.muk * state.n;
-      state.fricActiva = state.muk > 0 && state.n > 0;
-
-      // ΣFx = Fx − fk = m·ax
-      state.sumFx = state.Fx - state.fric;
-      state.sumFy = state.n + state.Fy - state.w;   // ≈ 0
-
-      // ax = ΣFx / m
-      state.ax = state.sumFx / state.m;
-      state.ay = 0;
-      state.T  = 0;
-
-    } else {
-      // Modo elevador: F es la tensión T que jalamos la cuerda
-      // ΣFy = T − w = m·ay  → ay = (T − w) / m
-      state.T   = state.F;
-      state.sumFy = state.T - state.w;
-      state.ay  = state.sumFy / state.m;
-      state.ax  = 0;
-      state.sumFx = 0;
-      state.Fx  = 0;
-      state.Fy  = state.F;
-      state.n   = 0;
-      state.fric = 0;
-      state.fricActiva = false;
+  function stateAt(t) {
+    t=SimCommon.time(t,state.tMax);
+    const {m,F,phi,theta,muk,mus,v0,modo}=state;
+    const w=m*G;
+    if(modo==='elevador'){
+      const ay=(F-w)/m;
+      return {t,w,n:0,Fx:0,Fy:F,fric:0,fricSigned:0,fricActiva:false,regime:'sin contacto',sumFx:0,sumFy:F-w,ax:0,ay,T:F,x:v0*t+0.5*ay*t*t,vx:v0+ay*t,y:0,vy:0};
     }
+    const angle=theta*Math.PI/180, p=phi*Math.PI/180;
+    const weightParallel=-w*Math.sin(angle),weightNormal=-w*Math.cos(angle);
+    const Fx=F*Math.cos(p),Fy=F*Math.sin(p);
+    const n=Math.max(0,-weightNormal-Fy),drive=Fx+weightParallel;
+    const ay=n===0?(Fy+weightNormal)/m:0;
+    const fromRest = () => Math.abs(drive)<=mus*n+1e-10
+      ? {a:0,fric:-drive,regime:'estática'}
+      : {a:(drive-Math.sign(drive)*muk*n)/m,fric:-Math.sign(drive)*muk*n,regime:'cinética'};
+    let segment=fromRest(),x=0,vx=0;
+    if(Math.abs(v0)>1e-12){
+      const fric=-Math.sign(v0)*muk*n,a=(drive+fric)/m;
+      const stop=v0*a<0?-v0/a:Infinity;
+      if(t<stop){segment={a,fric,regime:'cinética'};x=v0*t+0.5*a*t*t;vx=v0+a*t;}
+      else {const elapsed=t-stop;x=v0*stop+0.5*a*stop*stop+0.5*segment.a*elapsed*elapsed;vx=segment.a*elapsed;}
+    }else{x=0.5*segment.a*t*t;vx=segment.a*t;}
+    return {t,w,n,Fx,Fy,weightParallel,weightNormal,fric:Math.abs(segment.fric),fricSigned:segment.fric,fricActiva:segment.regime==='cinética',regime:segment.regime,
+      sumFx:drive+segment.fric,sumFy:n+Fy+weightNormal,ax:segment.a,ay,T:0,x,vx,y:0.5*ay*t*t,vy:ay*t};
   }
+  function calcular() { Object.assign(state,stateAt(state.t)); }
 
   // ── Init / Reset ─────────────────────────────────────────
   function init() {
@@ -106,11 +92,6 @@ const Engine = (() => {
   }
 
   // ── Step ─────────────────────────────────────────────────
-  function stateAt(t) {
-    t=SimCommon.time(t,state.tMax);
-    const a=state.modo==='plano'?state.ax:state.ay;
-    return {t,x:0.5*a*t*t,vx:a*t};
-  }
   function seekTo(t) { Object.assign(state,stateAt(t));state.ended=state.t>=state.tMax; }
   function step(dt) { if(!state.paused&&!state.ended&&Number.isFinite(dt)&&dt>0) seekTo(state.t+dt); }
 
@@ -126,19 +107,19 @@ const Engine = (() => {
           res:     `w = ${f(state.w)} N`,
         },
         normal: {
-          formula: 'n = w − Fy = w − F·sen φ',
-          sust:    `n = ${f(state.w)} − ${f(state.Fy)}`,
+          formula: 'N = max(0, mg cos θ − F sen φ)',
+          sust:    `N = ${f(state.w)} cos(${f(state.theta)}°) − ${f(state.Fy)}`,
           res:     `n = ${f(state.n)} N`,
         },
         fric: {
-          formula: 'fk = μk · n  [AGREGADA]',
-          sust:    `fk = ${f(state.muk)} · ${f(state.n)}`,
+          formula: state.regime==='estática'?'|fs| ≤ μsN':'fk = −sign(v) μkN',
+          sust:    `${state.regime}: f = ${f(state.fricSigned)} N`,
           res:     `fk = ${f(state.fric)} N`,
           agregada: true,
         },
         segunda: {
           formula: 'ΣFx = m · ax',
-          sust:    `${f(state.Fx)} − ${f(state.fric)} = ${f(state.m)} · ax`,
+          sust:    `${f(state.Fx)} + (${f(state.weightParallel)}) + (${f(state.fricSigned)}) = ${f(state.m)} · ax`,
           res:     `ax = ${f(state.ax)} m/s²`,
         },
       };
@@ -165,10 +146,13 @@ const Engine = (() => {
   }
 
   // ── Setters ───────────────────────────────────────────────
-  function setM(v)    { state.m   = +v; init(); }
-  function setF(v)    { state.F   = +v; init(); }
-  function setPhi(v)  { state.phi = +v; init(); }
-  function setMuk(v)  { state.muk = +v; init(); }
+  function setMus(v) { state.mus=SimCommon.number(v,0);state.muk=Math.min(state.muk,state.mus);init(); }
+  function setTheta(v) { state.theta=SimCommon.number(v,-90,90);init(); }
+  function setV0(v) { state.v0=SimCommon.number(v);init(); }
+  function setM(v)    { state.m   = SimCommon.number(v,0.001); init(); }
+  function setF(v)    { state.F   = SimCommon.number(v,0); init(); }
+  function setPhi(v)  { state.phi = SimCommon.number(v,-180,180); init(); }
+  function setMuk(v)  { state.muk = SimCommon.number(v,0); state.mus=Math.max(state.mus,state.muk); init(); }
   function setModo(v) { state.modo = v; init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }
@@ -178,7 +162,7 @@ const Engine = (() => {
 
   return {
     init, step, seekTo, stateAt, getState, getSustitucion,
-    setM, setF, setPhi, setMuk, setModo,
+    setM, setF, setPhi, setMuk, setMus, setTheta, setV0, setModo,
     togglePause, fmt, G,
   };
 

@@ -102,6 +102,8 @@ const UI = (() => {
 
   // ── Actualizar panel derecho de resultados ────────────────
   function updatePanel(vecs, res) {
+    const products=Engine.products();
+    setTxt('vector-products',products?`A·B = ${fmt(products.dot)} u²; (A×B)z = ${fmt(products.crossZ)} u²`:'Añade dos vectores.');
     // Resultante
     setTxt('res-rx',  fmt(res.Rx));
     setTxt('res-ry',  fmt(res.Ry));
@@ -114,7 +116,7 @@ const UI = (() => {
     setTxt('res-rx-sust', `Rx = ${rxParts} = ${fmt(res.Rx)}`);
     setTxt('res-ry-sust', `Ry = ${ryParts} = ${fmt(res.Ry)}`);
     setTxt('res-r-sust',  `R = √(${fmt(res.Rx)}² + ${fmt(res.Ry)}²) = ${fmt(res.R)}`);
-    setTxt('res-ang-sust',`θ = tan⁻¹(${fmt(res.Ry)} / ${fmt(res.Rx)}) = ${fmt(res.thetaR)}°`);
+    setTxt('res-ang-sust',`θ = atan2(${fmt(res.Ry)}, ${fmt(res.Rx)}) = ${fmt(res.thetaR)}°`);
 
     // Ley del coseno (solo si hay 2 vectores)
     const lcBlock = document.getElementById('ley-coseno-block');

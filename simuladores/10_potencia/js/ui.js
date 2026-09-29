@@ -116,3 +116,10 @@ function setTab(name, btn) {
   if (btn) btn.classList.add('active');
 }
 document.addEventListener('DOMContentLoaded', () => UI.boot());
+document.addEventListener('DOMContentLoaded',()=>{
+ const output=document.getElementById('eff-result');
+ const update=()=>{const unit=document.getElementById('eff-kind').value;
+ const eta=Engine.efficiency(parseFloat(document.getElementById('eff-out').value),parseFloat(document.getElementById('eff-in').value));
+ output.textContent=eta===null?'Entrada > 0; salida útil entre 0 y entrada.':`η = salida/entrada = ${(eta*100).toFixed(1)} % (ambas en ${unit})`;};
+ for(const id of ['eff-kind','eff-in','eff-out'])document.getElementById(id).addEventListener('input',update);update();
+});

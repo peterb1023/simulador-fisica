@@ -21,5 +21,10 @@ const SimCommon = (() => {
     if(end-n*max/count>1e-9) points.push(at(end));
     return points;
   }
-  return { createClock, time, samples };
+  function number(value,min=-1e100,max=1e100) {
+    if(value===''||value===null||!Number.isFinite(+value)||+value<min||+value>max)
+      throw new RangeError(`Introduce un número finito entre ${min} y ${max}.`);
+    return +value;
+  }
+  return { createClock, time, samples, number };
 })();
