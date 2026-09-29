@@ -14,6 +14,7 @@
       const r=Engine.convertir(input.value,category,from,to);if(!r)throw Error('Conversión inválida.');
       return {parameters:{categoría:category,valor:Number(input.value),origen:from,destino:to},results:{['Resultado ('+to+')']:r.resultado}};
     }
+    if(id==='13')return {parameters:pick(Engine.getState(),{R_h:'Rh (m)',R_ext:'Re (m)',R_int:'Ri (m)',tp:'tp (m)',w:'w (m)',rho:'ρ (kg/m³)',omega:'ω (rad/s)'}),results:pick(Engine.getCalc(),{M_total:'M (kg)',I_total:'I (kg·m²)',K:'K (J)'})};
     if(id==='02'){
       const params=Object.fromEntries(Engine.getVectors().map((v,i)=>['Vector '+(i+1)+' (u)',`(${v.vx}, ${v.vy})`]));
       const r=Engine.getResultant(),products=Engine.products();

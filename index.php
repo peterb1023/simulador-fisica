@@ -308,7 +308,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     <div class="portal-subtitle">Física I — Ing. Civil · XAMPP + PHP + Canvas</div>
   </div>
   <div class="portal-meta">
-    <div class="portal-meta-item"><b>12</b> / 12 con pruebas numéricas</div>
+    <div class="portal-meta-item"><b>13</b> / 13 con pruebas numéricas</div>
     <div class="portal-meta-item"><b>Stack:</b> PHP · JS · HTML5</div>
   </div>
 </header>
@@ -319,7 +319,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
   <h1>Aprende física<br>con <span>simulaciones</span><br>interactivas.</h1>
   <p>Visualiza fórmulas resolviéndose en tiempo real. Ajusta parámetros, observa cómo cambian las energías, fuerzas y trayectorias — todo basado en las fórmulas exactas de tu profesor.</p>
   <div class="hero-stats">
-    <div class="hs"><div class="hs-n">12</div><div class="hs-l">Simuladores</div></div>
+    <div class="hs"><div class="hs-n">13</div><div class="hs-l">Simuladores</div></div>
     <div class="hs"><div class="hs-n">5</div><div class="hs-l">Categorías</div></div>
     <div class="hs"><div class="hs-n">13</div><div class="hs-l">Semanas</div></div>
     <div class="hs"><div class="hs-n">2</div><div class="hs-l">Extras</div></div>
@@ -332,7 +332,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
 <div class="view-tabs">
   <button class="view-tab active" onclick="switchView('semana', this)">Por Semana</button>
   <button class="view-tab" onclick="switchView('categoria', this)">Por Categoría</button>
-  <div class="view-label">12 simuladores · 2 extras</div>
+  <div class="view-label">13 simuladores · 2 extras</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -583,6 +583,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
         </div>
         <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--purple)"></div></div>
       </a>
+      <a class="sim-card" href="simuladores/13_llanta/index.php" style="--card-accent:#3fb950"><div class="sc-head"><span class="sc-num">SIM 13</span><span class="badge badge-done">✓ Probado</span></div><div class="sc-title">Llanta compuesta</div><div class="sc-type">Dos paredes anulares + huella cilíndrica</div><div class="sc-formulas"><span class="sc-formula-tag">I = 2Ip + Ih</span><span class="sc-formula-tag">K = ½Iω²</span></div></a>
 
     </div>
   </div>
@@ -720,6 +721,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
         <div class="sc-type">Comparador visual</div>
         <div class="sc-formulas"><span class="sc-formula-tag">I = Σmr²</span><span class="sc-formula-tag">K = ½Iω²</span></div>
       </a>
+      <a class="sim-card" href="simuladores/13_llanta/index.php" style="--card-accent:#3fb950"><div class="sc-head"><span class="sc-num">SIM 13</span><span class="badge badge-done">✓ Probado</span></div><div class="sc-title">Llanta compuesta</div><div class="sc-type">Dos paredes anulares + huella cilíndrica</div><div class="sc-formulas"><span class="sc-formula-tag">I = 2Ip + Ih</span><span class="sc-formula-tag">K = ½Iω²</span></div></a>
     </div>
   </div>
 

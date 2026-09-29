@@ -44,3 +44,7 @@ Los residuos `files (3).zip` y `Nuevo documento de texto.html` se retiraron úni
 - Capturas manuales unificadas en los doce simuladores; máximo 100 por simulador. No se guardan frames ni se duplica el historial temporal.
 - JSON validado, snapshots independientes, almacenamiento bloqueado/corrupto tolerado, borrado individual y limpieza. Render con textContent.
 - GREEN: numerical.cjs, registry.cjs y http-smoke.cjs (15 páginas, 73 recursos). Captura por teclado verificada en los doce simuladores; sin overflow del documento en 390/1024/1440 px.
+
+## Rescate B — SIM 13: llanta compuesta
+Integrado tras validar por integración radial independiente I = ∫r²dm. Modelo homogéneo: dos paredes anulares y huella cilíndrica sin solapamiento; no incluye aro, buje ni radios. Entrada SI, radios ordenados, 2tp ≤ w, densidad positiva, rechazo de NaN/Infinity y desbordamientos. La masa se deriva de densidad y volumen; densidad cero/negativa se rechaza. Ri=0 y ω=0 son válidos.
+Animación con reloj común, timeline analítica de 20 s y Canvas DPR; corte muestra ambas paredes. Registros locales compartidos. `node tests/sim13.cjs` GREEN; navegador 390/1024/1440 px sin overflow ni errores de consola.

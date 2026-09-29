@@ -391,3 +391,7 @@ Se mantienen PHP + JavaScript vanilla y la separación engine/render/ui. Utilida
 Se eliminaron los dos residuos indicados después de conservarlos en el baseline. `.claude/` se conserva para desarrollo y se excluye de `git archive`. Los extras se conservan sin modificaciones funcionales. Smoke detecta `bC is not defined` en transporte (línea 509), conservado fuera de alcance.
 
 Ver README.md, DEPLOYMENT.md y VALIDACION.md para ejecución, evidencia y límites reales. Las pruebas numéricas no equivalen a una auditoría exhaustiva de todas las combinaciones de interfaz ni de todos los navegadores.
+
+## Rescate B — SIM 13: llanta compuesta
+Integrado tras validar por integración radial independiente I = ∫r²dm. Modelo homogéneo: dos paredes anulares y huella cilíndrica sin solapamiento; no incluye aro, buje ni radios. Entrada SI, radios ordenados, 2tp ≤ w, densidad positiva, rechazo de NaN/Infinity y desbordamientos. La masa se deriva de densidad y volumen; densidad cero/negativa se rechaza. Ri=0 y ω=0 son válidos.
+Animación con reloj común, timeline analítica de 20 s y Canvas DPR; corte muestra ambas paredes. Registros locales compartidos. `node tests/sim13.cjs` GREEN; navegador 390/1024/1440 px sin overflow ni errores de consola.

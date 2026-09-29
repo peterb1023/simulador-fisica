@@ -54,3 +54,7 @@ Google Fonts es opcional; sin Internet se usan sans-serif/monospace. No cambia e
 - No incluye autenticación ni integración de la base histórica. CSP restrictiva pendiente de migrar handlers inline; ver DEPLOYMENT.md.
 
 Distribución sin configuración de desarrollo: `git archive --format=zip --output=../simulador_fisica.zip HEAD`. La copia original de residuos queda recuperable desde el baseline.
+
+## Rescate B — SIM 13: llanta compuesta
+Integrado tras validar por integración radial independiente I = ∫r²dm. Modelo homogéneo: dos paredes anulares y huella cilíndrica sin solapamiento; no incluye aro, buje ni radios. Entrada SI, radios ordenados, 2tp ≤ w, densidad positiva, rechazo de NaN/Infinity y desbordamientos. La masa se deriva de densidad y volumen; densidad cero/negativa se rechaza. Ri=0 y ω=0 son válidos.
+Animación con reloj común, timeline analítica de 20 s y Canvas DPR; corte muestra ambas paredes. Registros locales compartidos. `node tests/sim13.cjs` GREEN; navegador 390/1024/1440 px sin overflow ni errores de consola.
