@@ -30,3 +30,16 @@ work.setPhi(90); near(work.calcular().W,0); work.setModo('resorte');work.setK(50
 const inertia=engine('12'); inertia.setCuerpo('disco');inertia.setM(2);inertia.setDim(3);inertia.setD(2);near(inertia.getState().I,9);near(inertia.getState().I_P,17);
 inertia.setCuerpo('varilla_ext');inertia.setDim(3);inertia.setD(1.5);near(inertia.getState().I_P,inertia.getState().I);
 console.log('Numerical tests: PASS');
+
+for (const hz of [30,60,120]) {
+  const e=engine('04');e.setX0(0);e.setV0(10);e.setA(2);
+  for(let i=0;i<hz*3;i++) e.step(1/hz);
+  near(e.getState().x,39);near(e.getState().v,16);
+}
+const clockContext=vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/sim-common.js'),'utf8'),clockContext);
+vm.runInContext(`let now=0; const clock=SimCommon.createClock(()=>now);
+ for(const hz of [30,60,120]) { now=0;clock.reset();let total=0;
+ for(let i=0;i<hz;i++){now+=1000/hz;total+=clock.tick();}
+ if(Math.abs(total-1)>1e-10)throw Error('clock frequency'); }
+ now+=100000;if(clock.tick()!==0.05)throw Error('clock cap');`,clockContext);

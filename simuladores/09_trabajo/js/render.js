@@ -3,6 +3,7 @@
 // ============================================================
 
 const Renderer = (() => {
+  const clock = SimCommon.createClock();
 
   let canvasMain, ctxMain;
   let canvasGraph, ctxGraph;
@@ -479,7 +480,7 @@ const Renderer = (() => {
   // ── Frame ──────────────────────────────────────────
   function frame() {
     const st = Engine.getState();
-    Engine.step(1 / 60);
+    Engine.step(clock.tick());
 
     drawMain(st);
     drawGraph(st);
@@ -489,6 +490,7 @@ const Renderer = (() => {
   }
 
   function start() {
+    clock.reset();
     if (animId) cancelAnimationFrame(animId);
     animId = requestAnimationFrame(frame);
   }

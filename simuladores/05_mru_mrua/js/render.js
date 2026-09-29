@@ -2,6 +2,7 @@
 //  RENDERER — Canvas principal + gráficas x(t) y v(t)
 // ============================================================
 const Renderer = (() => {
+  const clock = SimCommon.createClock();
   let cMain,ctxMain,cX,ctxX,cV,ctxV,animId=null;
   const C={bg:'#0a1628',panel:'#0d1117',grid:'rgba(48,54,61,0.5)',axis:'rgba(88,166,255,0.3)',
     tx2:'#8b949e',tx3:'#484f58',zero:'rgba(248,81,73,0.5)',tCursor:'rgba(88,166,255,0.5)',
@@ -145,14 +146,14 @@ const Renderer = (() => {
   }
 
   function frame(){
-    const st=Engine.getState(); Engine.step(1/60);
+    const st=Engine.getState(); Engine.step(clock.tick());
     drawMain(st);
     drawGraph(cX,ctxX,[{hist:st.mru.histX.map(p=>({t:p.t,v:p.x})),color:C.lineX_mru,label:'MRU'},{hist:st.mrua.histX.map(p=>({t:p.t,v:p.x})),color:C.lineX_mrua,label:'MRUA'}],st.tMax,'x (m)');
     drawGraph(cV,ctxV,[{hist:st.mru.histV,color:C.lineV_mru,label:'MRU'},{hist:st.mrua.histV,color:C.lineV_mrua,label:'MRUA'}],st.tMax,'v (m/s)');
     updatePanel(Engine.getSustitucion()); syncTimeline(st);
     animId=requestAnimationFrame(frame);
   }
-  function start(){if(animId)cancelAnimationFrame(animId);animId=requestAnimationFrame(frame);}
+  function start(){clock.reset();if(animId)cancelAnimationFrame(animId);animId=requestAnimationFrame(frame);}
   function stop(){if(animId){cancelAnimationFrame(animId);animId=null;}}
   return{init,start,stop,resize};
 })();

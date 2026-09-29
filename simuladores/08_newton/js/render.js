@@ -16,6 +16,7 @@
 // ============================================================
 
 const Renderer = (() => {
+  const clock = SimCommon.createClock();
 
   let canvas, ctx;
   let animId = null;
@@ -355,7 +356,7 @@ const Renderer = (() => {
 
   // ── Frame loop ────────────────────────────────────────────
   function frame() {
-    Engine.step(1 / 60);
+    Engine.step(clock.tick());
     const st = Engine.getState();
     draw(st);
     UI.updatePanel(Engine.getSustitucion());
@@ -363,6 +364,7 @@ const Renderer = (() => {
   }
 
   function start() {
+    clock.reset();
     if (animId) cancelAnimationFrame(animId);
     animId = requestAnimationFrame(frame);
   }
