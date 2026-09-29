@@ -38,18 +38,14 @@ const Renderer = (() => {
     canvas = document.getElementById('simCanvas');
     ctx    = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
     bindDrag();
   }
 
   function resize() {
-    const p = canvas.parentElement;
-    W = canvas.width  = p.offsetWidth  || 640;
-    H = canvas.height = p.offsetHeight || 480;
-    ox = W / 2;
-    oy = H / 2;
-    // Ajustar escala según tamaño de canvas
-    scale = Math.min(W, H) / 14;
+    [canvas].forEach(SimCanvas.resize);
+    W=canvas.logicalWidth;H=canvas.logicalHeight;
+    ox=W/2;oy=H/2;scale=Math.min(W,H)/14;
   }
 
   // ── Coordenadas ──────────────────────────────────────────
@@ -319,8 +315,8 @@ const Renderer = (() => {
       clientY = e.touches[0].clientY;
     }
     return {
-      x: (clientX - rect.left) * (canvas.width  / rect.width),
-      y: (clientY - rect.top)  * (canvas.height / rect.height),
+      x: (clientX - rect.left) * (canvas.logicalWidth  / rect.width),
+      y: (clientY - rect.top)  * (canvas.logicalHeight / rect.height),
     };
   }
 

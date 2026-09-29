@@ -48,13 +48,11 @@ const Renderer = (() => {
     canvas = document.getElementById('canvasMain');
     ctx    = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
   }
 
   function resize() {
-    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth;
-    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight;
-    elevY = canvas.height * 0.3;
+    [canvas].forEach(SimCanvas.resize);
   }
 
   // ── Flecha ────────────────────────────────────────────────
@@ -91,7 +89,7 @@ const Renderer = (() => {
 
   // ── Cuadrícula ────────────────────────────────────────────
   function drawGrid() {
-    const W = canvas.width, H = canvas.height, step = 40;
+    const W = canvas.logicalWidth, H = canvas.logicalHeight, step = 40;
     ctx.strokeStyle = C.grid;
     ctx.lineWidth   = 0.5;
     for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
@@ -102,7 +100,7 @@ const Renderer = (() => {
   //  MODO PLANO
   // ══════════════════════════════════════════════════════════
   function drawPlano(st) {
-    const W=canvas.width,H=canvas.height,th=st.theta*Math.PI/180;
+    const W=canvas.logicalWidth,H=canvas.logicalHeight,th=st.theta*Math.PI/180;
     const tx=Math.cos(th),ty=-Math.sin(th),nx=-Math.sin(th),ny=-Math.cos(th);
     const cx=W/2,cy=H*0.58;
     ctx.strokeStyle=C.suelo;ctx.lineWidth=2;ctx.beginPath();
@@ -123,8 +121,8 @@ const Renderer = (() => {
   }
 
   function drawElevador(st) {
-    const W  = canvas.width;
-    const H  = canvas.height;
+    const W  = canvas.logicalWidth;
+    const H  = canvas.logicalHeight;
 
     // Animar posición vertical del bloque según ay
     // Ventana visual acotada, posición física consultable sin depender de frames.
@@ -200,7 +198,7 @@ const Renderer = (() => {
   // ════════════════════════════════════════════════════════
   function draw(st) {
     ctx.fillStyle = C.bg;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.logicalWidth, canvas.logicalHeight);
     drawGrid();
 
     if (st.modo === 'plano') {

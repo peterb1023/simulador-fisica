@@ -34,22 +34,19 @@ const Renderer = (() => {
     ctxMain     = canvasMain.getContext('2d');
     ctxGraph    = canvasGraph.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvasMain,canvasGraph],resize);
   }
 
   function resize() {
-    [canvasMain, canvasGraph].forEach(c => {
-      c.width  = c.offsetWidth  || c.parentElement.offsetWidth;
-      c.height = c.offsetHeight || c.parentElement.offsetHeight;
-    });
+    [canvasMain,canvasGraph].forEach(SimCanvas.resize);
   }
 
   // ════════════════════════════════════════════════════
   //  ESCENA PRINCIPAL
   // ════════════════════════════════════════════════════
   function drawMain(st) {
-    const W = canvasMain.width;
-    const H = canvasMain.height;
+    const W = canvasMain.logicalWidth;
+    const H = canvasMain.logicalHeight;
     const ctx = ctxMain;
 
     ctx.fillStyle = C.bg;
@@ -350,8 +347,8 @@ const Renderer = (() => {
   function drawGraph(st) {
     const canvas = canvasGraph;
     const ctx    = ctxGraph;
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
     const PAD = { top: 20, right: 16, bottom: 32, left: 50 };
     const gW  = W - PAD.left - PAD.right;
     const gH  = H - PAD.top  - PAD.bottom;

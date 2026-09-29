@@ -12,14 +12,14 @@ const Renderer = (() => {
   function init() {
     cMain=document.getElementById('canvasMain'); cX=document.getElementById('canvasX'); cV=document.getElementById('canvasV');
     ctxMain=cMain.getContext('2d'); ctxX=cX.getContext('2d'); ctxV=cV.getContext('2d');
-    resize(); window.addEventListener('resize',resize);
+    resize(); SimCanvas.observe([cMain,cX,cV],resize);
   }
   function resize() {
-    [cMain,cX,cV].forEach(c=>{c.width=c.offsetWidth||c.parentElement.offsetWidth; c.height=c.offsetHeight||c.parentElement.offsetHeight;});
+    [cMain,cX,cV].forEach(SimCanvas.resize);
   }
 
   function drawMain(st) {
-    const W=cMain.width, H=cMain.height, ctx=ctxMain;
+    const W=cMain.logicalWidth, H=cMain.logicalHeight, ctx=ctxMain;
     ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
 
     const MARGIN=44, VIS=60, PPM=(W-MARGIN*2)/VIS, OBJ_PX=W*0.45, RH=4, HALF=Math.floor(H/2);
@@ -109,7 +109,7 @@ const Renderer = (() => {
   }
 
   function drawGraph(canvas,ctx,series,tMax,labelY){
-    const W=canvas.width,H=canvas.height,PAD={top:18,right:14,bottom:28,left:44};
+    const W=canvas.logicalWidth,H=canvas.logicalHeight,PAD={top:18,right:14,bottom:28,left:44};
     const gW=W-PAD.left-PAD.right,gH=H-PAD.top-PAD.bottom;
     ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
     const allVals=series.flatMap(s=>s.hist.map(p=>p.v));

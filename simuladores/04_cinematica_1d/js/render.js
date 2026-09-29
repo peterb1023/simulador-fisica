@@ -35,22 +35,19 @@ const Renderer = (() => {
     ctxX       = canvasX.getContext('2d');
     ctxV       = canvasV.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvasMain,canvasX,canvasV],resize);
   }
 
   function resize() {
-    [canvasMain, canvasX, canvasV].forEach(c => {
-      c.width  = c.offsetWidth  || c.parentElement.offsetWidth;
-      c.height = c.offsetHeight || c.parentElement.offsetHeight;
-    });
+    [canvasMain,canvasX,canvasV].forEach(SimCanvas.resize);
   }
 
   // ════════════════════════════════════════════════════════
   //  PISTA DEL OBJETO  (cámara sigue al objeto)
   // ════════════════════════════════════════════════════════
   function drawMain(st) {
-    const W   = canvasMain.width;
-    const H   = canvasMain.height;
+    const W   = canvasMain.logicalWidth;
+    const H   = canvasMain.logicalHeight;
     const ctx = ctxMain;
 
     ctx.fillStyle = C.bg;
@@ -218,8 +215,8 @@ const Renderer = (() => {
   //  GRÁFICA GENÉRICA
   // ════════════════════════════════════════════════════════
   function drawGraph(canvas, ctx, hist, color, labelY, st) {
-    const W   = canvas.width;
-    const H   = canvas.height;
+    const W   = canvas.logicalWidth;
+    const H   = canvas.logicalHeight;
     const PAD = { top: 18, right: 14, bottom: 28, left: 44 };
     const gW  = W - PAD.left - PAD.right;
     const gH  = H - PAD.top  - PAD.bottom;

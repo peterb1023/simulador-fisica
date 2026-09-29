@@ -31,14 +31,12 @@ const Renderer = (() => {
     canvas = document.getElementById('simCanvas');
     ctx    = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
   }
 
   function resize() {
-    const parent = canvas.parentElement;
-    // Esperar a que el layout esté calculado
-    W = canvas.width  = parent.offsetWidth  || 620;
-    H = canvas.height = parent.offsetHeight || 420;
+    [canvas].forEach(SimCanvas.resize);
+    W=canvas.logicalWidth;H=canvas.logicalHeight;
   }
 
   // ── Coordenadas de pista ─────────────────────────────────

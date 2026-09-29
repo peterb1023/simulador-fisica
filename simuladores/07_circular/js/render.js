@@ -38,28 +38,27 @@ const Renderer = (() => {
     canvas = document.getElementById('canvasMain');
     ctx    = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
   }
 
   function resize() {
-    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth;
-    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight;
+    [canvas].forEach(SimCanvas.resize);
   }
 
   // ── Centro del canvas y escala ────────────────────────────
   function getMeta(st) {
-    const cx = canvas.width  / 2;
-    const cy = canvas.height / 2;
+    const cx = canvas.logicalWidth  / 2;
+    const cy = canvas.logicalHeight / 2;
     // Escala: el radio R debe ocupar ~35% del lado más corto
-    const side = Math.min(canvas.width, canvas.height);
+    const side = Math.min(canvas.logicalWidth, canvas.logicalHeight);
     const scale = (side * 0.35) / st.R;
     return { cx, cy, scale };
   }
 
   // ── Cuadrícula ────────────────────────────────────────────
   function drawGrid() {
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
     const step = 40;
     ctx.strokeStyle = C.grid;
     ctx.lineWidth   = 0.5;
@@ -98,8 +97,8 @@ const Renderer = (() => {
   //  DRAW PRINCIPAL
   // ════════════════════════════════════════════════════════
   function draw(st) {
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
     const { cx, cy, scale } = getMeta(st);
 
     // Fondo

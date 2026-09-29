@@ -33,12 +33,11 @@ const Renderer = (() => {
     canvas = document.getElementById('canvasMain');
     ctx    = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
   }
 
   function resize() {
-    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth;
-    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight;
+    [canvas].forEach(SimCanvas.resize);
   }
 
   // ── Utilidades ───────────────────────────────────────────
@@ -53,7 +52,7 @@ const Renderer = (() => {
   }
 
   function drawGrid() {
-    const W = canvas.width, H = canvas.height, step = 40;
+    const W = canvas.logicalWidth, H = canvas.logicalHeight, step = 40;
     ctx.strokeStyle = C.grid;
     ctx.lineWidth   = 0.5;
     for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
@@ -307,8 +306,8 @@ const Renderer = (() => {
 
   // ── Draw principal ───────────────────────────────────────
   function draw(st) {
-    const W  = canvas.width;
-    const H  = canvas.height;
+    const W  = canvas.logicalWidth;
+    const H  = canvas.logicalHeight;
     const c  = Engine.getCuerpo();
 
     ctx.fillStyle = C.bg;

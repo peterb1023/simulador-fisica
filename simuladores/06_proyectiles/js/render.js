@@ -46,19 +46,18 @@ const Renderer = (() => {
     canvas = document.getElementById('canvasMain');
     ctx    = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
   }
 
   function resize() {
-    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth;
-    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight;
+    [canvas].forEach(SimCanvas.resize);
   }
 
   // ── Mapeo mundo → canvas ──────────────────────────────────
   // El "mundo" visible se ajusta dinámicamente al alcance y altura del proyectil
   function getScale(st) {
-    const W = canvas.width  - PAD.left - PAD.right;
-    const H = canvas.height - PAD.top  - PAD.bottom;
+    const W = canvas.logicalWidth  - PAD.left - PAD.right;
+    const H = canvas.logicalHeight - PAD.top  - PAD.bottom;
 
     // Rango del mundo con padding del 15%
     const worldW = Math.max(st.xMax * 1.18, 10);
@@ -71,7 +70,7 @@ const Renderer = (() => {
     return {
       scale,
       toCanvasX: x  => PAD.left + x * scale,
-      toCanvasY: y  => canvas.height - PAD.bottom - y * scale,
+      toCanvasY: y  => canvas.logicalHeight - PAD.bottom - y * scale,
       worldW, worldH,
       gridStep: niceStep(worldW / 5),
     };
@@ -90,8 +89,8 @@ const Renderer = (() => {
   //  DRAW PRINCIPAL
   // ════════════════════════════════════════════════════════
   function draw(st) {
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
     const { scale, toCanvasX, toCanvasY, worldW, worldH, gridStep } = getScale(st);
 
     ctx.fillStyle = C.bg;
@@ -243,8 +242,8 @@ const Renderer = (() => {
 
   // ── Cuadrícula ────────────────────────────────────────────
   function drawGrid(st, toCanvasX, toCanvasY, worldW, worldH, gridStep, scale) {
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
 
     ctx.strokeStyle = C.grid;
     ctx.lineWidth = 0.5;
@@ -263,8 +262,8 @@ const Renderer = (() => {
 
   // ── Ejes con números ──────────────────────────────────────
   function drawAxes(st, toCanvasX, toCanvasY, worldW, gridStep, scale) {
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
     const groundY = toCanvasY(0);
 
     ctx.font = '9px Space Mono, monospace';

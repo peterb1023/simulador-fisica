@@ -28,13 +28,11 @@ const Renderer = (() => {
     if (!canvas) return;
     ctx = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    SimCanvas.observe([canvas],resize);
   }
 
   function resize() {
-    if (!canvas) return;
-    canvas.width  = canvas.offsetWidth  || canvas.parentElement.offsetWidth;
-    canvas.height = canvas.offsetHeight || canvas.parentElement.offsetHeight;
+    [canvas].forEach(SimCanvas.resize);
   }
 
   // ── Frame ─────────────────────────────────────────────────
@@ -55,8 +53,8 @@ const Renderer = (() => {
   }
 
   function draw(st, P, Pmax) {
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
 
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, W, H);
