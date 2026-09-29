@@ -116,9 +116,9 @@ const Engine = (() => {
   }
 
   // ── Setters ───────────────────────────────────────────────
-  function setR(v)     { state.R     = +v; calcular(); }
-  function setAlpha(v) { state.alpha = +v; init(); }
-  function setW0(v)    { state.w0    = +v; init(); }
+  function setR(v)     { state.R     = SimCommon.number(v,Number.EPSILON); calcular(); }
+  function setAlpha(v) { state.alpha = SimCommon.number(v); init(); }
+  function setW0(v)    { state.w0    = SimCommon.number(v); init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }
   function fmt(n)        { return Math.round(n * 100) / 100; }

@@ -177,10 +177,10 @@ const Engine = (() => {
     state.dim = c.param === 'L' ? 1.5 : 0.8;
     calcular();
   }
-  function setM(v)     { state.M     = +v; calcular(); }
-  function setDim(v)   { state.dim   = +v; calcular(); }
-  function setOmega(v) { state.omega = +v; calcular(); }
-  function setD(v)     { state.d     = +v; calcular(); }
+  function setM(v)     { state.M     = SimCommon.number(v,Number.EPSILON); calcular(); }
+  function setDim(v)   { state.dim   = SimCommon.number(v,0); calcular(); }
+  function setOmega(v) { state.omega = SimCommon.number(v); calcular(); }
+  function setD(v)     { state.d     = SimCommon.number(v,0); calcular(); }
 
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }

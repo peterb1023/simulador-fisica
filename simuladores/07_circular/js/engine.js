@@ -140,9 +140,9 @@ const Engine = (() => {
   }
 
   // ── Setters ───────────────────────────────────────────────
-  function setR(v)    { state.R    = +v; init(); }
-  function setV0(v)   { state.v0   = +v; init(); }
-  function setAtan(v) { state.atan = +v; init(); }
+  function setR(v)    { state.R    = SimCommon.number(v,Number.EPSILON); init(); }
+  function setV0(v)   { state.v0   = SimCommon.number(v); init(); }
+  function setAtan(v) { state.atan = SimCommon.number(v); init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }
   function fmt(n)        { return Math.round(n * 100) / 100; }

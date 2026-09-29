@@ -47,9 +47,9 @@ const Engine = (() => {
       const K1    = 0.5 * state.m * state.v0 * state.v0;
       const Wtot  = W;
       const K2    = K1 + Wtot;
-      const v2    = K2 >= 0 ? Math.sqrt(2 * K2 / state.m) : 0;
+      const v2    = K2 >= 0 ? Math.sqrt(2 * K2 / state.m) : null;
 
-      return { Fcomp, W, K1, K2: Math.max(0, K2), v2, phiRad, cosPhi };
+      return { Fcomp, W, K1, K2: K2>=0?K2:null, v2, phiRad, cosPhi };
 
     } else {
       // Resorte: x1 = 0, x2 = state.x
@@ -105,7 +105,7 @@ const Engine = (() => {
         energia: {
           formula: 'W_tot = K₂ − K₁',
           sust:    `${fmt(c.W)} = ½·${fmt(state.m)}·v² − ½·${fmt(state.m)}·${fmt(state.v0)}²`,
-          res:     `v₂ = ${fmt(c.v2)} m/s`,
+          res:     c.v2===null?'Desplazamiento no alcanzable con esta energía inicial.':`v₂ = ${fmt(c.v2)} m/s`,
         },
       };
     } else {
@@ -130,13 +130,13 @@ const Engine = (() => {
   }
 
   // ── Setters ──────────────────────────────────────────
-  function setF(v)    { state.F   = +v; init(); }
-  function setPhi(v)  { state.phi = +v; init(); }
-  function setS(v)    { state.s   = +v; init(); }
-  function setM(v)    { state.m   = +v; init(); }
-  function setV0(v)   { state.v0  = +v; init(); }
-  function setK(v)    { state.k   = +v; init(); }
-  function setX(v)    { state.x   = +v; init(); }
+  function setF(v)    { state.F   = SimCommon.number(v,0); init(); }
+  function setPhi(v)  { state.phi = SimCommon.number(v,-180,180); init(); }
+  function setS(v)    { state.s   = SimCommon.number(v,0); init(); }
+  function setM(v)    { state.m   = SimCommon.number(v,Number.EPSILON); init(); }
+  function setV0(v)   { state.v0  = SimCommon.number(v,0); init(); }
+  function setK(v)    { state.k   = SimCommon.number(v,0); init(); }
+  function setX(v)    { state.x   = SimCommon.number(v,0); init(); }
   function setModo(m) { state.modo = m; init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return { ...state, calc: calcular() }; }

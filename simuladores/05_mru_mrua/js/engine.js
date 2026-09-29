@@ -47,9 +47,9 @@ const Engine = (() => {
   }
   init();
   return { init,step,seekTo,getState,getSustitucion,
-    setMruX0:v=>{state.mru.x0=+v;init()}, setMruV:v=>{state.mru.v=+v;init()},
-    setMruaX0:v=>{state.mrua.x0=+v;init()}, setMruaV0:v=>{state.mrua.v0=+v;init()},
-    setMruaA:v=>{state.mrua.a=+v;init()}, setTMax:v=>{state.tMax=+v;init()},
+    setMruX0:v=>{state.mru.x0=SimCommon.number(v);init()}, setMruV:v=>{state.mru.v=SimCommon.number(v);init()},
+    setMruaX0:v=>{state.mrua.x0=SimCommon.number(v);init()}, setMruaV0:v=>{state.mrua.v0=SimCommon.number(v);init()},
+    setMruaA:v=>{state.mrua.a=SimCommon.number(v);init()}, setTMax:v=>{state.tMax=SimCommon.number(v,Number.EPSILON);init()},
     setModoCaida:b=>{state.modoCaida=b;init()}, togglePause:()=>{state.paused=!state.paused},
     G, fmt };
 })();

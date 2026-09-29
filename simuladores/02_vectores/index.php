@@ -126,6 +126,7 @@ $js_cfg = json_encode($cfg);
 </div><!-- /#app -->
 
 <script>const CFG = <?= $js_cfg ?>;</script>
+<script src="../../js/sim-common.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>

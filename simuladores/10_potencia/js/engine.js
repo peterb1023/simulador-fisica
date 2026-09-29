@@ -39,12 +39,17 @@ const Engine = (() => {
   // ── Calcular según modo ───────────────────────────────────
   function calcular() {
     const { modo, W, P, t, F, v } = state;
+    state.error='';
+    const required={P:[W,t],W:[P,t],t:[W,P],Fv:[F,v]}[modo];
+    if(!required||!required.every(x=>Number.isFinite(x)&&x>=0)){
+      state.resultado=null;state.pasos=[];state.error='Introduce valores finitos no negativos.';return;
+    }
     let resultado = null;
     let pasos     = [];
 
     if (modo === 'P') {
       // P = W / t
-      if (t === 0) { state.resultado = null; state.pasos = []; return; }
+      if (t === 0) { state.resultado = null; state.pasos = []; state.error='El divisor debe ser mayor que cero.'; return; }
       resultado = W / t;
       pasos = [
         { formula: 'P = W / t',
@@ -69,7 +74,7 @@ const Engine = (() => {
 
     } else if (modo === 't') {
       // t = W / P
-      if (P === 0) { state.resultado = null; state.pasos = []; return; }
+      if (P === 0) { state.resultado = null; state.pasos = []; state.error='El divisor debe ser mayor que cero.'; return; }
       resultado = W / P;
       pasos = [
         { formula: 't = W / P',
@@ -93,7 +98,7 @@ const Engine = (() => {
       ];
     }
 
-    state.resultado = resultado;
+    state.resultado = Number.isFinite(resultado)?resultado:null;
     state.pasos     = pasos;
   }
 

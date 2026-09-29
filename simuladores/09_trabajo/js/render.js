@@ -195,7 +195,7 @@ const Renderer = (() => {
     ctx.font = 'bold 11px Space Mono, monospace';
     ctx.fillStyle = C.work;
     ctx.textAlign = 'center';
-    ctx.fillText(`W_ext = ΔU = ${Engine.fmt(Wactual)} J`, objCX, objY - 26);
+    ctx.fillText(`W = ${Engine.fmt(Wactual)} J`, objCX, objY - 26);
 
     ctx.font = '10px Space Mono, monospace';
     ctx.fillStyle = C.tx2;

@@ -29,7 +29,7 @@ const work=engine('09'); work.setF(10); work.setS(5); work.setPhi(60); near(work
 work.setPhi(90); near(work.calcular().W,0); work.setModo('resorte');work.setK(50);work.setX(2);near(work.calcular().W,100);near(work.calcular().K2,0);
 const inertia=engine('12'); inertia.setCuerpo('disco');inertia.setM(2);inertia.setDim(3);inertia.setD(2);near(inertia.getState().I,9);near(inertia.getState().I_P,17);
 inertia.setCuerpo('varilla_ext');inertia.setDim(3);inertia.setD(1.5);near(inertia.getState().I_P,inertia.getState().I);
-console.log('Numerical tests: PASS');
+
 
 for (const hz of [30,60,120]) {
   const e=engine('04');e.setX0(0);e.setV0(10);e.setA(2);
@@ -62,3 +62,19 @@ for(const hz of [30,60,120]){
  const rotation=engine('11');rotation.setW0(2);rotation.setAlpha(3);for(let i=0;i<hz*4;i++)rotation.step(1/hz);near(rotation.getState().omega,14);near(rotation.getState().theta,32);rotation.step(10);near(rotation.getState().omega,44);
  const circular=engine('07');circular.setR(2);circular.setV0(4);near(circular.getState().omega,2);near(circular.getState().arad,8);near(circular.getState().T,Math.PI);circular.setAtan(-2);for(let i=0;i<hz*4;i++)circular.step(1/hz);near(circular.getState().theta,0);near(circular.getState().v,-4);
 }
+
+const units=engine('03');near(units.convertir(1,'Longitud','km','m').resultado,1000);near(units.convertir(32,'Temperatura','°F','°C').resultado,0);near(units.convertir(1,'Potencia','kW','W').resultado,1000);
+const mru=engine('05');mru.setMruaX0(0);mru.setMruaV0(10);mru.setMruaA(2);mru.seekTo(3);near(mru.getState().mrua.x,39);near(mru.getState().mrua.v,16);near(mru.getState().mrua.v**2,100+4*mru.getState().mrua.x);
+for(const [id,setter] of [['01','setMasa'],['04','setV0'],['05','setMruV'],['06','setV0'],['07','setR'],['08','setM'],['09','setK'],['11','setW0'],['12','setM']]){
+ const e=engine(id);for(const v of [NaN,Infinity,-Infinity])assert.throws(()=>e[setter](v),id+' '+v);
+}
+for(const [id,setter] of [['01','setMasa'],['06','setY0'],['07','setR'],['08','setMuk'],['09','setK'],['12','setM']]) assert.throws(()=>engine(id)[setter](-1),id+' negative');
+assert.throws(()=>vec.createVector(NaN,0));assert.throws(()=>vec.setPolar(0,-1,0));
+for(const v of [NaN,Infinity,-Infinity]){assert.equal(units.convertir(v,'Longitud','km','m'),null);power.setW(v);assert.equal(power.getState().resultado,null);assert.equal(power.efficiency(v,10),null);}
+assert.equal(units.convertir(-1,'Temperatura','K','°C'),null);near(units.convertir(0,'Longitud','m','km').resultado,0);
+power.setW(1000);power.setT(0);assert.equal(power.getState().resultado,null);power.setW(-1);assert.equal(power.getState().resultado,null);
+for(const angle of [0,90]){projectile.setY0(0);projectile.setAlpha(angle);projectile.setV0(0);projectile.seekTo(0);near(projectile.getState().x,0);near(projectile.getState().y,0);}
+work.setModo('fuerza');work.setF(10);work.setS(5);work.setPhi(0);near(work.calcular().W,50);work.setPhi(180);work.setV0(0);assert.equal(work.calcular().v2,null);
+newton.setV0(-4);newton.seekTo(10);near(newton.getState().vx,0);assert.ok(newton.getState().x<0);
+for(const hz of [30,60,120]){const e=engine('08');for(let i=0;i<hz;i++)e.step(1/hz);near(e.getState().x,3);near(e.getState().vx,6);}
+console.log('PASS: 12 simulators, physical cases, invalid inputs, deterministic seek, 30/60/120 Hz.');

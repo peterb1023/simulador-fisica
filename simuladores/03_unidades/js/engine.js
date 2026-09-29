@@ -170,6 +170,8 @@ const Engine = (() => {
   // ── Conversión principal ─────────────────────────────────
   // Retorna { resultado, pasos[] }
   function convertir(valor, catNombre, simOrigen, simDestino) {
+    if(!Number.isFinite(+valor)||valor==='')return null;
+    valor=+valor;
     const cat = CATEGORIAS.find(c => c.nombre === catNombre);
     if (!cat) return null;
 
@@ -183,6 +185,7 @@ const Engine = (() => {
       // Temperatura: conversión especial con offset
       // Paso 1: a Kelvin
       const enKelvin = (valor + uO.offset) * uO.factor;
+      if(enKelvin<0)return null;
       // Paso 2: de Kelvin a destino
       resultado = enKelvin / uD.factor - uD.offset;
 
@@ -227,12 +230,14 @@ const Engine = (() => {
       ];
     }
 
+    if(!Number.isFinite(resultado))return null;
     return { resultado, pasos, uOrigen: uO, uDestino: uD };
   }
 
   // ── Conversión de prefijo SI ─────────────────────────────
   function convertirPrefijo(valor, expOrigen, expDestino) {
     // valor × 10^(expOrigen - expDestino)
+    if(![valor,expOrigen,expDestino].every(Number.isFinite))return null;
     const diffExp = expOrigen - expDestino;
     const resultado = valor * Math.pow(10, diffExp);
     const pasos = [
@@ -248,7 +253,7 @@ const Engine = (() => {
         esFactor: false,
       },
     ];
-    return { resultado, pasos };
+    return Number.isFinite(resultado)?{ resultado, pasos }:null;
   }
 
   // ── Formateo de números ──────────────────────────────────

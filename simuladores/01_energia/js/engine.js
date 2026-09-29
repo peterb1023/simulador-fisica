@@ -116,9 +116,9 @@ const Engine = (() => {
     getVelocity,
     trackHeight,
 
-    setMasa(v)     { state.masa = v;    state.Et = state.masa * state.g * state.h0; init(); },
-    setGravity(v)  { state.g = v;       state.Et = state.masa * state.g * state.h0; init(); },
-    setAltura(v)   { state.h0 = v;      state.Et = state.masa * state.g * state.h0; init(); },
+    setMasa(v)     { state.masa = SimCommon.number(v,Number.EPSILON);    state.Et = state.masa * state.g * state.h0; init(); },
+    setGravity(v)  { state.g = SimCommon.number(v,0);       state.Et = state.masa * state.g * state.h0; init(); },
+    setAltura(v)   { state.h0 = SimCommon.number(v,0);      state.Et = state.masa * state.g * state.h0; init(); },
     setFriction(v) { state.friction = !!v; init(); },
     pause()        { state.paused = true; },
     resume()       { state.paused = false; },

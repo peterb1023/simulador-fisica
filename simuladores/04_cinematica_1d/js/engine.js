@@ -93,10 +93,10 @@ const Engine = (() => {
     state.histV=SimCommon.samples(t,state.tMax,ti=>({t:ti,v:vAt(ti)}));
   }
 
-  function setX0(v)         { state.x0 = v;         init(); }
-  function setV0(v)         { state.v0 = v;          init(); }
-  function setA(v)          { state.a  = v;          init(); }
-  function setTMax(v)       { state.tMax = v;        init(); }
+  function setX0(v)         { state.x0 = SimCommon.number(v);         init(); }
+  function setV0(v)         { state.v0 = SimCommon.number(v);          init(); }
+  function setA(v)          { state.a  = SimCommon.number(v);          init(); }
+  function setTMax(v)       { state.tMax = SimCommon.number(v,Number.EPSILON);        init(); }
   function setModoCaida(b)  { state.modoCaida = b;   init(); }
   function togglePause()    { state.paused = !state.paused; }
   function getState()       { return { ...state }; }

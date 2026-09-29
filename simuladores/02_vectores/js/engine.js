@@ -31,6 +31,7 @@ const Engine = (() => {
 
   // ── Crear vector ────────────────────────────────────────
   function createVector(vx = 3, vy = 3) {
+    vx=SimCommon.number(vx);vy=SimCommon.number(vy);
     const idx = vectors.length % COLORS.length;
     const v = {
       id:    nextId++,
@@ -66,7 +67,8 @@ const Engine = (() => {
   function setCartesian(id, vx, vy) {
     const v = vectors.find(v => v.id === id);
     if (!v) return;
-    v.vx = +vx; v.vy = +vy;
+    vx=SimCommon.number(vx);vy=SimCommon.number(vy);
+    v.vx = vx; v.vy = vy;
     recompute(v);
   }
 
@@ -74,6 +76,7 @@ const Engine = (() => {
   function setPolar(id, r, thetaDeg) {
     const v = vectors.find(v => v.id === id);
     if (!v) return;
+    r=SimCommon.number(r,0);thetaDeg=SimCommon.number(thetaDeg);
     const rad = toRad(thetaDeg);
     // Vx = r·cosθ   Vy = r·senθ
     v.r     = r;
@@ -99,7 +102,7 @@ const Engine = (() => {
       const A = vectors[0].r, B = vectors[1].r;
       // Ángulo entre los dos vectores
       const angBetween = toRad(vectors[1].theta - vectors[0].theta);
-      const Rcos = Math.sqrt(A*A + B*B + 2*A*B*Math.cos(angBetween));
+      const Rcos = Math.sqrt(Math.max(0,A*A + B*B + 2*A*B*Math.cos(angBetween)));
       leyCoseno = { A, B, angle: toDeg(angBetween), R: Rcos };
     }
 
