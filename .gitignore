@@ -4,3 +4,13 @@ __pycache__/
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Configuración privada y dumps históricos con datos personales
+/config/database.php
+.env
+.env.*
+!*.example
+fisica_grupos.sql
+*.dump
+*.sql.gz
+/database/backups/
