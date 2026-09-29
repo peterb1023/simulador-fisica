@@ -2,7 +2,7 @@
 require_once 'php/config.php';
 $cfg    = getSimConfig();
 $lim    = $cfg['limites'];
-$js_cfg = json_encode($cfg);
+$js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
 ?>
 <!DOCTYPE html>
 <html lang="es">
