@@ -309,5 +309,7 @@ $js_cfg = json_encode($cfg);
 <script src="../../js/canvas-common.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

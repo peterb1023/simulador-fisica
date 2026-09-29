@@ -54,7 +54,7 @@ $js_cfg = json_encode($cfg);
           <div class="sl-group">
 
             <div class="sl-row-08">
-              <span class="sl-label sl-label-white">m</span>
+              <label class="sl-label sl-label-white" for="sl-m">m</label>
               <input type="range" id="sl-m"
                 min="<?= $lim['m_min'] ?>" max="<?= $lim['m_max'] ?>"
                 step="0.5" value="5">
@@ -62,7 +62,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-08">
-              <span class="sl-label sl-label-gold">F</span>
+              <label class="sl-label sl-label-gold" for="sl-F">F</label>
               <input type="range" id="sl-F"
                 min="<?= $lim['F_min'] ?>" max="<?= $lim['F_max'] ?>"
                 step="1" value="30">
@@ -70,7 +70,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-08" id="row-phi">
-              <span class="sl-label sl-label-gold">φ</span>
+              <label class="sl-label sl-label-gold" for="sl-phi">φ</label>
               <input type="range" id="sl-phi"
                 min="<?= $lim['phi_min'] ?>" max="<?= $lim['phi_max'] ?>"
                 step="1" value="0">
@@ -78,7 +78,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-08" id="row-muk">
-              <span class="sl-label sl-label-purple">μk</span>
+              <label class="sl-label sl-label-purple" for="sl-muk">μk</label>
               <input type="range" id="sl-muk"
                 min="<?= $lim['mu_min'] ?>" max="<?= $lim['mu_max'] ?>"
                 step="0.05" value="0">
@@ -145,7 +145,7 @@ $js_cfg = json_encode($cfg);
       <!-- ══ CANVAS CENTRAL ══ -->
       <main class="panel-center-08">
         <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
-<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="0.01" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
+<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="any" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
       </main>
 
       <!-- ══ PANEL DERECHO: resolución ══ -->
@@ -308,5 +308,7 @@ $js_cfg = json_encode($cfg);
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
 <script src="../../js/timeline.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

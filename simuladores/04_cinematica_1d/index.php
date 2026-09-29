@@ -62,7 +62,7 @@ $js_cfg = json_encode($cfg);
           <div class="ps-label">Aceleración</div>
           <div class="sl-group">
             <div class="sl-row-04" id="row-a">
-              <span class="sl-label">a</span>
+              <label class="sl-label" for="sl-a">a</label>
               <input type="range" id="sl-a"
                 min="<?= $lim['a_min'] ?>" max="<?= $lim['a_max'] ?>"
                 step="0.5" value="-2">
@@ -400,5 +400,7 @@ $js_cfg = json_encode($cfg);
 <script src="../../js/canvas-common.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

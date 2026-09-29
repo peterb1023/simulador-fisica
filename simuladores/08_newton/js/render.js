@@ -109,7 +109,7 @@ const Renderer = (() => {
     const lift=30+Math.min(st.y*10,H*0.2),bx=cx+nx*lift,by=cy+ny*lift;
     ctx.save();ctx.translate(bx,by);ctx.rotate(-th);ctx.fillStyle=C.bloque;ctx.fillRect(-25,-25,50,50);ctx.restore();
     const scale=Math.min(W,H)*0.2/Math.max(st.w,st.F,st.n,Math.abs(st.sumFx),1);
-    const vector=(x,y,name,color)=>{const ex=bx+x*scale,ey=by+y*scale;arrow(bx,by,ex,ey,color,2.5);label(name,ex+5,ey-5,color);};
+    const vector=(x,y,name,color)=>{if(Math.hypot(x,y)<1e-8)return;const ex=bx+x*scale,ey=by+y*scale;arrow(bx,by,ex,ey,color,2.5);label(name,ex+5,ey-5,color);};
     vector(0,st.w,`mg=${Engine.fmt(st.w)} N`,C.peso);
     vector(nx*st.n,ny*st.n,`N=${Engine.fmt(st.n)} N`,C.normal);
     vector(tx*st.Fx+nx*st.Fy,ty*st.Fx+ny*st.Fy,`F=${Engine.fmt(st.F)} N`,C.fApp);
@@ -207,7 +207,7 @@ const Renderer = (() => {
       drawElevador(st);
     }
 
-    drawHUD(st);
+    if(st.modo==='elevador')drawHUD(st);
   }
 
   // ── HUD ───────────────────────────────────────────────────

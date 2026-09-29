@@ -347,5 +347,7 @@ $js_cfg = json_encode($cfg);
 <script src="../../js/sim-common.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

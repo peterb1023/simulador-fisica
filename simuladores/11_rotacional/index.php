@@ -44,7 +44,7 @@ $js_cfg = json_encode($cfg);
           <div class="sl-group">
 
             <div class="sl-row-11">
-              <span class="sl-label sl-label-white">R</span>
+              <label class="sl-label sl-label-white" for="sl-R">R</label>
               <input type="range" id="sl-R"
                 min="<?= $lim['R_min'] ?>" max="<?= $lim['R_max'] ?>"
                 step="0.1" value="1.0">
@@ -52,7 +52,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-11">
-              <span class="sl-label sl-label-gold">α</span>
+              <label class="sl-label sl-label-gold" for="sl-alpha">α</label>
               <input type="range" id="sl-alpha"
                 min="<?= $lim['alpha_min'] ?>" max="<?= $lim['alpha_max'] ?>"
                 step="0.5" value="2.0">
@@ -60,7 +60,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-11">
-              <span class="sl-label sl-label-blue">ω₀</span>
+              <label class="sl-label sl-label-blue" for="sl-w0">ω₀</label>
               <input type="range" id="sl-w0"
                 min="<?= $lim['w0_min'] ?>" max="<?= $lim['w0_max'] ?>"
                 step="0.5" value="0.0">
@@ -127,7 +127,7 @@ $js_cfg = json_encode($cfg);
 
       <!-- ══ CANVAS CENTRAL ══ -->
       <main class="panel-center-11">
-        <canvas id="canvasMain"></canvas>
+        <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
       </main>
 
       <!-- ══ PANEL DERECHO: resolución ══ -->
@@ -287,5 +287,7 @@ $js_cfg = json_encode($cfg);
 <script src="../../js/canvas-common.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

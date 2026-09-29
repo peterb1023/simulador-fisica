@@ -80,7 +80,7 @@ $js_cfg = json_encode($cfg);
       <!-- CANVAS CENTRAL -->
       <main class="panel-center">
         <div class="temporal-scene"><canvas id="simCanvas"></canvas></div>
-<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="0.01" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
+<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="any" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
         <div class="speed-badge" id="speed-badge">v = 0.00 m/s</div>
         <div class="height-badge" id="height-badge">h = 5.0 m</div>
       </main>
@@ -89,7 +89,7 @@ $js_cfg = json_encode($cfg);
       <aside class="panel-right">
 
         <div class="energy-panel">
-          <div class="ep-title">Energía (Joules)</div>
+          <div class="ep-title">Energía (julios)</div>
 
           <div class="e-row">
             <span class="e-dot" style="background:var(--ep)"></span>
@@ -166,5 +166,7 @@ $js_cfg = json_encode($cfg);
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
 <script src="../../js/timeline.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

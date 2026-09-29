@@ -42,13 +42,13 @@ const UI = (() => {
       <div class="vc-section">
         <div class="vc-label">Componentes</div>
         <div class="sl-row">
-          <span class="sl-axis" style="color:${v.color}">Vx</span>
+          <label class="sl-axis" style="color:${v.color}" for="sl-vx-${v.id}">Vx (u)</label>
           <input type="range" id="sl-vx-${v.id}" min="-10" max="10" step="0.5" value="${fmt(v.vx)}"
             oninput="onSlide(${v.id},'vx',+this.value)">
           <span class="sl-val" id="vx-val-${v.id}"><b>${fmt(v.vx)}</b></span>
         </div>
         <div class="sl-row">
-          <span class="sl-axis" style="color:${v.color}">Vy</span>
+          <label class="sl-axis" style="color:${v.color}" for="sl-vy-${v.id}">Vy (u)</label>
           <input type="range" id="sl-vy-${v.id}" min="-10" max="10" step="0.5" value="${fmt(v.vy)}"
             oninput="onSlide(${v.id},'vy',+this.value)">
           <span class="sl-val" id="vy-val-${v.id}"><b>${fmt(v.vy)}</b></span>
@@ -58,13 +58,13 @@ const UI = (() => {
       <div class="vc-section">
         <div class="vc-label">Polares</div>
         <div class="sl-row">
-          <span class="sl-axis" style="color:${v.color}">r</span>
+          <label class="sl-axis" style="color:${v.color}" for="sl-r-${v.id}">r (u)</label>
           <input type="range" id="sl-r-${v.id}" min="0" max="14" step="0.5" value="${fmt(v.r)}"
             oninput="onSlide(${v.id},'r',+this.value)">
           <span class="sl-val" id="r-val-${v.id}"><b>${fmt(v.r)}</b></span>
         </div>
         <div class="sl-row">
-          <span class="sl-axis" style="color:${v.color}">θ</span>
+          <label class="sl-axis" style="color:${v.color}" for="sl-t-${v.id}">θ °</label>
           <input type="range" id="sl-t-${v.id}" min="0" max="360" step="1" value="${fmt(v.theta)}"
             oninput="onSlide(${v.id},'theta',+this.value)">
           <span class="sl-val" id="t-val-${v.id}"><b>${fmt(v.theta)}°</b></span>

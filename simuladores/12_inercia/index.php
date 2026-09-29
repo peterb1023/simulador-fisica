@@ -52,7 +52,7 @@ $js_cfg = json_encode($cfg);
           <div class="sl-group">
 
             <div class="sl-row-12">
-              <span class="sl-label sl-label-white">M</span>
+              <label class="sl-label sl-label-white" for="sl-M">M</label>
               <input type="range" id="sl-M"
                 min="<?= $lim['M_min'] ?>" max="<?= $lim['M_max'] ?>"
                 step="0.5" value="5">
@@ -60,7 +60,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-12">
-              <span class="sl-label sl-label-dyn" id="lbl-dim">L</span>
+              <label class="sl-label sl-label-dyn" id="lbl-dim" for="sl-dim">L</label>
               <input type="range" id="sl-dim"
                 min="<?= $lim['L_min'] ?>" max="<?= $lim['L_max'] ?>"
                 step="0.1" value="1.5">
@@ -69,7 +69,7 @@ $js_cfg = json_encode($cfg);
             <div class="sl-dim-desc" id="desc-dim">L (longitud)</div>
 
             <div class="sl-row-12">
-              <span class="sl-label sl-label-blue">ω</span>
+              <label class="sl-label sl-label-blue" for="sl-omega">ω</label>
               <input type="range" id="sl-omega"
                 min="<?= $lim['w_min'] ?>" max="<?= $lim['w_max'] ?>"
                 step="0.5" value="3">
@@ -77,7 +77,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-12">
-              <span class="sl-label sl-label-gold">d</span>
+              <label class="sl-label sl-label-gold" for="sl-d">d</label>
               <input type="range" id="sl-d"
                 min="<?= $lim['d_min'] ?>" max="<?= $lim['d_max'] ?>"
                 step="0.1" value="0">
@@ -128,7 +128,7 @@ $js_cfg = json_encode($cfg);
 
       <!-- ══ CANVAS CENTRAL ══ -->
       <main class="panel-center-12">
-        <canvas id="canvasMain"></canvas>
+        <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
       </main>
 
       <!-- ══ PANEL DERECHO: resolución ══ -->
@@ -274,5 +274,7 @@ $js_cfg = json_encode($cfg);
 <script src="../../js/canvas-common.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

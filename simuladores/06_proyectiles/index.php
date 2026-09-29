@@ -52,7 +52,7 @@ $js_cfg = json_encode($cfg);
             </div>
 
             <div class="sl-row-06">
-              <span class="sl-label sl-label-gold">α</span>
+              <label class="sl-label sl-label-gold" for="sl-alpha">α</label>
               <input type="range" id="sl-alpha"
                 min="<?= $lim['alpha_min'] ?>" max="<?= $lim['alpha_max'] ?>"
                 step="1" value="45">
@@ -122,7 +122,7 @@ $js_cfg = json_encode($cfg);
       <!-- ══ CANVAS CENTRAL ══ -->
       <main class="panel-center-06">
         <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
-<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="0.01" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
+<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="any" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
       </main>
 
       <!-- ══ PANEL DERECHO: resolución ══ -->
@@ -318,5 +318,7 @@ $js_cfg = json_encode($cfg);
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
 <script src="../../js/timeline.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

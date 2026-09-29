@@ -68,17 +68,8 @@ const UI = (() => {
     const sO     = document.getElementById('sel-origen').value;
     const sD     = document.getElementById('sel-destino').value;
 
-    if (sO === sD) {
-      document.getElementById('res-valor').textContent = Engine.fmtN(valor);
-      document.getElementById('res-unidad').textContent = sD;
-      document.getElementById('res-de').textContent = `${Engine.fmtN(valor)} ${sO}  →  ${Engine.fmtN(valor)} ${sD}`;
-      document.getElementById('pasos-container').innerHTML = '';
-      buildEquivTable(cat, sO, valor);
-      return;
-    }
-
     const res = Engine.convertir(valor, cat.nombre, sO, sD);
-    if (!res) return;
+    if (!res) { clearResult();document.getElementById('res-de').textContent='Valor inválido o temperatura por debajo del cero absoluto.';return; }
 
     // Mostrar resultado grande
     document.getElementById('res-valor').textContent = Engine.fmtN(res.resultado);
@@ -129,6 +120,8 @@ const UI = (() => {
         <td class="eq-sym">${u.simbolo}</td>
         <td class="eq-name">${u.nombre}</td>
         <td class="eq-val">${Engine.fmtN(res.resultado)}</td>`;
+      tr.tabIndex=0;tr.setAttribute('role','button');tr.setAttribute('aria-label','Convertir a '+u.nombre);
+      tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tr.click();}};
       tr.onclick = () => {
         document.getElementById('sel-destino').value = u.simbolo;
         calcular();
@@ -185,6 +178,7 @@ const UI = (() => {
     const pO = Engine.PREFIJOS.find(p => p.exp === expO);
     const pD = Engine.PREFIJOS.find(p => p.exp === expD);
     const res = Engine.convertirPrefijo(valor, expO, expD);
+    if(!res){document.getElementById('pref-resultado').textContent='Valor fuera del rango numérico.';return;}
 
     document.getElementById('pref-resultado').innerHTML =
       `${Engine.fmtN(valor)} ${pO.simbolo || '(base)'}  =  <b>${Engine.fmtN(res.resultado)} ${pD.simbolo || '(base)'}</b>`;

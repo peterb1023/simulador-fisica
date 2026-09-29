@@ -55,7 +55,7 @@ $lim    = $cfg['limites'];
           <div class="ps">
             <div class="ps-label">Fuerza aplicada</div>
             <div class="sl-row">
-              <span class="sl-label">F</span>
+              <label class="sl-label" for="sl-F">F</label>
               <input type="range"
                 id="sl-F"
                 min="<?= $lim['F_min'] ?>" max="<?= $lim['F_max'] ?>" step="1" value="40"
@@ -67,7 +67,7 @@ $lim    = $cfg['limites'];
           <div class="ps">
             <div class="ps-label">Ángulo φ (F con desplazamiento)</div>
             <div class="sl-row">
-              <span class="sl-label">φ</span>
+              <label class="sl-label" for="sl-phi">φ</label>
               <input type="range"
                 id="sl-phi"
                 min="<?= $lim['phi_min'] ?>" max="<?= $lim['phi_max'] ?>" step="1" value="30"
@@ -79,7 +79,7 @@ $lim    = $cfg['limites'];
           <div class="ps">
             <div class="ps-label">Desplazamiento</div>
             <div class="sl-row">
-              <span class="sl-label">s</span>
+              <label class="sl-label" for="sl-s">s</label>
               <input type="range"
                 id="sl-s"
                 min="<?= $lim['s_min'] ?>" max="<?= $lim['s_max'] ?>" step="1" value="10"
@@ -96,7 +96,7 @@ $lim    = $cfg['limites'];
           <div class="ps">
             <div class="ps-label">Constante del resorte <span class="tag-agr">AGREGADA</span></div>
             <div class="sl-row">
-              <span class="sl-label">k</span>
+              <label class="sl-label" for="sl-k">k</label>
               <input type="range"
                 id="sl-k"
                 min="<?= $lim['k_min'] ?>" max="<?= $lim['k_max'] ?>" step="5" value="50"
@@ -108,7 +108,7 @@ $lim    = $cfg['limites'];
           <div class="ps">
             <div class="ps-label">Elongación del resorte</div>
             <div class="sl-row">
-              <span class="sl-label">x</span>
+              <label class="sl-label" for="sl-x">x</label>
               <input type="range"
                 id="sl-x"
                 min="<?= $lim['x_min'] ?>" max="<?= $lim['x_max'] ?>" step="0.1" value="1.0"
@@ -123,7 +123,7 @@ $lim    = $cfg['limites'];
         <div class="ps">
           <div class="ps-label">Teorema trabajo-energía</div>
           <div class="sl-row">
-            <span class="sl-label">m</span>
+            <label class="sl-label" for="sl-m">m</label>
             <input type="range"
               id="sl-m"
               min="<?= $lim['m_min'] ?>" max="<?= $lim['m_max'] ?>" step="1" value="5"
@@ -131,7 +131,7 @@ $lim    = $cfg['limites'];
             <span class="sl-val"><b id="v-m">5</b> kg</span>
           </div>
           <div class="sl-row">
-            <span class="sl-label">v₀</span>
+            <label class="sl-label" for="sl-v0">v₀</label>
             <input type="range"
               id="sl-v0"
               min="<?= $lim['v0_min'] ?>" max="<?= $lim['v0_max'] ?>" step="0.5" value="3"
@@ -151,7 +151,7 @@ $lim    = $cfg['limites'];
       <!-- CANVAS CENTRAL -->
       <main class="panel-center">
         <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
-<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="0.01" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
+<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="any" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
         <div class="graph-wrap">
           <div class="graph-label">Gráfica F(s) — Área = Trabajo</div>
           <canvas id="canvasGraph"></canvas>
@@ -216,5 +216,7 @@ $lim    = $cfg['limites'];
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
 <script src="../../js/timeline.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

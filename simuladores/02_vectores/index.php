@@ -63,7 +63,7 @@ $js_cfg = json_encode($cfg);
 
       <!-- CANVAS CENTRAL -->
       <main class="panel-center">
-        <canvas id="simCanvas"></canvas>
+        <div class="temporal-scene"><canvas id="simCanvas"></canvas></div>
         <div class="zoom-controls">
           <button class="zoom-btn" onclick="Renderer.zoomIn()" title="Zoom in (+)">➕</button>
           <button class="zoom-btn" onclick="Renderer.zoomOut()" title="Zoom out (-)">➖</button>
@@ -131,5 +131,7 @@ $js_cfg = json_encode($cfg);
 <script src="../../js/canvas-common.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

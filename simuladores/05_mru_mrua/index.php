@@ -41,7 +41,7 @@ require_once __DIR__ . '/php/config.php';
             <span class="sl-val" id="val-mru-x0"><b><?= $defaults['mru_x0'] ?></b> <span>m</span></span>
           </div>
           <div class="sl-row-05">
-            <span class="sl-label" style="color:#58a6ff">v</span>
+            <label class="sl-label" style="color:#58a6ff" for="sl-mru-v">v</label>
             <input type="range" id="sl-mru-v"
               min="<?= MRU_V_MIN ?>" max="<?= MRU_V_MAX ?>" step="0.5" value="<?= $defaults['mru_v'] ?>"
               style="--thumb:#58a6ff">
@@ -68,7 +68,7 @@ require_once __DIR__ . '/php/config.php';
             <span class="sl-val" id="val-mrua-v0"><b><?= $defaults['mrua_v0'] ?></b> <span>m/s</span></span>
           </div>
           <div class="sl-row-05" id="row-mrua-a">
-            <span class="sl-label" style="color:#f0883e">a</span>
+            <label class="sl-label" style="color:#f0883e" for="sl-mrua-a">a</label>
             <input type="range" id="sl-mrua-a"
               min="<?= MRUA_A_MIN ?>" max="<?= MRUA_A_MAX ?>" step="0.5" value="<?= $defaults['mrua_a'] ?>"
               style="--thumb:#f0883e">
@@ -176,5 +176,7 @@ require_once __DIR__ . '/php/config.php';
 <script src="../../js/canvas-common.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<link rel="stylesheet" href="../../css/accessibility.css">
+<script src="../../js/accessibility.js"></script>
 </body>
 </html>

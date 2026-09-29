@@ -75,7 +75,7 @@ const UI = (() => {
     const st = Engine.getState();
 
     // Resultado principal
-    let resStr = '—';
+    let resStr = st.error || '—';
     let resUnit = '';
     if (st.resultado !== null) {
       resStr = Engine.fmt(st.resultado);
