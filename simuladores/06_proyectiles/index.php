@@ -149,7 +149,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
         <div class="res-section">
           <div class="res-title">Ecuación de trayectoria</div>
           <div class="tray-box">
-            <div class="tray-formula">y = tan(α)·x − <span style="font-size:9px">[g / (2v₀²cos²α)]</span>·x²</div>
+            <div class="tray-formula">y = y₀ + tan(α)·x − <span style="font-size:9px">[g / (2v₀²cos²α)]</span>·x²</div>
             <div class="res-hint" style="margin-top:6px">Elimina t entre x(t) e y(t).<br>Solo depende de la posición x.</div>
           </div>
         </div>

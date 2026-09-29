@@ -1,0 +1,6 @@
+# Solo artefactos generados del entorno de desarrollo
+*.log
+__pycache__/
+node_modules/
+.DS_Store
+Thumbs.db

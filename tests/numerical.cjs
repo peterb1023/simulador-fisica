@@ -77,4 +77,14 @@ for(const angle of [0,90]){projectile.setY0(0);projectile.setAlpha(angle);projec
 work.setModo('fuerza');work.setF(10);work.setS(5);work.setPhi(0);near(work.calcular().W,50);work.setPhi(180);work.setV0(0);assert.equal(work.calcular().v2,null);
 newton.setV0(-4);newton.seekTo(10);near(newton.getState().vx,0);assert.ok(newton.getState().x<0);
 for(const hz of [30,60,120]){const e=engine('08');for(let i=0;i<hz;i++)e.step(1/hz);near(e.getState().x,3);near(e.getState().vx,6);}
-console.log('PASS: 12 simulators, physical cases, invalid inputs, deterministic seek, 30/60/120 Hz.');
+
+
+projectile.setV0(20);projectile.setAlpha(45);projectile.seekTo(+projectile.getState().tMax.toPrecision(15));assert.ok(projectile.getState().ended);
+for(const dpr of [1,2]){
+ const ctx=vm.createContext({window:{devicePixelRatio:dpr}});
+ const helper=vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/canvas-common.js'),'utf8')+';SimCanvas',ctx);
+ let transform;const c={getBoundingClientRect:()=>({width:320,height:200}),getContext:()=>({setTransform:(...v)=>transform=v})};
+ helper.resize(c);near(c.width,320*dpr);near(c.height,200*dpr);near(c.logicalWidth,320);near(transform[0],dpr);
+}
+
+console.log('PASS: 12 simulators, numerical/invalid cases, deterministic seek, 30/60/120 Hz, DPR 1/2.');

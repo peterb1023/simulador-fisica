@@ -294,6 +294,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
   animation: scanline 6s linear infinite;
 }
 </style>
+<style>:focus-visible{outline:3px solid #79c0ff;outline-offset:3px}</style>
 </head>
 <body>
 
@@ -307,7 +308,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     <div class="portal-subtitle">Física I — Ing. Civil · XAMPP + PHP + Canvas</div>
   </div>
   <div class="portal-meta">
-    <div class="portal-meta-item"><b>1</b> / 12 construido</div>
+    <div class="portal-meta-item"><b>12</b> / 12 con pruebas numéricas</div>
     <div class="portal-meta-item"><b>Stack:</b> PHP · JS · HTML5</div>
   </div>
 </header>
@@ -350,7 +351,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/02_vectores/index.php" style="--card-accent:#388bfd">
         <div class="sc-head">
           <span class="sc-num">SIM 02</span>
-          <span class="sc-status"><span class="badge badge-next">Siguiente</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Vectores</div>
         <div class="sc-type">Plano cartesiano interactivo</div>
@@ -359,13 +360,13 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">Vx = r·cosθ</span>
           <span class="sc-formula-tag">R = ΣV</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--ep)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--ep)"></div></div>
       </a>
 
       <a class="sim-card" href="simuladores/03_unidades/index.php" style="--card-accent:#3fb950">
         <div class="sc-head">
           <span class="sc-num">SIM 03</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Conversión de Unidades</div>
         <div class="sc-type">Calculadora paso a paso</div>
@@ -373,7 +374,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">Prefijos SI</span>
           <span class="sc-formula-tag">Exa → Atto</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--ec)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--ec)"></div></div>
       </a>
 
     </div>
@@ -390,7 +391,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/04_cinematica_1d/index.php" style="--card-accent:#e3b341">
         <div class="sc-head">
           <span class="sc-num">SIM 04</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Cinemática 1D</div>
         <div class="sc-type">Gráficas animadas x(t) y v(t)</div>
@@ -398,13 +399,13 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">v = v₀ + at</span>
           <span class="sc-formula-tag">x = x₀ + v₀t + ½at²</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--et)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--et)"></div></div>
       </a>
 
       <a class="sim-card" href="simuladores/05_mru_mrua/index.php" style="--card-accent:#e3b341">
         <div class="sc-head">
           <span class="sc-num">SIM 05</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">MRU y MRUA</div>
         <div class="sc-type">Canvas animado</div>
@@ -412,7 +413,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">v constante</span>
           <span class="sc-formula-tag">a constante</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--et)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--et)"></div></div>
       </a>
 
     </div>
@@ -428,7 +429,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/06_proyectiles/index.php" style="--card-accent:#f0883e">
         <div class="sc-head">
           <span class="sc-num">SIM 06</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Proyectiles</div>
         <div class="sc-type">Canvas animado con trayectoria</div>
@@ -436,7 +437,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">x = (v₀cosα)t</span>
           <span class="sc-formula-tag">y = v₀yt − ½gt²</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--orange)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--orange)"></div></div>
       </a>
     </div>
   </div>
@@ -451,7 +452,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/07_circular/index.php" style="--card-accent:#bc8cff">
         <div class="sc-head">
           <span class="sc-num">SIM 07</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Movimiento Circular</div>
         <div class="sc-type">Canvas animado con flechas</div>
@@ -460,7 +461,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">v = 2πR/T</span>
           <span class="sc-formula-tag">atan = d|v|/dt</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--purple)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--purple)"></div></div>
       </a>
     </div>
   </div>
@@ -475,7 +476,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/08_newton/index.php" style="--card-accent:#f85149">
         <div class="sc-head">
           <span class="sc-num">SIM 08</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Leyes de Newton</div>
         <div class="sc-type">Diagrama de cuerpo libre interactivo</div>
@@ -484,7 +485,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">w = mg</span>
           <span class="sc-formula-tag">T = m(g+ay)</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--th)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--th)"></div></div>
       </a>
     </div>
   </div>
@@ -500,7 +501,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card done" href="simuladores/01_energia/index.php" style="--card-accent:#3fb950">
         <div class="sc-head">
           <span class="sc-num">SIM 01</span>
-          <span class="sc-status"><span class="badge badge-done">✓ Listo</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Energía en la Pista</div>
         <div class="sc-type">Canvas animado · Conservación</div>
@@ -516,7 +517,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/09_trabajo/index.php" style="--card-accent:#3fb950">
         <div class="sc-head">
           <span class="sc-num">SIM 09</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Trabajo</div>
         <div class="sc-type">Canvas · Fuerza y desplazamiento</div>
@@ -524,13 +525,13 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">W = Fs·cosφ</span>
           <span class="sc-formula-tag">W_tot = ΔK</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--ec)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--ec)"></div></div>
       </a>
 
       <a class="sim-card" href="simuladores/10_potencia/index.php" style="--card-accent:#3fb950">
         <div class="sc-head">
           <span class="sc-num">SIM 10</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Potencia</div>
         <div class="sc-type">Calculadora con resolución</div>
@@ -539,7 +540,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">P = F·v</span>
           <span class="sc-formula-tag">1 hp = 746 W</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--ec)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--ec)"></div></div>
       </a>
 
     </div>
@@ -556,7 +557,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
       <a class="sim-card" href="simuladores/11_rotacional/index.php" style="--card-accent:#bc8cff">
         <div class="sc-head">
           <span class="sc-num">SIM 11</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Cinemática Rotacional</div>
         <div class="sc-type">Canvas · Disco girando</div>
@@ -565,13 +566,13 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">v = rω</span>
           <span class="sc-formula-tag">a_tan = rα</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--purple)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--purple)"></div></div>
       </a>
 
       <a class="sim-card" href="simuladores/12_inercia/index.php" style="--card-accent:#bc8cff">
         <div class="sc-head">
           <span class="sc-num">SIM 12</span>
-          <span class="sc-status"><span class="badge badge-plan">Planeado</span></span>
+          <span class="sc-status"><span class="badge badge-done">✓ Probado</span></span>
         </div>
         <div class="sc-title">Momento de Inercia</div>
         <div class="sc-type">Comparador visual de cuerpos</div>
@@ -580,7 +581,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
           <span class="sc-formula-tag">K = ½Iω²</span>
           <span class="sc-formula-tag">I_P = I_cm + Md²</span>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%;background:var(--purple)"></div></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--purple)"></div></div>
       </a>
 
     </div>
@@ -603,13 +604,13 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     </div>
     <div class="sim-grid">
       <a class="sim-card" href="simuladores/02_vectores/index.php" style="--card-accent:#388bfd">
-        <div class="sc-head"><span class="sc-num">SIM 02</span><span class="sc-status"><span class="badge badge-next">Siguiente</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 02</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Vectores</div>
         <div class="sc-type">Plano cartesiano interactivo</div>
-        <div class="sc-formulas"><span class="sc-formula-tag">r = √(Vx²+Vy²)</span><span class="sc-formula-tag">θ = tan⁻¹(Vy/Vx)</span><span class="sc-formula-tag">R = √(A²+B²+2AB·cosθ)</span></div>
+        <div class="sc-formulas"><span class="sc-formula-tag">r = √(Vx²+Vy²)</span><span class="sc-formula-tag">θ = atan2(Vy,Vx)</span><span class="sc-formula-tag">R = √(A²+B²+2AB·cosθ)</span></div>
       </a>
       <a class="sim-card" href="simuladores/03_unidades/index.php" style="--card-accent:#3fb950">
-        <div class="sc-head"><span class="sc-num">SIM 03</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 03</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Conversión de Unidades</div>
         <div class="sc-type">Calculadora paso a paso</div>
         <div class="sc-formulas"><span class="sc-formula-tag">Prefijos SI</span><span class="sc-formula-tag">Exa → Atto</span></div>
@@ -626,19 +627,19 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     </div>
     <div class="sim-grid">
       <a class="sim-card" href="simuladores/04_cinematica_1d/index.php" style="--card-accent:#e3b341">
-        <div class="sc-head"><span class="sc-num">SIM 04</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 04</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Cinemática 1D</div>
         <div class="sc-type">Gráficas animadas x(t), v(t)</div>
         <div class="sc-formulas"><span class="sc-formula-tag">v = v₀ + at</span><span class="sc-formula-tag">v² = v₀² + 2aΔx</span></div>
       </a>
       <a class="sim-card" href="simuladores/05_mru_mrua/index.php" style="--card-accent:#e3b341">
-        <div class="sc-head"><span class="sc-num">SIM 05</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 05</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">MRU y MRUA</div>
         <div class="sc-type">Canvas animado</div>
         <div class="sc-formulas"><span class="sc-formula-tag">v constante</span><span class="sc-formula-tag">a constante</span></div>
       </a>
       <a class="sim-card" href="simuladores/06_proyectiles/index.php" style="--card-accent:#f0883e">
-        <div class="sc-head"><span class="sc-num">SIM 06</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 06</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Proyectiles</div>
         <div class="sc-type">Canvas animado con trayectoria</div>
         <div class="sc-formulas"><span class="sc-formula-tag">x = (v₀cosα)t</span><span class="sc-formula-tag">y = v₀yt − ½gt²</span></div>
@@ -655,7 +656,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     </div>
     <div class="sim-grid">
       <a class="sim-card" href="simuladores/08_newton/index.php" style="--card-accent:#f85149">
-        <div class="sc-head"><span class="sc-num">SIM 08</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 08</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Leyes de Newton</div>
         <div class="sc-type">Diagrama de cuerpo libre</div>
         <div class="sc-formulas"><span class="sc-formula-tag">ΣF = ma</span><span class="sc-formula-tag">w = mg</span><span class="sc-formula-tag">T = m(g+ay)</span></div>
@@ -672,20 +673,20 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     </div>
     <div class="sim-grid">
       <a class="sim-card done" href="simuladores/01_energia/index.php" style="--card-accent:#3fb950">
-        <div class="sc-head"><span class="sc-num">SIM 01</span><span class="sc-status"><span class="badge badge-done">✓ Listo</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 01</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Energía en la Pista</div>
         <div class="sc-type">Canvas animado · Conservación</div>
         <div class="sc-formulas"><span class="sc-formula-tag">U = mgh</span><span class="sc-formula-tag">K = ½mv²</span><span class="sc-formula-tag">E = K + U</span></div>
         <div class="progress-bar-wrap"><div class="progress-bar" style="width:100%;background:var(--ec)"></div></div>
       </a>
       <a class="sim-card" href="simuladores/09_trabajo/index.php" style="--card-accent:#3fb950">
-        <div class="sc-head"><span class="sc-num">SIM 09</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 09</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Trabajo</div>
         <div class="sc-type">Canvas · F × desplazamiento</div>
         <div class="sc-formulas"><span class="sc-formula-tag">W = Fs·cosφ</span><span class="sc-formula-tag">W_tot = ΔK</span></div>
       </a>
       <a class="sim-card" href="simuladores/10_potencia/index.php" style="--card-accent:#3fb950">
-        <div class="sc-head"><span class="sc-num">SIM 10</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 10</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Potencia</div>
         <div class="sc-type">Calculadora con resolución</div>
         <div class="sc-formulas"><span class="sc-formula-tag">P = W/t</span><span class="sc-formula-tag">P = F·v</span></div>
@@ -702,19 +703,19 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     </div>
     <div class="sim-grid">
       <a class="sim-card" href="simuladores/07_circular/index.php" style="--card-accent:#bc8cff">
-        <div class="sc-head"><span class="sc-num">SIM 07</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 07</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Movimiento Circular</div>
         <div class="sc-type">Canvas con flechas arad, atan</div>
         <div class="sc-formulas"><span class="sc-formula-tag">arad = v²/R</span><span class="sc-formula-tag">v = 2πR/T</span></div>
       </a>
       <a class="sim-card" href="simuladores/11_rotacional/index.php" style="--card-accent:#bc8cff">
-        <div class="sc-head"><span class="sc-num">SIM 11</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 11</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Cinemática Rotacional</div>
         <div class="sc-type">Canvas · Disco girando</div>
         <div class="sc-formulas"><span class="sc-formula-tag">ω = Δθ/Δt</span><span class="sc-formula-tag">v = rω</span></div>
       </a>
       <a class="sim-card" href="simuladores/12_inercia/index.php" style="--card-accent:#bc8cff">
-        <div class="sc-head"><span class="sc-num">SIM 12</span><span class="sc-status"><span class="badge badge-plan">Planeado</span></span></div>
+        <div class="sc-head"><span class="sc-num">SIM 12</span><span class="sc-status"><span class="badge badge-done">✓ Probado</span></span></div>
         <div class="sc-title">Momento de Inercia</div>
         <div class="sc-type">Comparador visual</div>
         <div class="sc-formulas"><span class="sc-formula-tag">I = Σmr²</span><span class="sc-formula-tag">K = ½Iω²</span></div>
@@ -744,7 +745,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     <a class="extra-card" href="extras/simulador_transporte.html">
       <div class="extra-tag">Grafos y rutas</div>
       <div class="extra-title">Rutas de Transporte</div>
-      <div class="extra-desc">Optimización de rutas mediante grafos. Algoritmos de camino mínimo visualizados.</div>
+      <div class="extra-desc">Sistemas matriciales de rutas. Aviso: conserva un error histórico de cálculo (bC no definido).</div>
       <span class="extra-badge">Extra · HTML standalone</span>
     </a>
   </div>
@@ -753,7 +754,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
 <!-- FOOTER -->
 <div style="border-top:1px solid var(--border)">
   <div class="portal-footer">
-    <span class="footer-txt">Lab Virtual — Física I · 2025</span>
+    <span class="footer-txt">Lab Virtual — Física I · 2026</span>
     <div class="footer-stack">
       <span class="tech-tag">PHP</span>
       <span class="tech-tag">HTML5 Canvas</span>

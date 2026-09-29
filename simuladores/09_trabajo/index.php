@@ -153,7 +153,7 @@ $lim    = $cfg['limites'];
         <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
 <div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="any" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
         <div class="graph-wrap">
-          <div class="graph-label">Gráfica F(s) — Área = Trabajo</div>
+          <div class="graph-label">Gráfica F(s) — Área = Trabajo; 4 s de presentación, no tiempo físico</div>
           <canvas id="canvasGraph"></canvas>
         </div>
       </main>

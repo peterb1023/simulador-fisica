@@ -11,7 +11,11 @@ const SimCommon = (() => {
       }
     };
   }
-  function time(t, max) { return Number.isFinite(+t) ? Math.max(0, Math.min(+t, max)) : 0; }
+  function time(t, max) {
+    if(!Number.isFinite(+t))return 0;
+    const value=Math.max(0,Math.min(+t,max));
+    return max-value<=Number.EPSILON*Math.max(1,max)*8?max:value;
+  }
   // Grilla fija: como máximo 241 muestras, independiente del refresco y duración.
   function samples(t, max, at, count=240) {
     const end=time(t,max), points=[];

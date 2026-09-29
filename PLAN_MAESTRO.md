@@ -2,7 +2,7 @@
 **Proyecto:** Lab virtual de Física I  
 **Stack:** PHP + HTML5 Canvas + JS vanilla  
 **Servidor:** XAMPP (Apache)  
-**Última actualización:** 2026-04-23
+**Última actualización:** 2026-09-29
 
 ---
 
@@ -10,18 +10,18 @@
 
 | # | Nombre | Estado | Timeline | Notas |
 |---|--------|--------|----------|-------|
-| 01 | Energía en la Pista | ✅ Construido | 🔲 Pendiente | Base original del proyecto |
-| 02 | Vectores | ✅ Construido + corregido | N/A | No aplica (interactivo, no temporal) |
-| 03 | Conversión de Unidades | ✅ Construido + corregido | N/A | No aplica (calculadora) |
-| 04 | Cinemática 1D | ✅ Construido + mejorado | ✅ Implementado | Timeline completo + cámara seguimiento |
-| 05 | MRU y MRUA | 📋 Pendiente | 🔲 Pendiente | |
-| 06 | Proyectiles | 📋 Pendiente | 🔲 Pendiente | |
-| 07 | Mov. Circular | 📋 Pendiente | 🔲 Pendiente | |
-| 08 | Leyes de Newton | 📋 Pendiente | 🔲 Pendiente | |
-| 09 | Trabajo | 📋 Pendiente | 🔲 Pendiente | |
-| 10 | Potencia | 📋 Pendiente | N/A | No aplica (calculadora) |
-| 11 | Cinemática Rotacional | ✅ Funcional | ❌ Excluido | Ya funciona bien sin timeline |
-| 12 | Momento de Inercia | ✅ Funcional | ❌ Excluido | Ya funciona bien sin timeline |
+| 01 | Energía en la Pista | Pruebas numéricas GREEN | Sí | RK4 determinista en pista parabólica; calor viscoso |
+| 02 | Vectores | Pruebas numéricas GREEN | N/A | Suma, componentes, producto punto y componente z del cruz |
+| 03 | Conversión de Unidades | Pruebas numéricas GREEN | N/A | Conversiones y temperatura con validación |
+| 04 | Cinemática 1D | Pruebas numéricas GREEN | Sí | Timeline conservado; tiempo real e historial acotado |
+| 05 | MRU y MRUA | Pruebas numéricas GREEN | Sí | Timeline conservado; tiempo real e historial acotado |
+| 06 | Proyectiles | Pruebas numéricas GREEN | Sí | Vuelo analítico y fórmulas coherentes |
+| 07 | Movimiento Circular | Pruebas numéricas GREEN | Sí | Ángulo analítico, velocidad con signo |
+| 08 | Leyes de Newton | Pruebas numéricas GREEN | Sí | Plano inclinado, fricción estática/cinética por tramos |
+| 09 | Trabajo | Pruebas numéricas GREEN | Sí | Resorte: trabajo externo cuasiestático = ΔU |
+| 10 | Potencia | Pruebas numéricas GREEN | N/A | Eficiencia y validación de divisores |
+| 11 | Cinemática Rotacional | Pruebas numéricas GREEN | Excluido | Solución analítica sin saturación física |
+| 12 | Momento de Inercia | Pruebas numéricas GREEN | Excluido | Fórmulas de cuerpos y ejes paralelos desde Icm |
 
 ---
 
@@ -41,7 +41,7 @@ simuladores_fisica/
 │
 ├── simuladores/
 │   │
-│   ├── 01_energia/            ← ✅ CONSTRUIDO
+│   ├── 01_energia/            ← Implementado
 │   │   ├── index.php
 │   │   ├── php/config.php
 │   │   ├── php/formulas.php
@@ -50,21 +50,21 @@ simuladores_fisica/
 │   │   ├── js/render.js
 │   │   └── js/ui.js
 │   │
-│   ├── 02_vectores/           ← ✅ CONSTRUIDO + CORREGIDO
+│   ├── 02_vectores/           ← Implementado + CORREGIDO
 │   │   └── (misma estructura)
 │   │
-│   ├── 03_unidades/           ← ✅ CONSTRUIDO + CORREGIDO
+│   ├── 03_unidades/           ← Implementado + CORREGIDO
 │   │   └── (misma estructura)
 │   │
-│   ├── 04_cinematica_1d/      ← ✅ CONSTRUIDO + MEJORADO (timeline ✅)
+│   ├── 04_cinematica_1d/      ← Implementado + MEJORADO (timeline ✅)
 │   │   └── (misma estructura)
 │   │
-│   ├── 05_mru_mrua/           ← 📋 Pendiente
-│   ├── 06_proyectiles/        ← 📋 Pendiente
-│   ├── 07_circular/           ← 📋 Pendiente
-│   ├── 08_newton/             ← 📋 Pendiente
-│   ├── 09_trabajo/            ← 📋 Pendiente
-│   ├── 10_potencia/           ← 📋 Pendiente
+│   ├── 05_mru_mrua/           ← Implementado y probado
+│   ├── 06_proyectiles/        ← Implementado y probado
+│   ├── 07_circular/           ← Implementado y probado
+│   ├── 08_newton/             ← Implementado y probado
+│   ├── 09_trabajo/            ← Implementado y probado
+│   ├── 10_potencia/           ← Implementado y probado
 │   ├── 11_rotacional/         ← ✅ Funcional (sin timeline)
 │   └── 12_inercia/            ← ✅ Funcional (sin timeline)
 │
@@ -97,31 +97,11 @@ Una barra de control estilo reproductor de video ubicada entre la pista/canvas p
 
 ### Implementación técnica (basada en SIM 04 — referencia)
 
-**`engine.js`** — agregar función `seekTo(t)`:
-```js
-function seekTo(targetT) {
-  const t     = Math.max(0, Math.min(targetT, state.tMax));
-  state.t     = t;
-  state.x     = xAt(t);   // función que calcula posición en t sin mutar estado
-  state.v     = vAt(t);   // ídem para velocidad
-  state.ended = (t >= state.tMax);
-  // Reconstruir historial muestreando a 60 muestras/s
-  const RATE  = 60;
-  const steps = Math.floor(t * RATE);
-  state.histX = [];
-  state.histV = [];
-  for (let i = 0; i <= steps; i++) {
-    const ti = i / RATE;
-    state.histX.push({ t: ti, x: xAt(ti) });
-    state.histV.push({ t: ti, v: vAt(ti) });
-  }
-  if (steps / RATE < t - 1e-9) {
-    state.histX.push({ t, x: state.x });
-    state.histV.push({ t, v: state.v });
-  }
-}
-```
-> Clave: el engine debe tener funciones `xAt(t)` y `vAt(t)` (o equivalentes) que calculen el estado en cualquier instante usando las fórmulas analíticas, sin depender del loop de animación.
+**Motor:** `seekTo(t)` y `stateAt(t)` (o funciones equivalentes en 04/05) calculan el estado sin depender de frames previos. Las soluciones analíticas se muestrean con `SimCommon.samples`: máximo 242 puntos. SIM 01 no tiene solución elemental en esta pista: usa checkpoints RK4 a 240 Hz durante 20 s (4801 estados), con paso parcial para seek exacto; el cambio de parámetros reconstruye esa caché acotada.
+
+**Controles:** 04/05 conservan sus APIs y bindings. 01/06/07/08/09 usan `js/timeline.js`. Arrastrar pausa; se reanuda con ▶, y reproducir desde el final vuelve a cero. Duraciones: 01/07=20 s, 08=10 s, 09=4 s de presentación, 06=tiempo de vuelo, 04/05=configurable.
+
+Los fragmentos siguientes documentan la API original de 04/05; el código real tiene prioridad:
 
 **`render.js`** — sincronizar scrubber en cada frame:
 ```js
@@ -266,9 +246,9 @@ El campo de duración se implementa como `<input type="number">` sin límite sup
 **Fórmulas del profesor:**
 - `Vx = r·cosθ` / `Vy = r·senθ`
 - `r = √(Vx²+Vy²)`
-- `θ = tan⁻¹(Vy/Vx)`
+- `θ = atan2(Vy,Vx)`
 - `Rx = ΣVx` / `Ry = ΣVy`
-- `R = √(Rx²+Ry²)` / `θR = tan⁻¹(Ry/Rx)`
+- `R = √(Rx²+Ry²)` / `θR = atan2(Ry,Rx)`
 - `R = √(A²+B²+2AB·cosθ)` — Ley del coseno
 - `A/senα = B/senβ = R/senθ` — Ley del seno
 
@@ -328,7 +308,7 @@ El campo de duración se implementa como `<input type="number">` sin límite sup
 - `W = Fs·cosφ`
 - `W = F⃗·s⃗`
 - `W_tot = ΔK = K₂ − K₁`
-- `W = ½kx²₂ − ½kx²₁` (resorte) `[AGREGADA]`
+- `W_ext = ΔU = ½k(x₂² − x₁²)` (resorte cuasiestático); `W_resorte = −ΔU`, `ΔK = 0`
 
 ---
 
@@ -402,11 +382,12 @@ Se muestran en el portal con sección especial **"Otros proyectos"**.
 
 ---
 
-## Próximos pasos
+## Remediación completada y validación
 
-1. **Añadir timeline a SIM 01** (Energía en la Pista) — único animado ya construido sin ella
-2. **SIM 05 — MRU y MRUA** — siguiente en la secuencia, incluye timeline desde el inicio
-3. **SIM 06 — Proyectiles** — cinemática 2D, timeline + vista 2D del canvas
-4. **SIM 07, 08, 09** — completar cinemática circular, Newton y trabajo
-5. **SIM 10** — potencia (calculadora, sin timeline)
-6. **Portal `index.php`** — si aún no está refinado, vistas por semana y categoría
+Fases 0–8 ejecutadas secuencialmente con commits separados. Baseline original: `e166ddf`. Comando de suite: `node tests/numerical.cjs`.
+
+Se mantienen PHP + JavaScript vanilla y la separación engine/render/ui. Utilidades comunes: reloj, muestreo y validación (`js/sim-common.js`), Canvas/DPR (`js/canvas-common.js`), timeline, accesibilidad y estilos compartidos. No se integra `fisica_grupos`: no hay dependencia en el código actual.
+
+Se eliminaron los dos residuos indicados después de conservarlos en el baseline. `.claude/` se conserva para desarrollo y se excluye de `git archive`. Los extras se conservan sin modificaciones funcionales. Smoke detecta `bC is not defined` en transporte (línea 509), conservado fuera de alcance.
+
+Ver README.md, DEPLOYMENT.md y VALIDACION.md para ejecución, evidencia y límites reales. Las pruebas numéricas no equivalen a una auditoría exhaustiva de todas las combinaciones de interfaz ni de todos los navegadores.

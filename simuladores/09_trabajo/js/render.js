@@ -360,10 +360,10 @@ const Renderer = (() => {
     if (hist.length < 2) return;
 
     const maxS  = st.modo === 'fuerza' ? st.s  : st.x;
-    const maxF  = st.modo === 'fuerza' ? st.calc.Fcomp * 1.2 : st.k * st.x * 1.2;
-    const minF  = 0;
+    const force = st.modo === 'fuerza' ? st.calc.Fcomp : st.k * st.x;
+    const maxF = Math.max(1, force * 1.2), minF = Math.min(0, force * 1.2);
 
-    const toX = s  => PAD.left + (s / maxS) * gW;
+    const toX = s  => PAD.left + (s / (maxS || 1)) * gW;
     const toY = fs => PAD.top  + (1 - (fs - minF) / (maxF - minF + 0.001)) * gH;
 
     // Grid
