@@ -43,3 +43,10 @@ vm.runInContext(`let now=0; const clock=SimCommon.createClock(()=>now);
  for(let i=0;i<hz;i++){now+=1000/hz;total+=clock.tick();}
  if(Math.abs(total-1)>1e-10)throw Error('clock frequency'); }
  now+=100000;if(clock.tick()!==0.05)throw Error('clock cap');`,clockContext);
+
+for(const id of ['01','04','05','06','07','08','09']){
+ const e=engine(id);e.init();const t=Math.min(1,e.getState().tMax/2);
+ e.seekTo(t);const before=JSON.stringify(e.getState());e.seekTo(0);e.seekTo(t);assert.equal(JSON.stringify(e.getState()),before,id+' deterministic seek');
+ e.seekTo(e.getState().tMax);assert.ok(e.getState().ended,id+' end');
+}
+const long=engine('04');long.setTMax(1e6);long.seekTo(1e6);assert.ok(long.getState().histX.length<=242);

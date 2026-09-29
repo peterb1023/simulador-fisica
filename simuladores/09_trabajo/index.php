@@ -12,6 +12,7 @@ $lim    = $cfg['limites'];
 <title>SIM <?= $cfg['sim_num'] ?> — <?= htmlspecialchars($cfg['titulo']) ?></title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/sim.css">
+<link rel="stylesheet" href="../../css/timeline.css">
 </head>
 <body>
 <div id="app">
@@ -149,7 +150,8 @@ $lim    = $cfg['limites'];
 
       <!-- CANVAS CENTRAL -->
       <main class="panel-center">
-        <canvas id="canvasMain"></canvas>
+        <div class="temporal-scene"><canvas id="canvasMain"></canvas></div>
+<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="0.01" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
         <div class="graph-wrap">
           <div class="graph-label">Gráfica F(s) — Área = Trabajo</div>
           <canvas id="canvasGraph"></canvas>
@@ -212,5 +214,6 @@ $lim    = $cfg['limites'];
 <script src="js/engine.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<script src="../../js/timeline.js"></script>
 </body>
 </html>

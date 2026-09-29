@@ -26,6 +26,7 @@ const Engine = (() => {
 
     // Animación
     t:      0,
+    tMax: 4,
     sActual: 0,   // desplazamiento actual en la animación (0 → s)
     paused: false,
     ended:  false,
@@ -69,27 +70,19 @@ const Engine = (() => {
   }
 
   // ── Step ─────────────────────────────────────────────
-  function step(dt) {
-    if (state.paused || state.ended) return;
-
-    const maxS = state.modo === 'fuerza' ? state.s : state.x;
-    const rate = (maxS / 4) * state.speed; // recorre el desplazamiento en ~4s
-
-    state.sActual += dt * rate;
-    if (state.sActual >= maxS) {
-      state.sActual = maxS;
-      state.ended   = true;
-    }
-
-    // Historial para gráfica F(s)
-    let Fs;
-    if (state.modo === 'fuerza') {
-      Fs = state.F * Math.cos(state.phi * Math.PI / 180);
-    } else {
-      Fs = state.k * state.sActual; // F = kx
-    }
-    state.histFs.push({ s: state.sActual, Fs });
+  // Tiempo de presentación: revela el área bajo F(s), no integra movimiento.
+  function stateAt(t) {
+    t=SimCommon.time(t,state.tMax);
+    return {t,sActual:(state.modo==='fuerza'?state.s:state.x)*t/state.tMax};
   }
+  function seekTo(t) {
+    Object.assign(state,stateAt(t));state.ended=state.t>=state.tMax;
+    state.histFs=SimCommon.samples(state.t,state.tMax,ti=>{
+      const s=stateAt(ti).sActual;
+      return {s,Fs:state.modo==='fuerza'?state.F*Math.cos(state.phi*Math.PI/180):state.k*s};
+    });
+  }
+  function step(dt) { if(!state.paused&&!state.ended&&Number.isFinite(dt)&&dt>0) seekTo(state.t+dt*state.speed); }
 
   // ── Resolución simbólica ─────────────────────────────
   function getSustitucion() {
@@ -152,7 +145,7 @@ const Engine = (() => {
   init();
 
   return {
-    init, step, getState, getSustitucion,
+    init, step, seekTo, stateAt, getState, getSustitucion,
     setF, setPhi, setS, setM, setV0, setK, setX, setModo,
     togglePause, calcular, fmt,
   };

@@ -73,31 +73,15 @@ const Engine = (() => {
   }
 
   // ── Step ─────────────────────────────────────────────────
-  function step(dt) {
-    if (state.paused || state.ended) return;
-
-    state.t += dt;
-
-    if (state.t >= state.tMax) {
-      state.t   = state.tMax;
-      state.ended = true;
-    }
-
-    const t = state.t;
-
-    // x = v0x · t
-    state.x = state.v0x * t;
-    // y = y0 + v0y·t − ½·g·t²
-    state.y = state.y0 + state.v0y * t - 0.5 * G * t * t;
-    if (state.y < 0) state.y = 0;
-
-    // vx = v0x  (constante)
-    state.vx = state.v0x;
-    // vy = v0y − g·t
-    state.vy = state.v0y - G * t;
-
-    state.trail.push({ x: state.x, y: state.y });
+  function stateAt(t) {
+    t=SimCommon.time(t,state.tMax);
+    return {t,x:state.v0x*t,y:Math.max(0,state.y0+state.v0y*t-0.5*G*t*t),vx:state.v0x,vy:state.v0y-G*t};
   }
+  function seekTo(t) {
+    Object.assign(state,stateAt(t));state.ended=state.t>=state.tMax;
+    state.trail=SimCommon.samples(state.t,state.tMax,stateAt);
+  }
+  function step(dt) { if(!state.paused&&!state.ended&&Number.isFinite(dt)&&dt>0) seekTo(state.t+dt); }
 
   // ── Puntos de la trayectoria teórica (para dibujar la curva completa) ──
   function getTrajectoryPoints(n) {
@@ -157,7 +141,7 @@ const Engine = (() => {
   init();
 
   return {
-    init, step, getState, getSustitucion,
+    init, step, seekTo, stateAt, getState, getSustitucion,
     setV0, setAlpha, setY0, togglePause,
     getTrajectoryPoints, yOfX,
     G, fmt,

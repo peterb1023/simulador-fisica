@@ -20,28 +20,16 @@ const Engine = (() => {
     state.mrua.histX=[{t:0,x:state.mrua.x0}]; state.mrua.histV=[{t:0,v:state.mrua.v0}];
   }
   function step(dt) {
-    if (state.paused||state.ended) return;
-    state.t+=dt;
-    if (state.t>=state.tMax){state.t=state.tMax;state.ended=true;}
-    const t=state.t;
-    state.mru.x=mruXAt(t); state.mru.histX.push({t,x:state.mru.x}); state.mru.histV.push({t,v:state.mru.v});
-    state.mrua.x=mruaXAt(t); state.mrua.v=mruaVAt(t); state.mrua.histX.push({t,x:state.mrua.x}); state.mrua.histV.push({t,v:state.mrua.v});
+    if (state.paused || state.ended || !Number.isFinite(dt) || dt<=0) return;
+    seekTo(state.t + dt);
   }
   function seekTo(targetT) {
-    const t=Math.max(0,Math.min(targetT,state.tMax));
-    state.t=t; state.ended=(t>=state.tMax);
-    state.mru.x=mruXAt(t); state.mrua.x=mruaXAt(t); state.mrua.v=mruaVAt(t);
-    const RATE=60, steps=Math.floor(t*RATE);
-    state.mru.histX=[]; state.mru.histV=[]; state.mrua.histX=[]; state.mrua.histV=[];
-    for(let i=0;i<=steps;i++){
-      const ti=i/RATE;
-      state.mru.histX.push({t:ti,x:mruXAt(ti)}); state.mru.histV.push({t:ti,v:state.mru.v});
-      state.mrua.histX.push({t:ti,x:mruaXAt(ti)}); state.mrua.histV.push({t:ti,v:mruaVAt(ti)});
-    }
-    if(steps/RATE < t-1e-9){
-      state.mru.histX.push({t,x:state.mru.x}); state.mru.histV.push({t,v:state.mru.v});
-      state.mrua.histX.push({t,x:state.mrua.x}); state.mrua.histV.push({t,v:state.mrua.v});
-    }
+    const t=SimCommon.time(targetT,state.tMax);state.t=t;state.ended=t>=state.tMax;
+    state.mru.x=mruXAt(t);state.mrua.x=mruaXAt(t);state.mrua.v=mruaVAt(t);
+    state.mru.histX=SimCommon.samples(t,state.tMax,ti=>({t:ti,x:mruXAt(ti)}));
+    state.mru.histV=SimCommon.samples(t,state.tMax,ti=>({t:ti,v:state.mru.v}));
+    state.mrua.histX=SimCommon.samples(t,state.tMax,ti=>({t:ti,x:mruaXAt(ti)}));
+    state.mrua.histV=SimCommon.samples(t,state.tMax,ti=>({t:ti,v:mruaVAt(ti)}));
   }
   function getSustitucion() {
     const t=state.t, a=state.modoCaida?G:state.mrua.a;

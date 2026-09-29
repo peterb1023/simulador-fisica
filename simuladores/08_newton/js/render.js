@@ -235,9 +235,8 @@ const Renderer = (() => {
     const H  = canvas.height;
 
     // Animar posición vertical del bloque según ay
-    elevY += st.ay * 0.8;
-    if (elevY < H * 0.1)  elevY = H * 0.1;
-    if (elevY > H * 0.75) elevY = H * 0.75;
+    // Ventana visual acotada, posición física consultable sin depender de frames.
+    elevY = H * (0.4 - 0.25 * Math.tanh(st.x / 10));
 
     const bcx = W / 2;
     const bcy = elevY + BH / 2;

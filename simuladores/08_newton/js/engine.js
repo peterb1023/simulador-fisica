@@ -45,6 +45,7 @@ const Engine = (() => {
     T:    0,      // tensión (solo modo elevador)
 
     // Estado cinemático (para animar el bloque)
+    t: 0, tMax: 10, ended: false,
     x:    0,      // posición horizontal (m)
     vx:   0,      // velocidad horizontal (m/s)
 
@@ -98,27 +99,20 @@ const Engine = (() => {
 
   // ── Init / Reset ─────────────────────────────────────────
   function init() {
+    state.t=0;state.ended=false;
     state.x  = 0;
     state.vx = 0;
     calcular();
   }
 
   // ── Step ─────────────────────────────────────────────────
-  function step(dt) {
-    if (state.paused) return;
-    calcular();
-
-    if (state.modo === 'plano') {
-      // Cinemática: x = x + vx·dt + ½·ax·dt²
-      state.vx += state.ax * dt;
-      state.x  += state.vx * dt;
-
-      // Límites: rebota en ±20 m
-      if (state.x >  20) { state.x =  20; state.vx = 0; }
-      if (state.x < -20) { state.x = -20; state.vx = 0; }
-    }
-    // En modo elevador la posición la maneja render.js directamente
+  function stateAt(t) {
+    t=SimCommon.time(t,state.tMax);
+    const a=state.modo==='plano'?state.ax:state.ay;
+    return {t,x:0.5*a*t*t,vx:a*t};
   }
+  function seekTo(t) { Object.assign(state,stateAt(t));state.ended=state.t>=state.tMax; }
+  function step(dt) { if(!state.paused&&!state.ended&&Number.isFinite(dt)&&dt>0) seekTo(state.t+dt); }
 
   // ── Resolución en vivo ────────────────────────────────────
   function getSustitucion() {
@@ -171,11 +165,11 @@ const Engine = (() => {
   }
 
   // ── Setters ───────────────────────────────────────────────
-  function setM(v)    { state.m   = +v; calcular(); }
-  function setF(v)    { state.F   = +v; calcular(); }
-  function setPhi(v)  { state.phi = +v; calcular(); }
-  function setMuk(v)  { state.muk = +v; calcular(); }
-  function setModo(v) { state.modo = v; state.x = 0; state.vx = 0; calcular(); }
+  function setM(v)    { state.m   = +v; init(); }
+  function setF(v)    { state.F   = +v; init(); }
+  function setPhi(v)  { state.phi = +v; init(); }
+  function setMuk(v)  { state.muk = +v; init(); }
+  function setModo(v) { state.modo = v; init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }
   function fmt(n)        { return Math.round(n * 100) / 100; }
@@ -183,7 +177,7 @@ const Engine = (() => {
   init();
 
   return {
-    init, step, getState, getSustitucion,
+    init, step, seekTo, stateAt, getState, getSustitucion,
     setM, setF, setPhi, setMuk, setModo,
     togglePause, fmt, G,
   };

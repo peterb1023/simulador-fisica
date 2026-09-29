@@ -1,0 +1,8 @@
+[data-timeline]{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg2,#161b22);border:1px solid var(--border,#30363d);border-radius:8px;min-width:0;z-index:2;position:relative;flex-wrap:wrap}
+[data-timeline] input{flex:1;min-width:70px;width:100px}[data-timeline] output{font:12px monospace;color:var(--tx1,#eee)}
+[data-timeline] button{padding:6px 12px;background:#21262d;color:#eee;border:1px solid #536174;border-radius:5px;cursor:pointer}
+
+main:has(> [data-timeline]){display:flex;flex-direction:column;min-width:0}
+.temporal-scene{position:relative;flex:1;min-height:180px;overflow:hidden}
+.temporal-scene canvas{position:absolute!important;inset:0;width:100%!important;height:100%!important}
+[data-timeline]{flex-shrink:0}

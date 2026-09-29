@@ -48,25 +48,8 @@ const Engine = (() => {
 
   // ── Step (llamado cada frame con dt en segundos) ──────────
   function step(dt) {
-    if (state.paused || state.ended) return;
-
-    state.t += dt;
-
-    if (state.t >= state.tMax) {
-      state.t   = state.tMax;
-      state.ended = true;
-    }
-
-    const t  = state.t;
-    const a  = state.modoCaida ? G : state.a;
-
-    // x = x0 + v0·t + ½·a·t²
-    state.x = state.x0 + state.v0 * t + 0.5 * a * t * t;
-    // vx = v0 + a·t
-    state.v = state.v0 + a * t;
-
-    state.histX.push({ t, x: state.x });
-    state.histV.push({ t, v: state.v });
+    if (state.paused || state.ended || !Number.isFinite(dt) || dt<=0) return;
+    seekTo(state.t + dt);
   }
 
   // ── Calcular posición en cualquier t (sin mutar estado) ──
@@ -104,27 +87,10 @@ const Engine = (() => {
   // ── Setters ──────────────────────────────────────────────
   // ── Seek: mover al tiempo t sin animar ──────────────────
   function seekTo(targetT) {
-    const t     = Math.max(0, Math.min(targetT, state.tMax));
-    state.t     = t;
-    state.x     = xAt(t);
-    state.v     = vAt(t);
-    state.ended = (t >= state.tMax);
-    // Reconstruir historial muestreando a 60 muestras/s
-    const RATE  = 60;
-    const steps = Math.floor(t * RATE);
-    state.histX = [];
-    state.histV = [];
-    for (let i = 0; i <= steps; i++) {
-      const ti = i / RATE;
-      state.histX.push({ t: ti, x: xAt(ti) });
-      state.histV.push({ t: ti, v: vAt(ti) });
-    }
-    // Asegurar que el punto exacto esté incluido
-    const lastT = steps / RATE;
-    if (lastT < t - 1e-9) {
-      state.histX.push({ t, x: state.x });
-      state.histV.push({ t, v: state.v });
-    }
+    const t=SimCommon.time(targetT,state.tMax);state.t=t;state.ended=t>=state.tMax;
+    state.x=xAt(t);state.v=vAt(t);
+    state.histX=SimCommon.samples(t,state.tMax,ti=>({t:ti,x:xAt(ti)}));
+    state.histV=SimCommon.samples(t,state.tMax,ti=>({t:ti,v:vAt(ti)}));
   }
 
   function setX0(v)         { state.x0 = v;         init(); }

@@ -11,6 +11,7 @@ $js_cfg = json_encode($cfg);
 <title>Simulador de Física — <?= htmlspecialchars($cfg['titulo']) ?></title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/sim.css">
+<link rel="stylesheet" href="../../css/timeline.css">
 </head>
 <body>
 <div id="app">
@@ -78,7 +79,8 @@ $js_cfg = json_encode($cfg);
 
       <!-- CANVAS CENTRAL -->
       <main class="panel-center">
-        <canvas id="simCanvas"></canvas>
+        <div class="temporal-scene"><canvas id="simCanvas"></canvas></div>
+<div data-timeline aria-label="Controles de tiempo"><button type="button" data-reset aria-label="Volver al inicio">⏮</button><button type="button" data-play aria-label="Pausar">⏸</button><input type="range" min="0" max="20" step="0.01" value="0" aria-label="Tiempo de simulación en segundos"><output>0 s</output></div>
         <div class="speed-badge" id="speed-badge">v = 0.00 m/s</div>
         <div class="height-badge" id="height-badge">h = 5.0 m</div>
       </main>
@@ -158,8 +160,10 @@ $js_cfg = json_encode($cfg);
 </div>
 
 <script>const CFG = <?= $js_cfg ?>;</script>
+<script src="../../js/sim-common.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/render.js"></script>
 <script src="js/ui.js"></script>
+<script src="../../js/timeline.js"></script>
 </body>
 </html>

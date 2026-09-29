@@ -22,6 +22,7 @@ const Engine = (() => {
 
     // Estado dinámico
     t:     0,
+    tMax: 20, ended: false,
     theta: 0,      // ángulo acumulado (rad)
     v:     0,      // rapidez actual (m/s)
     omega: 0,      // velocidad angular (rad/s)
@@ -68,7 +69,7 @@ const Engine = (() => {
     state.theta = 0;   // empieza en la derecha (ángulo 0)
     state.trail = [];
     state.paused = false;
-    updatePos();
+    state.ended=false; seekTo(0);
   }
 
   // ── Actualizar posición y vectores ───────────────────────
@@ -95,31 +96,18 @@ const Engine = (() => {
   }
 
   // ── Step ─────────────────────────────────────────────────
-  function step(dt) {
-    if (state.paused) return;
-
-    state.t += dt;
-
-    // En MCUV la rapidez cambia: v = v0 + atan·t
-    // Pero para que el control sea intuitivo usamos el valor actual
-    state.v += state.atan * dt;
-    if (state.v < 0.1) state.v = 0.1;   // evita división por 0
-
-    // Recalcular arad y omega con la v actual
-    state.omega = state.v / state.R;
-    state.arad  = (state.v * state.v) / state.R;
-    state.T     = (2 * Math.PI * state.R) / state.v;
-    state.f     = 1 / state.T;
-
-    // Avanzar el ángulo
-    state.theta += state.omega * dt;
-
-    updatePos();
-
-    // Trail
-    state.trail.push({ x: state.x, y: state.y });
-    if (state.trail.length > state.trailMax) state.trail.shift();
+  function stateAt(t) {
+    t=SimCommon.time(t,state.tMax);
+    const v=state.v0+state.atan*t,omega=v/state.R;
+    const theta=(state.v0*t+0.5*state.atan*t*t)/state.R;
+    const T=v===0?Infinity:2*Math.PI*state.R/Math.abs(v);
+    return {t,v,omega,theta,T,f:1/T,arad:v*v/state.R,x:state.R*Math.cos(theta),y:state.R*Math.sin(theta)};
   }
+  function seekTo(t) {
+    Object.assign(state,stateAt(t));state.ended=state.t>=state.tMax;updatePos();
+    state.trail=SimCommon.samples(state.t,state.tMax,stateAt);
+  }
+  function step(dt) { if(!state.paused&&!state.ended&&Number.isFinite(dt)&&dt>0) seekTo(state.t+dt); }
 
   // ── Resolución en vivo ────────────────────────────────────
   function getSustitucion() {
@@ -154,7 +142,7 @@ const Engine = (() => {
   // ── Setters ───────────────────────────────────────────────
   function setR(v)    { state.R    = +v; init(); }
   function setV0(v)   { state.v0   = +v; init(); }
-  function setAtan(v) { state.atan = +v; state.v = state.v0; }
+  function setAtan(v) { state.atan = +v; init(); }
   function togglePause() { state.paused = !state.paused; }
   function getState()    { return state; }
   function fmt(n)        { return Math.round(n * 100) / 100; }
@@ -162,7 +150,7 @@ const Engine = (() => {
   init();
 
   return {
-    init, step, getState, getSustitucion,
+    init, step, seekTo, stateAt, getState, getSustitucion,
     setR, setV0, setAtan, togglePause,
     fmt,
   };
