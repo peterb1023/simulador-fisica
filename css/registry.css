@@ -5,3 +5,5 @@
 @media(max-width:1100px){.registry-panel{max-height:none;padding:12px}}.sim-nav{flex-wrap:wrap}
 
 .group-dialog{margin:auto;width:min(92vw,720px);max-height:85vh;overflow:auto;padding:20px;background:var(--panel);color:var(--tx1);border:1px solid var(--border);border-radius:8px}.group-dialog::backdrop{background:#0009}.group-dialog p,.group-dialog label{display:block;margin:12px 0}.group-dialog pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:35vh;overflow:auto}.group-dialog select{max-width:100%;display:block}.group-dialog button,.group-dialog a{display:inline-block;margin:8px;padding:8px;color:var(--tx1);background:var(--input);border:1px solid var(--border)}.sim-header{height:auto;min-height:52px;flex-wrap:wrap;flex-shrink:0}
+
+.registry-panel th[scope=colgroup]{text-align:center;background:var(--input)}.registry-panel td{min-width:100px;max-width:260px;overflow-wrap:anywhere}.registry-panel th{min-width:100px}.registry-panel th[rowspan]{min-width:60px}

@@ -59,15 +59,28 @@
     save.type=clear.type='button';actions.append(save,clear);tab.append(actions);
     const status=make('p');status.setAttribute('role','status');tab.append(status);
     const wrap=make('div',null,'registry-scroll');wrap.tabIndex=0;wrap.setAttribute('aria-label','Tabla de registros; desplazamiento horizontal');
-    const table=make('table'),caption=make('caption','Capturas del simulador '+id),thead=make('thead'),head=make('tr');
-    for(const text of ['#','Fecha','Parámetros','Resultados','Acciones']){const th=make('th',text);th.scope='col';head.append(th);}thead.append(head);
+    const table=make('table'),caption=make('caption','Capturas del simulador '+id),thead=make('thead');
     const tbody=make('tbody');table.append(caption,thead,tbody);wrap.append(table);tab.append(wrap);
     document.getElementById('tab-sim').parentElement.append(tab);
     const open=make('button','Registros','nav-btn'),quick=make('button','Guardar registro','nav-btn');open.type=quick.type='button';nav.append(quick,open);
     const listFields=fields=>{const dl=make('dl');for(const [key,value]of Object.entries(fields)){dl.append(make('dt',key),make('dd',value===null?'No definido / no alcanzable':typeof value==='number'?String(Math.round(value*1e6)/1e6):String(value)));}return dl;};
     function render(){const records=store.list();open.textContent=`Registros (${records.length})`;open.setAttribute('aria-label',open.textContent);tbody.replaceChildren();clear.disabled=!records.length;
+      // Union of snapshot fields preserves comparisons across modes. Cap visible columns.
+      const columns={};for(const field of ['parameters','results']){const keys=[...new Set(records.flatMap(r=>Object.keys(r.snapshot[field])))];columns[field]={shown:keys.slice(0,32),extra:keys.length>32};}
+      thead.replaceChildren();const groups=make('tr'),labels=make('tr');
+      for(const text of ['#','Fecha']){const th=make('th',text);th.scope='col';th.rowSpan=2;groups.append(th);}
+      for(const [field,name]of [['parameters','Parámetros'],['results','Resultados']]){
+        const keys=columns[field].shown,group=make('th',name);group.scope='colgroup';group.colSpan=Math.max(1,keys.length+Number(columns[field].extra));group.id='registry-'+field;groups.append(group);
+        for(const [i,key]of (keys.length?keys:['Sin datos']).entries()){const th=make('th',key);th.scope='col';th.id='registry-'+field+'-'+i;labels.append(th);}
+        if(columns[field].extra){const th=make('th','Otros campos');th.scope='col';labels.append(th);}
+      }
+      const actionHeader=make('th','Acciones');actionHeader.scope='col';actionHeader.rowSpan=2;groups.append(actionHeader);thead.append(groups,labels);
       for(const r of records){const tr=make('tr');tr.append(make('td',String(r.id)),make('td',new Date(r.savedAt).toLocaleString('es')));
-        for(const field of ['parameters','results']){const td=make('td');td.append(listFields(r.snapshot[field]));tr.append(td);}
+        for(const field of ['parameters','results']){
+          const keys=columns[field].shown;
+          for(const [i,key]of (keys.length?keys:['Sin datos']).entries()){const value=r.snapshot[field][key],td=make('td',value===undefined?'—':value===null?'No definido':String(value));td.setAttribute('headers','registry-'+field+' registry-'+field+'-'+i);tr.append(td);}
+          if(columns[field].extra){const td=make('td');td.append(listFields(Object.fromEntries(Object.entries(r.snapshot[field]).filter(([key])=>!keys.includes(key)))));tr.append(td);}
+        }
         const td=make('td'),remove=make('button','Eliminar');remove.type='button';remove.setAttribute('aria-label','Eliminar registro '+r.id);remove.addEventListener('click',()=>{store.remove(r.id);render();});td.append(remove);tr.append(td);tbody.append(tr);}
       status.textContent=store.notice()||(records.length?'Registros guardados en este navegador.':'Sin registros guardados.');
     }
