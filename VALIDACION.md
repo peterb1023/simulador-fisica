@@ -47,7 +47,7 @@ Los residuos `files (3).zip` y `Nuevo documento de texto.html` se retiraron úni
 
 ## Rescate B — SIM 13: llanta compuesta
 Integrado tras validar por integración radial independiente I = ∫r²dm. Modelo homogéneo: dos paredes anulares y huella cilíndrica sin solapamiento; no incluye aro, buje ni radios. Entrada SI, radios ordenados, 2tp ≤ w, densidad positiva, rechazo de NaN/Infinity y desbordamientos. La masa se deriva de densidad y volumen; densidad cero/negativa se rechaza. Ri=0 y ω=0 son válidos.
-Animación con reloj común, timeline analítica de 20 s y Canvas DPR; corte muestra ambas paredes. Registros locales compartidos. `node tests/sim13.cjs` GREEN; navegador 390/1024/1440 px sin overflow ni errores de consola.
+Modelo estático sin timeline; Canvas DPR y corte con ambas paredes. Registros locales compartidos. `node tests/sim13.cjs` GREEN; navegador 390/1024/1440 px sin overflow ni errores de consola.
 
 ## Rescate C — grupos aislados
 `modules/groups/` recupera cuentas nuevas, grupos, invitaciones, membresía y guardado explícito de registros locales. Desactivado por defecto y sin enlaces desde el portal. Configuración y despliegue en `modules/groups/README.md`; esquema limpio en `database/schema.sql`. No se importaron datos ni hashes del donante.
@@ -56,3 +56,5 @@ Sin regresiones encontradas. Extras sin cambios: persiste el error histórico `b
 
 ## Ampliación A / D2
 Tablas con columnas derivadas de los campos de cada simulador, unidades y encabezados Parámetros/Resultados. Máximo 32 columnas por grupo; campos adicionales conservados en una celda semántica. Pruebas `records-ui.cjs` sobre los 13 motores: guardar, borrar, limpiar, contador, recargar, corrupción y seek sin capturas automáticas. Tabla 06 abierta por teclado a 360×800: documento 360 px, scroll interno 1409 px dentro de 334 px; consola sin errores.
+
+Ampliación B: SIM13 estático por requisito; sin reloj ni timeline artificial. Fórmulas extraídas a `simuladores/13_llanta/php/formulas.php`. Pruebas independientes: nominal SI, cilindro macizo exacto (2tp=w, Ri=0), anillo delgado, paredes/huella de espesor tendente a cero; límites, NaN e Infinity. w es ancho axial total; las paredes están dentro de sus extremos (2tp≤w), en un intervalo radial distinto de la huella.
