@@ -1,0 +1,4 @@
+const cp=require('node:child_process'),fs=require('node:fs'),assert=require('node:assert/strict');
+const paths=cp.execFileSync('git',['diff','--cached','--name-only'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
+for(const p of paths){assert.ok(!/(^|\/)(\.env(?:\.|$)|database\.php$)|\.(zip|dump)(\.gz)?$/i.test(p),'private artifact: '+p);if(p.endsWith('.sql'))assert.ok(['database/schema.sql','database/seed.example.sql'].includes(p),'unauthorized SQL');if(!fs.existsSync(p))continue;const s=fs.readFileSync(p,'utf8');assert.ok(!/\$2[aby]\$\d{2}\$[A-Za-z0-9./]{53}/.test(s),'literal password hash');for(const email of s.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi)||[])assert.ok(/@example\.(test|com)$/.test(email),'non-example email: '+p);}
+console.log('PASS: staged paths, SQL allowlist, no literal hashes or non-example emails. Manual provenance review still required.');

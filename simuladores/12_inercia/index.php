@@ -278,6 +278,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 <script src="../../js/accessibility.js"></script>
 <link rel="stylesheet" href="../../css/registry.css">
 <script src="../../js/sim-registry.js"></script>
+<script src="../../js/sim-groups.js"></script>
 <script src="../../js/sim-records-ui.js"></script>
 </body>
 </html>

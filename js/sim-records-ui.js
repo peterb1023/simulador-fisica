@@ -51,6 +51,7 @@
     const id=document.body.dataset.simId,nav=document.querySelector('.sim-nav');if(!nav||!id)return;
     let storage;try{storage=window.localStorage;}catch{}
     const store=SimRegistry.create(id,storage);
+    if(typeof SimGroups!=='undefined')SimGroups.bind(()=>capture(id),id);
     const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;};
     const tab=make('section',null,'tab registry-panel');tab.id='tab-registros';tab.style.display='none';
     const title=make('h2','Registros locales');tab.append(title,make('p','Capturas manuales de parámetros y resultados. Máximo 100; al superar el límite se retira el más antiguo. No son el historial temporal de la gráfica ni se envían al servidor.'));

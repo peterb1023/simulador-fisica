@@ -14,3 +14,9 @@ fisica_grupos.sql
 *.dump
 *.sql.gz
 /database/backups/
+
+VERSION MAS NUEVA ENCONTRADA/
+*.sql
+*.zip
+!database/schema.sql
+!database/seed.example.sql

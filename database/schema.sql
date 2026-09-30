@@ -1,9 +1,9 @@
-SET NAMES utf8mb4;
 CREATE TABLE usuarios (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  nombre VARCHAR(100) NOT NULL,
  email VARCHAR(254) NOT NULL UNIQUE,
  password_hash VARCHAR(255) NOT NULL,
+ activo BOOLEAN NOT NULL DEFAULT TRUE,
  creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE grupos (
@@ -34,3 +34,10 @@ CREATE TABLE simulaciones (
  FOREIGN KEY (grupo_id) REFERENCES grupos(id),
  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE request_limits (
+ bucket CHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ window_start BIGINT UNSIGNED NOT NULL,
+ attempts INT UNSIGNED NOT NULL,
+ INDEX limit_expiry (window_start)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

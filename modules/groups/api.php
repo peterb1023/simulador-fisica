@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/bootstrap.php';
+require __DIR__.'/rate-limit.php';
 header('Content-Type: application/json; charset=utf-8');
 function ok(array $data=[]): never {echo json_encode(['ok'=>true]+$data,JSON_THROW_ON_ERROR|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT);exit;}
 try {
@@ -14,6 +15,9 @@ try {
  }
  if($method!=='POST'){header('Allow: GET, POST');fail(405,'Método no permitido.');}
  csrf();
+ if($action==='login')rateLimit('login',10);
+ if($action==='register')rateLimit('register',10);
+ if($action==='join'){uid();rateLimit('join',20);}
  if(!str_starts_with(strtolower($_SERVER['CONTENT_TYPE']??''),'application/json'))fail(415,'Se requiere JSON.');
  $raw=file_get_contents('php://input',false,null,0,70001);if(strlen($raw)>70000)fail(413,'Solicitud demasiado grande.');
  try{$object=json_decode($raw,false,16,JSON_THROW_ON_ERROR);}catch(JsonException $e){fail(400,'JSON inválido.');}
@@ -26,8 +30,8 @@ try {
    try{query('INSERT INTO usuarios (nombre,email,password_hash) VALUES (?,?,?)',[$name,$email,password_hash($password,PASSWORD_DEFAULT)]);}catch(PDOException $e){if($e->getCode()==='23000')fail(409,'No se pudo crear la cuenta con esos datos.');throw $e;}
    ok(['message'=>'Cuenta creada. Inicia sesión.']);
   }
-  $user=query('SELECT id,nombre,password_hash FROM usuarios WHERE email=?',[$email])->fetch();
-  if(!$user||!password_verify($password,$user['password_hash']))fail(401,'Credenciales incorrectas.');
+  $user=query('SELECT id,nombre,password_hash,activo FROM usuarios WHERE email=?',[$email])->fetch();
+  if(!$user||!(bool)$user['activo']||!password_verify($password,$user['password_hash']))fail(401,'Credenciales incorrectas.');
   session_regenerate_id(true);$_SESSION=['uid'=>(int)$user['id'],'name'=>$user['nombre'],'csrf'=>bin2hex(random_bytes(32)),'last_seen'=>time()];ok(['csrf'=>$_SESSION['csrf']]);
  }
  $u=uid();

@@ -44,13 +44,21 @@ async function client(){let cookie='',csrf='';return {get cookie(){return cookie
  const info=await a.request('group&id='+group);assert.equal(info.value.group.nombre,xss);assert.equal(info.value.simulations.length,1);assert.notEqual(Number(info.value.simulations[0].usuario_id),999999);
  const hash=sql("USE fisica_test; SELECT password_hash FROM usuarios WHERE email='a@example.test';").trim();assert.notEqual(hash,pass);assert.ok(hash.startsWith('$2y$')||hash.startsWith('$argon2'));
  assert.equal((await b.request('join',{codigo:created.value.codigo})).status,200);assert.equal((await b.request('save',capture)).status,200);assert.equal((await b.request('leave',{grupo_id:group})).status,200);assert.equal((await b.request('group&id='+group)).status,403);assert.equal((await a.request('leave',{grupo_id:group})).status,409);
+ sql('USE fisica_test; DELETE FROM request_limits;');
+ const limiter=await client();await limiter.init();
+ for(let i=0;i<10;i++)assert.equal((await limiter.request('login',{email:'nobody@example.test',password:'incorrect-password'})).status,401);
+ const fresh=await client();await fresh.init();const blocked=await fresh.request('login',{email:'nobody@example.test',password:'incorrect-password'});assert.equal(blocked.status,429);assert.ok(Number(blocked.headers.get('retry-after'))>0);
+ for(let i=0;i<20;i++)assert.equal((await b.request('join',{codigo:'0'.repeat(32)})).status,404);
+ assert.equal((await b.request('join',{codigo:'0'.repeat(32)})).status,429);
+ sql('USE fisica_test; UPDATE request_limits SET window_start=0;');assert.equal((await b.request('join',{codigo:created.value.codigo})).status,200);
+ sql("USE fisica_test; UPDATE usuarios SET activo=0 WHERE email='b@example.test';");assert.equal((await b.request('groups')).status,401);
  const oldCookie=a.cookie;assert.equal((await a.request('logout',{})).status,200);const replay=await client();replay.cookie=oldCookie;assert.equal((await replay.request('groups')).status,401);
- const newSession=await a.init();assert.match(newSession.headers.get('set-cookie')||'ignored',/HttpOnly|ignored/i);
+ const newSession=await a.init();assert.match(newSession.headers.get('set-cookie'),/HttpOnly/i);assert.match(newSession.headers.get('set-cookie'),/SameSite=Lax/i);
  assert.equal((await a.request('logout')).status,401);
  const html=await (await fetch(`http://127.0.0.1:${httpPort}/modules/groups/`)).text();assert.ok(!html.includes(xss));
  const ui=fs.readFileSync(path.join(root,'modules/groups/app.js'),'utf8');assert.ok(!/innerHTML|onclick|addslashes/.test(ui));assert.match(ui,/textContent=data.group.nombre/);
  assert.ok(!/INSERT\s+INTO/i.test(fs.readFileSync(path.join(root,'database/schema.sql'),'utf8')));
- console.log('PASS: MariaDB registration/login, fixation, logout, own/foreign group, snapshots, CSRF, invalid JSON/simulator/size, XSS inert output, SQL injection, membership and session user.');
+ console.log('PASS: MariaDB registration/login, fixation, logout, own/foreign group, snapshots, CSRF, invalid JSON/simulator/size, XSS inert output, SQL injection, membership, active account, session user and persistent rate limits.');
  }finally{
  if(server){server.kill();await new Promise(r=>server.once('exit',r));}
  if(db){try{sql('SHUTDOWN');}catch{}if(db.exitCode===null)await Promise.race([new Promise(r=>db.once('exit',r)),pause(4000)]);if(db.exitCode===null)db.kill();}

@@ -180,6 +180,7 @@ require_once __DIR__ . '/php/config.php';
 <script src="../../js/accessibility.js"></script>
 <link rel="stylesheet" href="../../css/registry.css">
 <script src="../../js/sim-registry.js"></script>
+<script src="../../js/sim-groups.js"></script>
 <script src="../../js/sim-records-ui.js"></script>
 </body>
 </html>
