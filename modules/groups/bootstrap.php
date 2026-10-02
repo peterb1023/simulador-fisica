@@ -2,7 +2,8 @@
 declare(strict_types=1);
 if(getenv('SIM_DEMO')==='1'){ini_set('display_errors','0');ini_set('log_errors','1');}
 function fail(int $status,string $message): never {http_response_code($status);header('Content-Type: application/json; charset=utf-8');echo json_encode(['ok'=>false,'message'=>$message]);exit;}
-if (getenv('SIM_GROUPS_ENABLED') !== '1') fail(503,'Módulo de grupos desactivado.');
+require_once __DIR__.'/config.php';
+if (!(groupsConfig()['enabled'] ?? false)) fail(503,'Módulo de grupos desactivado.');
 $secure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 if (!$secure && !in_array($_SERVER['REMOTE_ADDR'] ?? '',['127.0.0.1','::1'],true)) fail(403,'Se requiere HTTPS.');
 header('Cache-Control: no-store');header('X-Content-Type-Options: nosniff');header('Referrer-Policy: no-referrer');
@@ -16,9 +17,7 @@ $_SESSION['last_seen']=time();
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function db(): PDO {
  static $pdo=null;if($pdo)return $pdo;
- $root=dirname(__DIR__,2);$private=$root.'/config/database.php';$cfg=require is_file($private)?$private:$root.'/config/database.example.php';
- if (!is_array($cfg)||!str_starts_with($cfg['dsn']??'','mysql:')||empty($cfg['user'])||strtolower($cfg['user'])==='root'||empty($cfg['password'])) fail(503,'Configura una cuenta de base de datos dedicada con contraseña.');
- $pdo=new PDO($cfg['dsn'],$cfg['user'],$cfg['password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);$GLOBALS['groupsPDO']=$pdo;return $pdo;
+ $pdo=groupsConnection();$GLOBALS['groupsPDO']=$pdo;return $pdo;
 }
 function query(string $sql,array $args=[]): PDOStatement {$q=db()->prepare($sql);$q->execute($args);return $q;}
 function uid(): int {if(empty($_SESSION['uid']))fail(401,'No autenticado.');$id=(int)$_SESSION['uid'];if(!query('SELECT id FROM usuarios WHERE id=? AND activo=1',[$id])->fetchColumn()){unset($_SESSION['uid']);fail(401,'Cuenta no disponible.');}return $id;}

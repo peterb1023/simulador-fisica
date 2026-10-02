@@ -28,3 +28,5 @@ Get-ChildItem -Recurse -Filter *.php | ForEach-Object { & C:\xampp\php\php.exe -
 Get-ChildItem -Recurse -File | Where-Object Extension -in '.js','.cjs' | ForEach-Object { node --check $_.FullName }
 ```
 `selected-ui.cjs` verifica entradas, sincronización y renderers reales 06/12 a DPR 1/2 en lienzos estrechos/medianos/anchos. `records-ui.cjs` carga los 13 motores y comprueba captura manual, borrado, limpieza, recarga, corrupción y aislamiento de seek. `sim13.cjs` usa referencias independientes, integral radial y límites analíticos.
+
+Grupos: `groups.cjs` aprovisiona cuentas ficticias con el CLI en MariaDB temporal, verifica que register público devuelve 403 y mantiene las pruebas de seguridad anteriores. `groups-hook.cjs` cubre además estados sin sesión/sin grupos y enlace de retorno. El flujo de navegador local está documentado en modules/groups/README.md.

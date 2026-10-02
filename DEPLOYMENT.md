@@ -13,5 +13,5 @@ Google Fonts es opcional: se conservan las familias Syne y Space Mono, con fallb
 XAMPP aquí es un entorno local. La configuración incluida no convierte esa instalación en un servicio público endurecido.
 
 ## Grupos y demo
-Configurar `config/database.php` (ignorado), usando el ejemplo sin credenciales versionadas y una cuenta limitada distinta de root. Importar únicamente `database/schema.sql` en una base nueva; no usar dumps históricos. El módulo permanece desactivado por defecto hasta configurar sus variables de entorno.
+Configurar `config/database.php` (ignorado), usando el ejemplo sin credenciales versionadas y una cuenta limitada distinta de root. Importar únicamente `database/schema.sql` en una base nueva; no usar dumps históricos. Activar con `enabled => true` en el archivo privado o `SIM_GROUPS_ENABLED=1`; las variables de entorno prevalecen sobre el archivo. La instalación local de demo ya está configurada; instrucciones y CLI en `modules/groups/README.md`.
 Para demo: `SIM_DEMO=1`, MariaDB en loopback y HTTPS confiable en el servidor/túnel. No exponer MariaDB ni publicar el checkout/configuración; Apache debe respetar los .htaccess de raíz, config y database. No se configuró ningún servicio externo ni puerto público. La prueba HTTP con php -S no verifica reglas Apache ni HTTPS real.

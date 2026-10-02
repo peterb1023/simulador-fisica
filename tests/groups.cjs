@@ -15,14 +15,15 @@ async function client(){let cookie='',csrf='';return {get cookie(){return cookie
  fs.mkdirSync(path.join(temp,'sessions'));
  server=cp.spawn(php,['-d','session.save_path='+path.join(temp,'sessions'),'-S','127.0.0.1:'+httpPort,'-t',root],{cwd:root,windowsHide:true,stdio:['ignore','ignore','ignore'],env:{...process.env,SIM_GROUPS_ENABLED:'1',SIM_DB_DSN:`mysql:host=127.0.0.1;port=${dbPort};dbname=fisica_test;charset=utf8mb4`,SIM_DB_USER:'fisica_test',SIM_DB_PASSWORD:appPassword}});
  const a=await client(),b=await client(),anon=await client();ready=false;for(let i=0;i<60;i++){await pause(100);try{await a.init();ready=true;break;}catch{}}assert.ok(ready,'HTTP ready');await b.init();await anon.init();
- const pass=crypto.randomBytes(18).toString('hex');
- assert.equal((await a.request('register',{nombre:'Estudiante ficticio A',email:'a@example.test',password:pass})).status,200);
- assert.equal((await b.request('register',{nombre:'Estudiante ficticio B',email:'b@example.test',password:pass+'b'})).status,200);
+ const demoEnv={...process.env,SIM_DB_DSN:`mysql:host=127.0.0.1;port=${dbPort};dbname=fisica_test;charset=utf8mb4`,SIM_DB_USER:'fisica_test',SIM_DB_PASSWORD:appPassword};
+ function demo(email,name){return JSON.parse(cp.execFileSync(php,['scripts/create_demo_user.php',email,name],{cwd:root,env:demoEnv,windowsHide:true,encoding:'utf8'})).password;}
+ const pass=demo('a@example.test','Estudiante ficticio A'),passB=demo('b@example.test','Estudiante ficticio B');
+ assert.equal((await a.request('register',{nombre:'No público',email:'c@example.test',password:pass})).status,403);
  assert.equal((await a.request('login',{email:'a@example.test',password:'incorrect-password'})).status,401);
  const before=a.cookie;assert.equal((await a.request('login',{email:'a@example.test',password:pass})).status,200);assert.notEqual(a.cookie,before,'session regenerated');
  const stale=await client();stale.cookie=before;assert.equal((await stale.request('groups')).status,401);
  const fixed=await client();fixed.cookie='FISICAGROUPS=attackerfixedsession123456';await fixed.init();assert.notEqual(fixed.cookie,'FISICAGROUPS=attackerfixedsession123456');
- assert.equal((await b.request('login',{email:'b@example.test',password:pass+'b'})).status,200);
+ assert.equal((await b.request('login',{email:'b@example.test',password:passB})).status,200);
  const xss='<img src=x onerror=alert(1)>';const created=await a.request('create',{nombre:xss});assert.equal(created.status,200);const group=created.value.id;
  assert.equal((await b.request('group&id='+group)).status,403);
  const capture={grupo_id:group,simulador_id:'13',parametros:{rho:1100},resultado:{I:1.281393},usuario_id:999999};
@@ -58,7 +59,7 @@ async function client(){let cookie='',csrf='';return {get cookie(){return cookie
  const html=await (await fetch(`http://127.0.0.1:${httpPort}/modules/groups/`)).text();assert.ok(!html.includes(xss));
  const ui=fs.readFileSync(path.join(root,'modules/groups/app.js'),'utf8');assert.ok(!/innerHTML|onclick|addslashes/.test(ui));assert.match(ui,/textContent=data.group.nombre/);
  assert.ok(!/INSERT\s+INTO/i.test(fs.readFileSync(path.join(root,'database/schema.sql'),'utf8')));
- console.log('PASS: MariaDB registration/login, fixation, logout, own/foreign group, snapshots, CSRF, invalid JSON/simulator/size, XSS inert output, SQL injection, membership, active account, session user and persistent rate limits.');
+ console.log('PASS: MariaDB CLI accounts/public registration denied/login, fixation, logout, own/foreign group, snapshots, CSRF, invalid JSON/simulator/size, XSS inert output, SQL injection, membership, active account, session user and persistent rate limits.');
  }finally{
  if(server){server.kill();await new Promise(r=>server.once('exit',r));}
  if(db){try{sql('SHUTDOWN');}catch{}if(db.exitCode===null)await Promise.race([new Promise(r=>db.once('exit',r)),pause(4000)]);if(db.exitCode===null)db.kill();}

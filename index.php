@@ -300,6 +300,8 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
 }
 </style>
 <style>:focus-visible{outline:3px solid #79c0ff;outline-offset:3px}</style>
+<link rel="stylesheet" href="css/account.css">
+<script src="js/account.js" defer></script>
 </head>
 <body>
 
@@ -316,6 +318,7 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
     <div class="portal-meta-item"><b>13</b> / 13 con pruebas numéricas</div>
     <div class="portal-meta-item"><b>Stack:</b> PHP · JS · HTML5</div>
   </div>
+<nav id="account-nav" aria-label="Cuenta"><a href="modules/groups/">Iniciar sesión</a><span id="account-status" role="status"></span></nav>
 </header>
 
 <!-- HERO -->
