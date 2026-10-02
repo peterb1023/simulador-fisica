@@ -9,7 +9,7 @@ try {
  if($method==='GET'){
   if($action==='session'){if(isset($_SESSION['uid']))uid();ok(['csrf'=>$_SESSION['csrf'],'user'=>isset($_SESSION['uid'])?['id'=>$_SESSION['uid'],'name'=>$_SESSION['name']]:null]);}
   $u=uid();
-  if($action==='groups')ok(['groups'=>query('SELECT g.id,g.nombre,g.codigo,g.lider_id FROM grupos g JOIN grupo_miembros m ON m.grupo_id=g.id WHERE m.usuario_id=? ORDER BY g.id DESC LIMIT 100',[$u])->fetchAll()]);
+  if($action==='groups')ok(['groups'=>query('SELECT g.id,g.nombre,g.codigo,g.lider_id,(SELECT COUNT(*) FROM grupo_miembros gm WHERE gm.grupo_id=g.id) AS num_miembros FROM grupos g JOIN grupo_miembros m ON m.grupo_id=g.id WHERE m.usuario_id=? ORDER BY g.id DESC LIMIT 100',[$u])->fetchAll()]);
   if($action==='group'){$raw=$_GET['id']??'';if(!is_string($raw)||!ctype_digit($raw))fail(400,'Grupo inválido.');$g=groupId((int)$raw);$group=member($g,$u);ok(['group'=>$group,'members'=>query('SELECT u.nombre FROM usuarios u JOIN grupo_miembros m ON m.usuario_id=u.id WHERE m.grupo_id=? LIMIT 100',[$g])->fetchAll(),'simulations'=>query('SELECT s.id,s.usuario_id,u.nombre AS guardado_por,s.simulador_id,s.parametros,s.resultado,s.guardado_en FROM simulaciones s JOIN usuarios u ON u.id=s.usuario_id WHERE s.grupo_id=? ORDER BY s.id DESC LIMIT 100',[$g])->fetchAll()]);}
   fail(404,'Acción inexistente.');
  }
