@@ -3,6 +3,63 @@
  let token='',group=null,currentUser=null,simulations=[],visibleSims=10;
  const simPageSize=10;
 
+ const SIMULATOR_NAMES={
+  '01':'Energía','1':'Energía',
+  '02':'Vectores','2':'Vectores',
+  '03':'Unidades y conversiones','3':'Unidades y conversiones',
+  '04':'Cinemática 1D','4':'Cinemática 1D',
+  '05':'MRU / MRUA','5':'MRU / MRUA',
+  '06':'Tiro parabólico','6':'Tiro parabólico',
+  '07':'Movimiento circular','7':'Movimiento circular',
+  '08':'Leyes de Newton y fricción','8':'Leyes de Newton y fricción',
+  '09':'Trabajo','9':'Trabajo',
+  '10':'Potencia y eficiencia','10':'Potencia y eficiencia',
+  '11':'Movimiento rotacional','11':'Movimiento rotacional',
+  '12':'Momento de inercia','12':'Momento de inercia',
+  '13':'Momento de inercia compuesto','13':'Momento de inercia compuesto'
+ };
+
+ function formatSimName(id){
+  const norm=String(id||'').trim();
+  const pad=norm.length===1?'0'+norm:norm;
+  const name=SIMULATOR_NAMES[pad]||SIMULATOR_NAMES[norm];
+  return name?name+' · SIM '+pad:'Simulador '+pad;
+ }
+
+ function formatDateHuman(dateStr){
+  if(!dateStr||typeof dateStr!=='string')return '';
+  const parts=dateStr.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if(!parts)return dateStr;
+  const [,y,m,d,h='00',min='00']=parts;
+  const months=['ene.','feb.','mar.','abr.','may.','jun.','jul.','ago.','sep.','oct.','nov.','dic.'];
+  const monthName=months[parseInt(m,10)-1]||m;
+  const day=parseInt(d,10);
+  let hour=parseInt(h,10);
+  const minute=min.padStart(2,'0');
+  const ampm=hour>=12?'p. m.':'a. m.';
+  hour=hour%12;
+  if(hour===0)hour=12;
+  return `${day} ${monthName} ${y} · ${hour}:${minute} ${ampm}`;
+ }
+
+ function formatValue(val){
+  if(typeof val==='number'){
+   return Number.isInteger(val)?String(val):(Math.abs(val)<0.0001||Math.abs(val)>=100000?val.toExponential(3):String(Number(val.toFixed(4))));
+  }
+  if(typeof val==='boolean'){
+   return val?'Sí':'No';
+  }
+  if(Array.isArray(val)){
+   return val.map(formatValue).join(', ');
+  }
+  if(typeof val==='object'&&val!==null){
+   const entries=Object.entries(val);
+   if(!entries.length)return '—';
+   return entries.map(([k,v])=>`${k}: ${formatValue(v)}`).join('; ');
+  }
+  return String(val??'');
+ }
+
  const returnPath=new URLSearchParams(location.search).get('return');
  const root=new URL('../../',location.href);
  let returnURL=null;
@@ -85,16 +142,7 @@
    const dt=document.createElement('dt');
    dt.textContent=String(k);
    const dd=document.createElement('dd');
-   const val=data[k];
-   if(typeof val==='number'){
-    dd.textContent=Number.isInteger(val)?String(val):(Math.abs(val)<0.0001||Math.abs(val)>=100000?val.toExponential(3):String(Number(val.toFixed(4))));
-   }else if(typeof val==='boolean'){
-    dd.textContent=val?'Sí':'No';
-   }else if(typeof val==='object'&&val!==null){
-    dd.textContent=JSON.stringify(val);
-   }else{
-    dd.textContent=String(val??'');
-   }
+   dd.textContent=formatValue(data[k]);
    dl.append(dt,dd);
   }
   sec.append(dl);
@@ -125,7 +173,7 @@
 
    const title=document.createElement('h4');
    title.className='sim-title';
-   title.textContent='Simulador '+s.simulador_id;
+   title.textContent=formatSimName(s.simulador_id);
 
    const author=document.createElement('span');
    author.className='sim-author';
@@ -135,7 +183,7 @@
 
    const time=document.createElement('time');
    time.className='sim-time';
-   time.textContent=s.guardado_en;
+   time.textContent=formatDateHuman(s.guardado_en);
 
    header.append(titleRow,time);
 
