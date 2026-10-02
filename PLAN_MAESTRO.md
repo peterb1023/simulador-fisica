@@ -402,3 +402,6 @@ GREEN: `node tests/groups.cjs` contra MariaDB temporal (login, fijación de sesi
 Sin regresiones encontradas. Extras sin cambios: persiste el error histórico `bC is not defined` del transporte. Pendiente de decisión: rescate visual del bloque D; despliegue público y migración de usuarios quedan fuera de este módulo aislado.
 
 Ampliación B: SIM13 estático por requisito; sin reloj ni timeline artificial. Fórmulas extraídas a `simuladores/13_llanta/php/formulas.php`. Pruebas independientes: nominal SI, cilindro macizo exacto (2tp=w, Ri=0), anillo delgado, paredes/huella de espesor tendente a cero; límites, NaN e Infinity. w es ancho axial total; las paredes están dentro de sus extremos (2tp≤w), en un intervalo radial distinto de la huella.
+
+## Cierre del rescate seleccionado
+C, A, B y D implementados y probados según VALIDACION.md. D2 quedó en el commit A por dependencia directa. Se conserva el arranque automático; demo pública y pruebas multiplataforma siguen pendientes.

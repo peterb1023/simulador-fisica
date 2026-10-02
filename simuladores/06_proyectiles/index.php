@@ -13,6 +13,8 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/sim.css">
 <link rel="stylesheet" href="../../css/timeline.css">
+<link rel="stylesheet" href="../../css/selected-ui.css">
+<script src="../../js/sim-inputs.js"></script>
 </head>
 <body data-sim-id="06">
 

@@ -37,6 +37,8 @@ const Renderer = (() => {
   }
 
   function resize() {
+    const narrow=canvas.getBoundingClientRect().width<650,main=canvas.closest('main');
+    main.style.minHeight=narrow?'820px':'';main.style.height=narrow?'820px':'';
     [canvas].forEach(SimCanvas.resize);
   }
 
@@ -181,86 +183,23 @@ const Renderer = (() => {
   }
 
   // ── Barras comparativas ───────────────────────────────────
-  function drawBarras(st, c, bx, by, bw, bh) {
-    const I_cm  = st.I;
-    const I_P   = st.I_P;
-    const K_cm  = st.K;
-    const K_P   = st.K_P;
-
-    const maxI  = Math.max(I_P, 0.01);
-    const maxK  = Math.max(K_P, 0.01);
-
-    const barH  = Math.min(bh * 0.18, 34);
-    const gap   = barH * 0.55;
-    const labelW = 60;
-    const barX   = bx + labelW;
-    const barW   = bw - labelW - 16;
-
-    // Título zona
-    lbl('Comparación I y K', bx + bw/2, by + 14, C.tx2, 'center', 10);
-
-    let y = by + 34;
-
-    // ─ I_cm ─
-    lbl('I_cm', bx + labelW - 6, y + barH/2, c.color, 'right', 10);
-    ctx.fillStyle = C.barBg;
-    ctx.beginPath(); ctx.roundRect(barX, y, barW, barH, 3); ctx.fill();
-    ctx.fillStyle = c.color + 'cc';
-    const wI = (I_cm / maxI) * barW;
-    ctx.beginPath(); ctx.roundRect(barX, y, wI, barH, 3); ctx.fill();
-    lbl(Engine.fmt(I_cm) + ' kg·m²', barX + wI + 5, y + barH/2, c.color, 'left', 9);
-    y += barH + gap;
-
-    // ─ I_P ─
-    lbl('I_P', bx + labelW - 6, y + barH/2, '#e3b341', 'right', 10);
-    ctx.fillStyle = C.barBg;
-    ctx.beginPath(); ctx.roundRect(barX, y, barW, barH, 3); ctx.fill();
-    ctx.fillStyle = '#e3b341cc';
-    const wIP = (I_P / maxI) * barW;
-    ctx.beginPath(); ctx.roundRect(barX, y, wIP, barH, 3); ctx.fill();
-    lbl(Engine.fmt(I_P) + ' kg·m²', barX + wIP + 5, y + barH/2, '#e3b341', 'left', 9);
-    y += barH + gap * 2.2;
-
-    // ─ K_cm ─
-    lbl('K_cm', bx + labelW - 6, y + barH/2, c.color, 'right', 10);
-    ctx.fillStyle = C.barBg;
-    ctx.beginPath(); ctx.roundRect(barX, y, barW, barH, 3); ctx.fill();
-    ctx.fillStyle = c.color + 'cc';
-    const wK = (K_cm / maxK) * barW;
-    ctx.beginPath(); ctx.roundRect(barX, y, wK, barH, 3); ctx.fill();
-    lbl(Engine.fmt(K_cm) + ' J', barX + wK + 5, y + barH/2, c.color, 'left', 9);
-    y += barH + gap;
-
-    // ─ K_P ─
-    lbl('K_P', bx + labelW - 6, y + barH/2, '#e3b341', 'right', 10);
-    ctx.fillStyle = C.barBg;
-    ctx.beginPath(); ctx.roundRect(barX, y, barW, barH, 3); ctx.fill();
-    ctx.fillStyle = '#e3b341cc';
-    const wKP = (K_P / maxK) * barW;
-    ctx.beginPath(); ctx.roundRect(barX, y, wKP, barH, 3); ctx.fill();
-    lbl(Engine.fmt(K_P) + ' J', barX + wKP + 5, y + barH/2, '#e3b341', 'left', 9);
-    y += barH + gap * 2;
-
-    // Delta I
-    const deltaI = I_P - I_cm;
-    lbl(`ΔI = M·d² = ${Engine.fmt(st.M)}·${Engine.fmt(st.d)}² = ${Engine.fmt(deltaI)} kg·m²`,
-        bx + bw/2, y + 10, C.tx2, 'center', 9, false);
-
-    // Nota: d = 0 → I_P = I_cm
-    if (st.d < 0.01) {
-      lbl('d = 0 → eje paralelo = eje cm', bx + bw/2, y + 24, C.tx3, 'center', 9, false);
-    }
+  function compact(value){const str=Engine.fmt(value);return str.length>13?value.toExponential(4):str;}
+  function drawBarras(st,c,bx,by,bw,bh){
+    lbl('Comparación I y K',bx+bw/2,by+14,C.tx2,'center',11);
+    const rows=[['I (eje activo)',st.I,'kg·m²',c.color,Math.max(st.I,st.I_P,.01)],['I_P',st.I_P,'kg·m²','#e3b341',Math.max(st.I,st.I_P,.01)],['K (eje activo)',st.K,'J',c.color,Math.max(st.K,st.K_P,.01)],['K_P',st.K_P,'J','#e3b341',Math.max(st.K,st.K_P,.01)]];
+    const gap=Math.min(58,(bh-48)/4),barW=Math.max(1,bw-24);
+    rows.forEach(([name,value,unit,color,max],i)=>{const y=by+38+i*gap;
+      lbl(name,bx+12,y,color,'left',10);lbl(compact(value)+' '+unit,bx+bw-12,y+14,color,'right',10);
+      ctx.fillStyle=C.barBg;ctx.fillRect(bx+12,y+24,barW,7);
+      ctx.fillStyle=color;ctx.fillRect(bx+12,y+24,barW*value/max,7);
+    });
   }
 
   // ── Comparador de referencia (columna derecha) ────────────
   // Muestra los 2 cuerpos de varilla uno encima del otro para comparar
-  function drawComparador(st, W, H) {
+  function drawComparador(st, boxX, boxY, boxW, boxH) {
     const allC   = Engine.getCuerpos();
     const active = Engine.getCuerpo();
-    const boxX   = W * 0.72;
-    const boxW   = W * 0.27;
-    const boxY   = 10;
-    const boxH   = H - 20;
 
     // Fondo
     ctx.fillStyle = 'rgba(22,30,46,0.7)';
@@ -290,17 +229,17 @@ const Renderer = (() => {
 
       // Barra
       ctx.fillStyle = C.barBg;
-      ctx.beginPath(); ctx.roundRect(boxX + 8, ry + rowH * 0.52, boxW - 16, 5, 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(boxX + 8, ry + rowH * 0.83, boxW - 16, 5, 2); ctx.fill();
       ctx.fillStyle = c.color + (isAct ? 'ff' : '88');
-      ctx.beginPath(); ctx.roundRect(boxX + 8, ry + rowH * 0.52, wBar, 5, 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(boxX + 8, ry + rowH * 0.83, wBar, 5, 2); ctx.fill();
 
       // Nombre
       lbl(c.nombre, boxX + 12, ry + rowH * 0.28,
-          isAct ? c.color : C.tx3, 'left', isAct ? 9 : 8);
+          isAct ? c.color : C.tx2, 'left', 9);
 
       // Valor I
-      lbl(Engine.fmt(I_i) + ' kg·m²', boxX + boxW - 10, ry + rowH * 0.28,
-          isAct ? c.color : C.tx3, 'right', isAct ? 9 : 8);
+      lbl(Engine.fmt(I_i) + ' kg·m²', boxX + boxW - 10, ry + rowH * 0.60,
+          isAct ? c.color : C.tx2, 'right', 9);
     });
   }
 
@@ -314,37 +253,23 @@ const Renderer = (() => {
     ctx.fillRect(0, 0, W, H);
     drawGrid();
 
-    // Zona izquierda: cuerpo girando
-    const leftW  = W * 0.32;
-    const centerX = leftW / 2;
-    const centerY = H / 2;
-    const maxR   = Math.min(leftW, H) * 0.38;
-
-    drawCuerpo(st, c, centerX, centerY, maxR);
-
-    // Label del cuerpo y eje
-    lbl(c.nombre, centerX, H - 42, c.color, 'center', 11);
-    lbl(c.ejeLabel, centerX, H - 27, C.tx3, 'center', 9, false);
-    lbl(`ω = ${Engine.fmt(st.omega)} rad/s`, centerX, H - 14, C.tx2, 'center', 9, false);
-
-    // Línea divisoria
-    ctx.strokeStyle = 'rgba(48,54,61,0.5)';
-    ctx.lineWidth   = 1;
-    ctx.beginPath();
-    ctx.moveTo(leftW, 10);
-    ctx.lineTo(leftW, H - 10);
-    ctx.stroke();
-
-    // Zona central: barras
-    const midW  = W * 0.40;
-    const midX  = leftW + 8;
-    drawBarras(st, c, midX, 10, midW - 16, H - 20);
-
-    // Zona derecha: comparador
-    drawComparador(st, W, H);
-
-    // HUD top-left
-    drawHUD(st, c);
+    const narrow=W<650;
+    if(narrow){
+      const top=210,barsH=270;
+      drawCuerpo(st,c,W*.72,100,Math.min(72,W*.19));
+      lbl(c.nombre,W/2,top-27,c.color,'center',11);
+      lbl(c.ejeLabel,W/2,top-10,C.tx2,'center',9);
+      drawBarras(st,c,8,top,W-16,barsH);
+      drawComparador(st,8,top+barsH+12,W-16,Math.max(240,H-top-barsH-24));
+    }else{
+      const bodyW=W*.28,barsX=bodyW+12,barsW=W*.34,compX=barsX+barsW+12;
+      drawCuerpo(st,c,bodyW/2,H*.53,Math.min(bodyW*.34,H*.25));
+      lbl(c.nombre,bodyW/2,H-55,c.color,'center',11);
+      lbl(c.ejeLabel,bodyW/2,H-36,C.tx2,'center',9);
+      drawBarras(st,c,barsX,10,barsW,Math.min(H-20,350));
+      drawComparador(st,compX,10,W-compX-10,H-20);
+    }
+    drawHUD(st,c);
   }
 
   function drawHUD(st, c) {

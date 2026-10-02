@@ -293,6 +293,11 @@ html, body { min-height: 100%; background: var(--bg); color: var(--tx1); font-fa
   pointer-events: none; z-index: 999;
   animation: scanline 6s linear infinite;
 }
+@media(max-width:600px){
+ .portal-header{height:auto;min-height:60px;flex-wrap:wrap;padding:10px 16px;gap:8px}
+ .portal-meta{margin-left:0;width:100%;flex-wrap:wrap;gap:8px}
+ .hero{padding-left:16px;padding-right:16px}.hero h1{overflow-wrap:anywhere}
+}
 </style>
 <style>:focus-visible{outline:3px solid #79c0ff;outline-offset:3px}</style>
 </head>

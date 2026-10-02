@@ -43,7 +43,7 @@ const UI = (() => {
 
   function bind(id, fn) {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', e => fn(e.target.value));
+    if (el) SimInputs.bind(el,fn);
   }
 
   function syncAll() {
@@ -59,6 +59,7 @@ const UI = (() => {
   function sv(slId, val, valId, unit) {
     const sl = document.getElementById(slId);
     if (sl) sl.value = val;
+    SimInputs.sync(slId,val);
     syncVal(valId, val, unit);
   }
 
@@ -73,6 +74,7 @@ const UI = (() => {
   function updateStats() {
     const st = Engine.getState();
     const c  = Engine.getCuerpo();
+    document.body.style.setProperty('--body-color',c.color);
     setHTML('stat-I',    Engine.fmt(st.I)    + ' kg·m²');
     setHTML('stat-IP',   Engine.fmt(st.I_P)  + ' kg·m²');
     setHTML('stat-K',    Engine.fmt(st.K)    + ' J');
@@ -130,6 +132,7 @@ function setCuerpo(id, btn) {
   const st = Engine.getState();
   const sl = document.getElementById('sl-dim');
   if (sl) sl.value = st.dim;
+  SimInputs.sync('sl-dim',st.dim);
 
   const lbl = document.getElementById('lbl-dim');
   const c   = Engine.getCuerpo();

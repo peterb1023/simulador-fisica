@@ -22,7 +22,7 @@ const UI = (() => {
 
   function bind(id, fn) {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', e => fn(e.target.value));
+    if (el) SimInputs.bind(el,fn);
   }
 
   function syncAll() {
@@ -36,6 +36,7 @@ const UI = (() => {
   function sv(slId, val, valId, unit) {
     const sl = document.getElementById(slId);
     if (sl) sl.value = val;
+    SimInputs.sync(slId,val);
     syncVal(valId, val, unit);
   }
 

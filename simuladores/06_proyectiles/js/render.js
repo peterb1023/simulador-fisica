@@ -56,23 +56,29 @@ const Renderer = (() => {
   // ── Mapeo mundo → canvas ──────────────────────────────────
   // El "mundo" visible se ajusta dinámicamente al alcance y altura del proyectil
   function getScale(st) {
-    const W = canvas.logicalWidth  - PAD.left - PAD.right;
-    const H = canvas.logicalHeight - PAD.top  - PAD.bottom;
+    PAD.left=Math.min(72,Math.max(48,canvas.logicalWidth*.15));
+    PAD.right=Math.min(30,Math.max(16,canvas.logicalWidth*.045));
+    PAD.top=Math.min(36,Math.max(24,canvas.logicalHeight*.07));
+    PAD.bottom=Math.min(56,Math.max(38,canvas.logicalHeight*.11));
+    const W = Math.max(1,canvas.logicalWidth - PAD.left - PAD.right);
+    const H = Math.max(1,canvas.logicalHeight - PAD.top - PAD.bottom);
 
     // Rango del mundo con padding del 15%
-    const worldW = Math.max(st.xMax * 1.18, 10);
-    const worldH = Math.max((st.yMax + st.y0) * 1.25, 10);
+    let worldW = Math.max(st.xMax * 1.18, 10);
+    let worldH = Math.max(Math.max(st.yMax,st.y0) * 1.25, 10);
 
     const scaleX = W / worldW;
     const scaleY = H / worldH;
     const scale  = Math.min(scaleX, scaleY);
+    worldW=W/scale;worldH=H/scale;
 
     return {
       scale,
       toCanvasX: x  => PAD.left + x * scale,
       toCanvasY: y  => canvas.logicalHeight - PAD.bottom - y * scale,
       worldW, worldH,
-      gridStep: niceStep(worldW / 5),
+      gridStep: niceStep(75/scale),
+      gridStepY: niceStep(48/scale),
     };
   }
 
@@ -91,13 +97,13 @@ const Renderer = (() => {
   function draw(st) {
     const W = canvas.logicalWidth;
     const H = canvas.logicalHeight;
-    const { scale, toCanvasX, toCanvasY, worldW, worldH, gridStep } = getScale(st);
+    const { scale, toCanvasX, toCanvasY, worldW, worldH, gridStep, gridStepY } = getScale(st);
 
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, W, H);
 
     // ── Cuadrícula ────────────────────────────────────────
-    drawGrid(st, toCanvasX, toCanvasY, worldW, worldH, gridStep, scale);
+    drawGrid(st, toCanvasX, toCanvasY, worldW, worldH, gridStep, gridStepY);
 
     // ── Zona suelo ────────────────────────────────────────
     const groundY = toCanvasY(0);
@@ -226,22 +232,22 @@ const Renderer = (() => {
     ctx.textAlign = 'left';
 
     ctx.fillStyle = C.vx;
-    ctx.fillText(`vx=${Engine.fmt(st.vx)}`, px + vxLen + 5, py + 4);
+    boundedLabel(`vx=${Engine.fmt(st.vx)}`, px + vxLen + 14, py + 18);
 
     ctx.fillStyle = vyColor;
     const vyLabelY = py + vyLen + (st.vy >= 0 ? -6 : 14);
     ctx.textAlign = 'center';
-    ctx.fillText(`vy=${Engine.fmt(st.vy)}`, px, vyLabelY);
+    boundedLabel(`vy=${Engine.fmt(st.vy)}`, px + 14, vyLabelY);
 
     // ── HUD: datos actuales (esquina superior) ────────────
     drawHUD(st, scale);
 
     // ── Ejes numéricos ────────────────────────────────────
-    drawAxes(st, toCanvasX, toCanvasY, worldW, gridStep, scale);
+    drawAxes(st, toCanvasX, toCanvasY, worldW, gridStep, gridStepY);
   }
 
   // ── Cuadrícula ────────────────────────────────────────────
-  function drawGrid(st, toCanvasX, toCanvasY, worldW, worldH, gridStep, scale) {
+  function drawGrid(st, toCanvasX, toCanvasY, worldW, worldH, gridStep, gridStepY) {
     const W = canvas.logicalWidth;
     const H = canvas.logicalHeight;
 
@@ -253,7 +259,7 @@ const Renderer = (() => {
       if (cx < PAD.left || cx > W - PAD.right) continue;
       ctx.beginPath(); ctx.moveTo(cx, PAD.top); ctx.lineTo(cx, H - PAD.bottom); ctx.stroke();
     }
-    for (let y = 0; y <= worldH + gridStep; y += gridStep) {
+    for (let y = 0; y <= worldH + gridStepY; y += gridStepY) {
       const cy = toCanvasY(y);
       if (cy < PAD.top || cy > H - PAD.bottom) continue;
       ctx.beginPath(); ctx.moveTo(PAD.left, cy); ctx.lineTo(W - PAD.right, cy); ctx.stroke();
@@ -261,7 +267,7 @@ const Renderer = (() => {
   }
 
   // ── Ejes con números ──────────────────────────────────────
-  function drawAxes(st, toCanvasX, toCanvasY, worldW, gridStep, scale) {
+  function drawAxes(st, toCanvasX, toCanvasY, worldW, gridStep, gridStepY) {
     const W = canvas.logicalWidth;
     const H = canvas.logicalHeight;
     const groundY = toCanvasY(0);
@@ -281,10 +287,10 @@ const Renderer = (() => {
     }
     ctx.fillStyle = C.tx3;
     ctx.textAlign = 'right';
-    ctx.fillText('x', W - PAD.right + 18, groundY + 4);
+    ctx.fillText('x', Math.min(W - 4, W - PAD.right + 18), groundY + 4);
 
     // Eje Y: marcas de altura
-    const hStep = gridStep;
+    const hStep = gridStepY;
     const worldH = (st.yMax + st.y0) * 1.25;
     ctx.textAlign = 'right';
     for (let y = hStep; y <= worldH + hStep; y += hStep) {
@@ -337,7 +343,7 @@ const Renderer = (() => {
       { label: '|v|', val: Engine.fmt(vMag) + ' m/s',  color: C.v_res },
     ];
 
-    const bx = PAD.left + 8;
+    const bx = Math.max(PAD.left+36,canvas.logicalWidth-158);
     let   by = PAD.top + 14;
     ctx.font = '10px Space Mono, monospace';
     lines.forEach(l => {
@@ -349,6 +355,11 @@ const Renderer = (() => {
       ctx.fillText(l.val, bx + 26, by);
       by += 14;
     });
+  }
+
+  function boundedLabel(text,x,y){
+    ctx.textAlign='left';const width=ctx.measureText(text).width;
+    ctx.fillText(text,Math.max(4,Math.min(x,canvas.logicalWidth-width-4)),Math.max(14,Math.min(y,canvas.logicalHeight-6)));
   }
 
   // ── Flecha ────────────────────────────────────────────────
