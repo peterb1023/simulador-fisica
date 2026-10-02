@@ -40,8 +40,8 @@
       <label>Email
         <input type="email" name="email" required maxlength="254" autocomplete="username" placeholder="estudiante@example.test">
       </label>
-      <label>Contraseña (12–72 bytes)
-        <input type="password" name="password" required minlength="12" maxlength="72" autocomplete="current-password">
+      <label>Contraseña
+        <input type="password" name="password" required minlength="5" maxlength="72" autocomplete="current-password">
       </label>
       <button name="login" class="btn-primary">Iniciar sesión</button>
     </form>

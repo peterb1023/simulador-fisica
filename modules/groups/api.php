@@ -24,7 +24,7 @@ try {
  if(!$object instanceof stdClass)fail(400,'Se requiere un objeto JSON.');$data=(array)$object;
  if($action==='login'){
   $email=strtolower(textField($data,'email',3,254));$password=$data['password']??null;
-  if(!filter_var($email,FILTER_VALIDATE_EMAIL)||!is_string($password)||strlen($password)<12||strlen($password)>72||str_contains($password,"\0"))fail(400,'Email inválido o contraseña fuera de 12–72 bytes.');
+  if(!filter_var($email,FILTER_VALIDATE_EMAIL)||!is_string($password)||strlen($password)<5||strlen($password)>72||str_contains($password,"\0"))fail(400,'Email inválido o contraseña fuera de 5–72 bytes.');
   $user=query('SELECT id,nombre,password_hash,activo FROM usuarios WHERE email=?',[$email])->fetch();
   if(!$user||!(bool)$user['activo']||!password_verify($password,$user['password_hash']))fail(401,'Credenciales incorrectas.');
   session_regenerate_id(true);$_SESSION=['uid'=>(int)$user['id'],'name'=>$user['nombre'],'csrf'=>bin2hex(random_bytes(32)),'last_seen'=>time()];ok(['csrf'=>$_SESSION['csrf']]);
