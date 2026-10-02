@@ -62,7 +62,7 @@
     const table=make('table'),caption=make('caption','Capturas del simulador '+id),thead=make('thead');
     const tbody=make('tbody');table.append(caption,thead,tbody);wrap.append(table);tab.append(wrap);
     document.getElementById('tab-sim').parentElement.append(tab);
-    const open=make('button','Registros','nav-btn'),quick=make('button','Guardar registro','nav-btn');open.type=quick.type='button';nav.append(quick,open);
+    const open=make('button','Registros','nav-btn nav-btn-records'),quick=make('button','Guardar registro','nav-btn nav-btn-record');open.type=quick.type='button';nav.append(quick,open);
     const listFields=fields=>{const dl=make('dl');for(const [key,value]of Object.entries(fields)){dl.append(make('dt',key),make('dd',value===null?'No definido / no alcanzable':typeof value==='number'?String(Math.round(value*1e6)/1e6):String(value)));}return dl;};
     function render(){const records=store.list();open.textContent=`Registros (${records.length})`;open.setAttribute('aria-label',open.textContent);tbody.replaceChildren();clear.disabled=!records.length;
       // Union of snapshot fields preserves comparisons across modes. Cap visible columns.

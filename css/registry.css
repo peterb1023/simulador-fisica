@@ -1,15 +1,570 @@
-.registry-panel{padding:20px;max-height:calc(100vh - 52px);overflow:auto;max-width:100%;background:var(--bg);color:var(--tx1)}
-.registry-panel p{margin:10px 0;line-height:1.5}.registry-actions{display:flex;gap:8px;flex-wrap:wrap}.registry-scroll{overflow:auto;max-width:100%;border:1px solid var(--border);margin-top:14px}
-.registry-panel table{width:100%;border-collapse:collapse;min-width:550px;font-size:12px}.registry-panel th,.registry-panel td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}.registry-panel caption{text-align:left;padding:10px;font-weight:bold}
-.registry-panel dt{font-weight:600}.registry-panel dd{margin:2px 0 8px;overflow-wrap:anywhere}.registry-panel button{cursor:pointer;background:var(--input);color:var(--tx1);padding:7px;border:1px solid var(--border);border-radius:5px}
-@media(max-width:1100px){.registry-panel{max-height:none;padding:12px}}.sim-nav{flex-wrap:wrap}
+/* ============================================================
+   Registros Locales y Panel
+   ============================================================ */
+.registry-panel{padding:20px;max-height:calc(100vh - 52px);overflow:auto;max-width:100%;background:var(--bg, #0d1117);color:var(--tx1, #e6edf3)}
+.registry-panel p{margin:10px 0;line-height:1.5}.registry-actions{display:flex;gap:8px;flex-wrap:wrap}.registry-scroll{overflow:auto;max-width:100%;border:1px solid var(--border, #30363d);margin-top:14px}
+.registry-panel table{width:100%;border-collapse:collapse;min-width:550px;font-size:12px}.registry-panel th,.registry-panel td{padding:10px;border-bottom:1px solid var(--border, #30363d);text-align:left;vertical-align:top}.registry-panel caption{text-align:left;padding:10px;font-weight:bold}
+.registry-panel dt{font-weight:600}.registry-panel dd{margin:2px 0 8px;overflow-wrap:anywhere}.registry-panel button{cursor:pointer;background:var(--input, #21262d);color:var(--tx1, #e6edf3);padding:7px;border:1px solid var(--border, #30363d);border-radius:5px}
+.registry-panel th[scope=colgroup]{text-align:center;background:var(--input, #21262d)}.registry-panel td{min-width:100px;max-width:260px;overflow-wrap:anywhere}.registry-panel th{min-width:100px}.registry-panel th[rowspan]{min-width:60px}
+@media(max-width:1100px){.registry-panel{max-height:none;padding:12px}}
 
-.group-dialog{margin:auto;width:min(92vw,720px);max-height:85vh;overflow:auto;padding:20px;background:var(--panel);color:var(--tx1);border:1px solid var(--border);border-radius:8px}.group-dialog::backdrop{background:#0009}.group-dialog p,.group-dialog label{display:block;margin:12px 0}.group-dialog pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:35vh;overflow:auto}.group-dialog select{max-width:100%;display:block}.group-dialog button,.group-dialog a{display:inline-block;margin:8px;padding:8px 14px;color:var(--tx1);background:var(--input);border:1px solid var(--border);border-radius:6px;font:inherit;cursor:pointer;text-decoration:none}.sim-header{height:auto;min-height:52px;flex-wrap:wrap;flex-shrink:0}
+/* ============================================================
+   Barra superior (Toolbar) y Jerarquía Compartida
+   ============================================================ */
+.sim-header {
+  height: auto !important;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  background: var(--panel, #161b22);
+  border-bottom: 1px solid var(--border, #30363d);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
 
-.group-dialog .status-loading{color:#e3b341;font-weight:600}
-.group-dialog .status-success{color:#3fb950;font-weight:600}
-.group-dialog .status-error{color:#f85149;font-weight:600}
+.sim-nav {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 
-.registry-panel th[scope=colgroup]{text-align:center;background:var(--input)}.registry-panel td{min-width:100px;max-width:260px;overflow-wrap:anywhere}.registry-panel th{min-width:100px}.registry-panel th[rowspan]{min-width:60px}
+/* Todos los botones de la barra superior: dimensiones consistentes */
+.sim-nav .nav-btn {
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font, 'Syne', system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border, #30363d);
+  background: #161b22;
+  color: var(--tx2, #8b949e);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
 
-.group-dialog [hidden]{display:none!important}
+.sim-nav .nav-btn:hover {
+  border-color: var(--borderL, #484f58);
+  color: var(--tx1, #e6edf3);
+  background: #21262d;
+}
+
+.sim-nav .nav-btn:focus-visible {
+  outline: 2px solid #58a6ff !important;
+  outline-offset: 1px;
+}
+
+.sim-nav .nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 1. NAVEGACIÓN (Simulador, Fórmulas, Portal) */
+.sim-nav .nav-btn:not(.nav-btn-record):not(.nav-btn-records):not(.nav-btn-group):not(.nav-user-pill):not(.nav-btn-login) {
+  order: 10;
+}
+.sim-nav .nav-btn.active {
+  background: var(--accent, #58a6ff);
+  border-color: var(--accent, #58a6ff);
+  color: #0d1117;
+  font-weight: 700;
+}
+
+/* 2. CAPTURAS LOCALES (Guardar registro & Registros N) */
+.sim-nav .nav-btn-record {
+  order: 20;
+  margin-left: 8px;
+  background: #1c2128;
+  border-color: rgba(56, 139, 253, 0.25);
+  color: #c9d1d9;
+}
+.sim-nav .nav-btn-record:hover {
+  background: #21262d;
+  border-color: rgba(56, 139, 253, 0.6);
+  color: #58a6ff;
+}
+
+.sim-nav .nav-btn-records {
+  order: 21;
+  background: #1c2128;
+  border-color: rgba(56, 139, 253, 0.25);
+  color: #8b949e;
+}
+.sim-nav .nav-btn-records:hover {
+  background: #21262d;
+  border-color: rgba(56, 139, 253, 0.6);
+  color: #58a6ff;
+}
+
+/* 3. CAPTURA EN GRUPO (Identificable, no gigante) */
+.sim-nav .nav-btn-group {
+  order: 22;
+  background: rgba(31, 111, 235, 0.12);
+  border-color: rgba(56, 139, 253, 0.4);
+  color: #58a6ff;
+  font-weight: 600;
+}
+.sim-nav .nav-btn-group:hover {
+  background: rgba(31, 111, 235, 0.25);
+  border-color: #58a6ff;
+  color: #79c0ff;
+}
+
+/* 4. CUENTA / SESIÓN (Demo Uno o Iniciar sesión) */
+.sim-nav .nav-user-wrap {
+  order: 30;
+  margin-left: 8px;
+  position: relative;
+  display: inline-flex;
+}
+
+.sim-nav .nav-user-pill {
+  height: 32px;
+  padding: 0 12px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 20px;
+  color: #e6edf3;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-nav .nav-user-pill:hover {
+  border-color: #58a6ff;
+  background: #262c36;
+}
+
+.sim-nav .nav-user-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3fb950;
+  box-shadow: 0 0 6px rgba(63, 185, 80, 0.6);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.sim-nav .nav-user-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.sim-nav .nav-user-caret {
+  font-size: 10px;
+  color: #8b949e;
+  margin-left: 2px;
+}
+
+.sim-nav .nav-user-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  min-width: 180px;
+  padding: 6px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sim-nav .nav-user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c9d1d9;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+  box-sizing: border-box;
+}
+
+.sim-nav .nav-user-dropdown-item:hover {
+  background: #21262d;
+  color: #58a6ff;
+}
+
+.sim-nav .nav-user-dropdown-logout:hover {
+  background: rgba(248, 81, 73, 0.15);
+  color: #ff7b72;
+}
+
+.sim-nav .nav-btn-login {
+  order: 30;
+  margin-left: 8px;
+  background: transparent;
+  border: 1px solid #388bfd;
+  color: #58a6ff;
+  border-radius: 6px;
+}
+.sim-nav .nav-btn-login:hover {
+  background: rgba(56, 139, 253, 0.15);
+  color: #79c0ff;
+}
+
+/* ============================================================
+   Modal Guardar en grupo
+   ============================================================ */
+.group-dialog {
+  margin: auto;
+  width: min(92vw, 680px);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 24px;
+  background: #161b22;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  grid-template-areas:
+    "title title title"
+    "status status status"
+    "label label label"
+    "preview preview preview"
+    "submit close login";
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font, 'Syne', system-ui, sans-serif);
+}
+
+.group-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+.group-dialog > h2 {
+  grid-area: title;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #e6edf3;
+  letter-spacing: -0.3px;
+}
+
+.group-dialog > p[role="status"] {
+  grid-area: status;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #8b949e;
+}
+
+.group-dialog > label {
+  grid-area: label;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #c9d1d9;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.group-dialog select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #21262d;
+  color: #e6edf3;
+  border: 1px solid #484f58;
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.group-dialog select:focus {
+  outline: 2px solid #58a6ff;
+  border-color: #58a6ff;
+}
+
+.group-dialog select option {
+  background: #161b22;
+  color: #e6edf3;
+}
+
+.group-dialog > .group-dialog-preview {
+  grid-area: preview;
+  margin: 0;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 42vh;
+  overflow-y: auto;
+}
+
+.group-dialog > .btn-dialog-submit {
+  grid-area: submit;
+  justify-self: start;
+  background: #238636;
+  border: 1px solid #2ea043;
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.group-dialog > .btn-dialog-submit:hover:not(:disabled) {
+  background: #2ea043;
+}
+
+.group-dialog > .btn-dialog-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.group-dialog > .btn-dialog-cancel {
+  grid-area: close;
+  justify-self: start;
+  background: #21262d;
+  border: 1px solid #484f58;
+  color: #c9d1d9;
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.group-dialog > .btn-dialog-cancel:hover {
+  background: #30363d;
+  color: #ffffff;
+}
+
+.group-dialog > .btn-dialog-manage {
+  grid-area: login;
+  justify-self: end;
+  background: transparent;
+  border: none;
+  color: #58a6ff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 8px 4px;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.group-dialog > .btn-dialog-manage:hover {
+  color: #79c0ff;
+}
+
+.group-dialog .status-loading { color: #e3b341 !important; font-weight: 600; }
+.group-dialog .status-success { color: #3fb950 !important; font-weight: 600; }
+.group-dialog .status-error   { color: #f85149 !important; font-weight: 600; }
+
+.group-dialog [hidden] { display: none !important; }
+
+/* Vista Previa Grid */
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #21262d;
+}
+
+.preview-caption {
+  font-size: 11px;
+  font-weight: 800;
+  color: #8b949e;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.preview-sim-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #58a6ff;
+}
+
+.group-dialog-preview .sim-card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.group-dialog-preview .sim-col {
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.group-dialog-preview .sim-col-title {
+  margin: 0 0 8px 0;
+  font-size: 10px;
+  font-weight: 800;
+  color: #79c0ff;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #21262d;
+  padding-bottom: 4px;
+}
+
+.group-dialog-preview .kv-list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.group-dialog-preview .kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  border-bottom: 1px dashed rgba(48,54,61,0.5);
+  padding-bottom: 3px;
+}
+
+.group-dialog-preview .kv-row:last-child {
+  border-bottom: none;
+}
+
+.group-dialog-preview .kv-row dt {
+  color: #8b949e;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.group-dialog-preview .kv-row dd {
+  margin: 0;
+  color: #e6edf3;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.group-dialog-preview .kv-none {
+  font-size: 12px;
+  color: #8b949e;
+  font-style: italic;
+  margin: 4px 0;
+}
+
+/* ============================================================
+   Responsive (1366 / 800 / 360)
+   ============================================================ */
+@media (max-width: 680px) {
+  .group-dialog {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "title title"
+      "status status"
+      "label label"
+      "preview preview"
+      "submit close"
+      "login login";
+  }
+  .group-dialog > .btn-dialog-submit,
+  .group-dialog > .btn-dialog-cancel {
+    width: 100%;
+    justify-self: stretch;
+    text-align: center;
+  }
+  .group-dialog > .btn-dialog-manage {
+    justify-self: center;
+    text-align: center;
+    width: 100%;
+  }
+  .group-dialog-preview .sim-card-body {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .group-dialog-preview .kv-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .group-dialog-preview .kv-row dd {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .sim-header {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .sim-nav {
+    width: 100%;
+    gap: 4px;
+  }
+  .sim-nav .nav-btn {
+    height: 28px;
+    min-height: 28px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+  .sim-nav .nav-btn-record,
+  .sim-nav .nav-user-wrap,
+  .sim-nav .nav-btn-login {
+    margin-left: 0;
+  }
+  .group-dialog {
+    padding: 16px 14px;
+    width: 95vw;
+    gap: 10px;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "status"
+      "label"
+      "preview"
+      "submit"
+      "close"
+      "login";
+  }
+}
