@@ -237,7 +237,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 .sl-label-gold   { color: var(--et); }
 .sl-label-purple { color: #a371f7; }
 .sl-row-08 input[type=range] {
-  flex: 1; -webkit-appearance: none; height: 3px;
+  flex: 1; min-width: 0; -webkit-appearance: none; height: 3px;
   background: var(--input); border-radius: 2px; outline: none; cursor: pointer;
 }
 .sl-row-08 input[type=range]::-webkit-slider-thumb {
@@ -245,7 +245,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
   border-radius: 50%; background: var(--accent); cursor: pointer;
   border: 2px solid var(--bg);
 }
-.sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 64px; text-align: right; }
+.sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 54px; text-align: right; flex-shrink: 0; white-space: nowrap; }
 .sl-val b { color: var(--tx1); }
 .sl-val span { font-size: 9px; }
 

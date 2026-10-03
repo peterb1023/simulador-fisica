@@ -150,7 +150,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
   width: 14px; flex-shrink: 0; text-align: center;
 }
 .sl-row input[type=range] {
-  flex: 1; -webkit-appearance: none; height: 3px;
+  flex: 1; min-width: 0; -webkit-appearance: none; height: 3px;
   background: var(--input); border-radius: 2px; outline: none;
 }
 .sl-row input[type=range]::-webkit-slider-thumb {
@@ -160,7 +160,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
 }
 .sl-val {
   font-family: var(--mono); font-size: 10px; color: var(--tx2);
-  white-space: nowrap; min-width: 44px; text-align: right;
+  white-space: nowrap; min-width: 44px; text-align: right; flex-shrink: 0;
 }
 .sl-val b { color: var(--tx1); }
 

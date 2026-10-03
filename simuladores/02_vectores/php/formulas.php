@@ -81,6 +81,17 @@
       <div class="fp-note">Para encontrar ángulos del triángulo vectorial cuando se conocen lados y ángulos.</div>
     </div>
 
+    <div class="fp-card" style="--accent-card:#a371f7">
+      <div class="fp-card-tag">Productos en 2D</div>
+      <div class="fp-eq-sm">A·B = AxBx + AyBy = |A||B|·cosθ</div>
+      <div class="fp-eq-sm">|A×B| = |A||B|·senθ</div>
+      <div class="fp-vars">
+        <span><b>A·B</b> = producto punto (resultado escalar)</span>
+        <span><b>A×B</b> en 2D: componente z = AxBy − AyBx</span>
+        <span><b>Unidades</b>: u² si A y B tienen unidades u</span>
+      </div>
+      <div class="fp-note">Producto punto: mide proyección. Producto cruz en 2D devuelve un escalar (componente z); su signo indica orientación según la regla de la mano derecha.</div>
+    </div>
+
   </div>
 </div>
-<section class="fp-card"><h3>Productos en 2D</h3><p>A·B = AxBx + AyBy = |A||B|cos θ (escalar).</p><p>A×B = (0,0,AxBy−AyBx). Se muestra su componente z; orientación según la regla de la mano derecha. Si A y B tienen unidades u, ambos productos tienen unidades u²; en general se multiplican las unidades de cada vector.</p></section>
