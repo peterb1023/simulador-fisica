@@ -89,10 +89,26 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
         </div>
 
         <div class="ps" id="incline-controls">
-<label for="sl-mus">μs (sin unidades; μs ≥ μk)</label><input id="sl-mus" type="range" min="0" max="2" step="0.05" value="0"><output id="val-mus">0</output>
-<label for="sl-theta">Inclinación θ (°)</label><input id="sl-theta" type="range" min="-60" max="60" step="1" value="0"><output id="val-theta">0°</output>
-<label for="sl-v0">Velocidad inicial sobre el plano (m/s)</label><input id="sl-v0" type="range" min="-10" max="10" step="0.5" value="0"><output id="val-v0">0 m/s</output>
-<p>φ se mide desde el plano. x positivo sube hacia la derecha. Cambiar parámetros reinicia el experimento.</p></div>
+          <div class="ps-label">Plano inclinado</div>
+          <div class="sl-group">
+            <div class="sl-row-08">
+              <label class="sl-label sl-label-white" for="sl-mus">μs</label>
+              <input id="sl-mus" type="range" min="0" max="2" step="0.05" value="0">
+              <span class="sl-val" id="val-mus"><b>0</b> <span></span></span>
+            </div>
+            <div class="sl-row-08">
+              <label class="sl-label sl-label-gold" for="sl-theta">θ</label>
+              <input id="sl-theta" type="range" min="-60" max="60" step="1" value="0">
+              <span class="sl-val" id="val-theta"><b>0</b> <span>°</span></span>
+            </div>
+            <div class="sl-row-08">
+              <label class="sl-label sl-label-white" for="sl-v0">v₀</label>
+              <input id="sl-v0" type="range" min="-10" max="10" step="0.5" value="0">
+              <span class="sl-val" id="val-v0"><b>0</b> <span>m/s</span></span>
+            </div>
+          </div>
+          <p class="ic-note">θ: inclinación del plano. v₀: vel. inicial sobre el plano. x→ positivo cuesta arriba. Cambiar reinicia.</p>
+        </div>
         <!-- Fuerzas resultantes -->
         <div class="ps">
           <div class="ps-label">Fuerzas</div>
@@ -249,21 +265,10 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 .sl-val b { color: var(--tx1); }
 .sl-val span { font-size: 9px; }
 
-/* ── Incline controls containment ── */
-#incline-controls label {
-  display: block; font-size: 10px; color: var(--tx2);
-  white-space: normal; word-break: break-word;
-  margin-top: 6px; margin-bottom: 2px;
-}
-#incline-controls input[type=range] {
-  width: 100%; max-width: 100%; box-sizing: border-box;
-}
-#incline-controls output {
-  font-family: var(--mono); font-size: 10px; color: var(--tx1);
-}
-#incline-controls p {
-  font-size: 10px; color: var(--tx3); margin-top: 6px;
-  word-break: break-word; line-height: 1.4;
+/* ── Nota de plano inclinado ── */
+.ic-note {
+  font-size: 9px; color: var(--tx3); margin-top: 6px;
+  line-height: 1.5; word-break: break-word;
 }
 
 /* ── Stats ── */

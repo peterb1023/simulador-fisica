@@ -1,18 +1,13 @@
 // ============================================================
 //  render.js  —  Canvas 2D SIM 08: Diagrama de Cuerpo Libre
 //  Modo PLANO:
-//    · Superficie con textura
-//    · Bloque deslizando (animado con ax)
-//    · Flecha W (peso, abajo)
-//    · Flecha N (normal, arriba)
-//    · Flecha F (aplicada, con ángulo φ)
-//    · Flecha fk (fricción, opuesta a v) [AGREGADA]
-//    · Flecha ΣF resultante (dorada)
-//    · Etiquetas de cada fuerza
+//    · Superficie con marcas de posición (se desplazan con st.x)
+//    · Bloque centrado + diagrama de fuerzas
+//    · Rastro corto del bloque
+//    · Indicador x=0, marcas cada 2m, posición actual
 //  Modo ELEVADOR:
-//    · Bloque colgando de cuerda
-//    · Flecha W (abajo) y T (arriba)
-//    · Indicador de movimiento
+//    · Bloque animado verticalmente
+//    · Flecha W y T
 // ============================================================
 
 const Renderer = (() => {
@@ -20,35 +15,49 @@ const Renderer = (() => {
 
   let canvas, ctx;
   let animId = null;
-  let elevY  = 0;   // posición vertical del bloque en el elevador (canvas px)
+  let elevY  = 0;
+
+  // px por metro en la escena (ajusta la velocidad de desplazamiento visual)
+  const PX_PER_M = 28;
+  // Intervalo de marcas en el suelo (metros de mundo real)
+  const MARK_INTERVAL = 2;
 
   const C = {
     bg:        '#0a1628',
-    grid:      'rgba(48,54,61,0.35)',
-    suelo:     'rgba(88,166,255,0.3)',
-    sueloFill: 'rgba(88,166,255,0.05)',
+    grid:      'rgba(48,54,61,0.30)',
+    suelo:     '#388bfd',
+    sueloFill: 'rgba(56,139,253,0.08)',
+    sueloBand: 'rgba(56,139,253,0.04)',
+    markMain:  'rgba(56,139,253,0.60)',
+    markSub:   'rgba(56,139,253,0.25)',
+    origin:    'rgba(88,200,120,0.70)',
+    trail:     'rgba(88,166,255,0.18)',
     bloque:    '#1c2d4a',
     bloqueB:   '#58a6ff',
-    peso:      '#f85149',   // W — rojo
-    normal:    '#3fb950',   // N — verde
-    fApp:      '#e3b341',   // F aplicada — dorado
-    fric:      '#a371f7',   // fk — violeta [AGREGADA]
-    sumF:      '#ffffff',   // ΣF resultante — blanco
+    bloqueSh:  'rgba(88,166,255,0.25)',
+    peso:      '#f85149',
+    normal:    '#3fb950',
+    fApp:      '#e3b341',
+    fric:      '#a371f7',
+    sumF:      '#ffffff',
     cuerda:    '#8b949e',
     tx1:       '#e6edf3',
     tx2:       '#8b949e',
     tx3:       '#484f58',
   };
 
-  // Tamaño del bloque en px
-  const BW = 60;
-  const BH = 60;
+  const BW = 56;
+  const BH = 56;
+
+  // Historial de posiciones del bloque en canvas (para trail)
+  const trail = [];
+  const TRAIL_LEN = 40;
 
   function init() {
     canvas = document.getElementById('canvasMain');
     ctx    = canvas.getContext('2d');
     resize();
-    SimCanvas.observe([canvas],resize);
+    SimCanvas.observe([canvas], resize);
   }
 
   function resize() {
@@ -87,7 +96,7 @@ const Renderer = (() => {
     ctx.restore();
   }
 
-  // ── Cuadrícula ────────────────────────────────────────────
+  // ── Cuadrícula de fondo (sutil) ───────────────────────────
   function drawGrid() {
     const W = canvas.logicalWidth, H = canvas.logicalHeight, step = 40;
     ctx.strokeStyle = C.grid;
@@ -97,35 +106,220 @@ const Renderer = (() => {
   }
 
   // ══════════════════════════════════════════════════════════
-  //  MODO PLANO
+  //  MODO PLANO — con entorno desplazable
   // ══════════════════════════════════════════════════════════
   function drawPlano(st) {
-    const W=canvas.logicalWidth,H=canvas.logicalHeight,th=st.theta*Math.PI/180;
-    const tx=Math.cos(th),ty=-Math.sin(th),nx=-Math.sin(th),ny=-Math.cos(th);
-    const cx=W/2,cy=H*0.58;
-    ctx.strokeStyle=C.suelo;ctx.lineWidth=2;ctx.beginPath();
-    ctx.moveTo(cx-tx*W,cy-ty*W);ctx.lineTo(cx+tx*W,cy+ty*W);ctx.stroke();
-    // Cámara sigue al bloque: x e y físicos se muestran, nunca se recortan en el motor.
-    const lift=30+Math.min(st.y*10,H*0.2),bx=cx+nx*lift,by=cy+ny*lift;
-    ctx.save();ctx.translate(bx,by);ctx.rotate(-th);ctx.fillStyle=C.bloque;ctx.fillRect(-25,-25,50,50);ctx.restore();
-    const scale=Math.min(W,H)*0.2/Math.max(st.w,st.F,st.n,Math.abs(st.sumFx),1);
-    const vector=(x,y,name,color)=>{if(Math.hypot(x,y)<1e-8)return;const ex=bx+x*scale,ey=by+y*scale;arrow(bx,by,ex,ey,color,2.5);label(name,ex+5,ey-5,color);};
-    vector(0,st.w,`mg=${Engine.fmt(st.w)} N`,C.peso);
-    vector(nx*st.n,ny*st.n,`N=${Engine.fmt(st.n)} N`,C.normal);
-    vector(tx*st.Fx+nx*st.Fy,ty*st.Fx+ny*st.Fy,`F=${Engine.fmt(st.F)} N`,C.fApp);
-    vector(tx*st.fricSigned,ty*st.fricSigned,`f=${Engine.fmt(st.fricSigned)} N (${st.regime})`,C.fric);
-    vector(tx*st.sumFx+nx*st.sumFy,ty*st.sumFx+ny*st.sumFy,'ΣF',C.sumF);
-    label(`mg∥=${Engine.fmt(st.weightParallel)} N; mg⊥=${Engine.fmt(st.weightNormal)} N`,12,24,C.tx1);
-    label(`x=${Engine.fmt(st.x)} m; v=${Engine.fmt(st.vx)} m/s; a=${Engine.fmt(st.ax)} m/s²`,12,H-40,C.tx1);
-    label(st.y>0?'Sin contacto: N=0, fricción=0':'Cámara de seguimiento; fuerzas a escala común',12,H-20,C.tx2);
+    const W = canvas.logicalWidth;
+    const H = canvas.logicalHeight;
+    const th  = st.theta * Math.PI / 180;
+
+    // Vectores unitarios del plano
+    const tx =  Math.cos(th);   // paralelo al plano (dirección +x física)
+    const ty = -Math.sin(th);
+    const nx = -Math.sin(th);   // normal al plano (hacia arriba del plano)
+    const ny = -Math.cos(th);
+
+    // Punto de anclaje del plano en pantalla (posición del bloque proyectada)
+    const cx = W / 2;
+    const cy = H * 0.58;
+
+    // ── El bloque siempre centrado en el canvas ────────────
+    // El entorno (suelo, marcas) se desplaza según -st.x
+    const offset = -st.x * PX_PER_M;  // píxeles de desplazamiento del entorno
+
+    // Elevación sobre el plano (cuando la F levanta al bloque)
+    const lift = 28 + Math.min(st.y * 10, H * 0.2);
+    const bx   = cx + nx * lift;
+    const by   = cy + ny * lift;
+
+    // ── Plano con marcas de posición ──────────────────────
+    ctx.save();
+    // Transformar al sistema del plano: origen en el punto de contacto actual
+    ctx.translate(bx - nx * lift, by - ny * lift);  // punto sobre el plano bajo el bloque
+    ctx.rotate(-th);  // alinear con el plano
+
+    // Franja de suelo
+    ctx.fillStyle = C.sueloBand;
+    ctx.fillRect(-W, 0, W * 2, 18);
+
+    // Línea del plano
+    ctx.strokeStyle = C.suelo;
+    ctx.lineWidth   = 2;
+    ctx.beginPath();
+    ctx.moveTo(-W, 0);
+    ctx.lineTo(W, 0);
+    ctx.stroke();
+
+    // Sombra del bloque sobre el plano
+    ctx.shadowColor = C.bloqueSh;
+    ctx.shadowBlur  = 14;
+    ctx.fillStyle   = 'rgba(56,139,253,0.12)';
+    ctx.fillRect(-BW * 0.7, 0, BW * 1.4, 8);
+    ctx.shadowBlur = 0;
+
+    // Marcas de posición sobre el plano (se desplazan con offset)
+    // En el sistema del plano: el bloque está en x=0 de pantalla, el mundo se mueve con 'offset'
+    const markStart = -st.x; // posición en mundo real del lado izquierdo visible
+    const firstMark = Math.ceil(markStart / MARK_INTERVAL) * MARK_INTERVAL - MARK_INTERVAL;
+    const lastMark  = firstMark + (W / PX_PER_M) + MARK_INTERVAL * 2;
+
+    ctx.font = '8px Space Mono, monospace';
+
+    for (let m = firstMark; m <= lastMark; m += MARK_INTERVAL) {
+      // posición en pantalla: offset del mundo + posición de la marca
+      const screenX = (m + st.x) * PX_PER_M;
+
+      // Marca principal (cada 2m)
+      ctx.strokeStyle = m === 0 ? C.origin : C.markMain;
+      ctx.lineWidth   = m === 0 ? 2 : 1;
+      ctx.beginPath();
+      ctx.moveTo(screenX, -10);
+      ctx.lineTo(screenX, 0);
+      ctx.stroke();
+
+      // Etiqueta de posición
+      ctx.fillStyle = m === 0 ? C.origin : C.markSub;
+      ctx.textAlign = 'center';
+      ctx.fillText(m === 0 ? 'x=0' : `${m}m`, screenX, -14);
+
+      // Submarca entre marcas principales (cada 1m)
+      const half = screenX + MARK_INTERVAL * PX_PER_M / 2;
+      ctx.strokeStyle = C.markSub;
+      ctx.lineWidth   = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(half, -5);
+      ctx.lineTo(half, 0);
+      ctx.stroke();
+    }
+
+    // Textura de superficie (líneas diagonales desplazables)
+    ctx.strokeStyle = 'rgba(56,139,253,0.12)';
+    ctx.lineWidth   = 1;
+    const diagSpacing = 20;
+    const diagOffset  = ((st.x * PX_PER_M) % diagSpacing + diagSpacing) % diagSpacing;
+    for (let dx = -W + diagOffset; dx < W + diagSpacing; dx += diagSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(dx, 0);
+      ctx.lineTo(dx - 12, 18);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // ── Rastro del bloque ─────────────────────────────────
+    if (Math.abs(st.vx) > 0.05) {
+      trail.push({ bx, by });
+      if (trail.length > TRAIL_LEN) trail.shift();
+    } else {
+      trail.length = 0;
+    }
+    for (let i = 0; i < trail.length; i++) {
+      const alpha = (i / TRAIL_LEN) * 0.5;
+      const tp = trail[i];
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = C.trail;
+      ctx.translate(tp.bx, tp.by);
+      ctx.rotate(-th);
+      ctx.fillRect(-BW / 2, -BH / 2, BW, BH);
+      ctx.restore();
+    }
+
+    // ── Bloque ────────────────────────────────────────────
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.rotate(-th);
+    // Sombra
+    ctx.shadowColor = C.bloqueSh;
+    ctx.shadowBlur  = 16;
+    // Relleno
+    ctx.fillStyle   = C.bloque;
+    ctx.beginPath();
+    ctx.roundRect(-BW / 2, -BH / 2, BW, BH, 5);
+    ctx.fill();
+    // Borde
+    ctx.shadowBlur  = 0;
+    ctx.strokeStyle = C.bloqueB;
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+    // Etiqueta de masa
+    ctx.font      = 'bold 12px Syne, sans-serif';
+    ctx.fillStyle = C.tx1;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Engine.fmt(st.m)} kg`, 0, 5);
+    ctx.restore();
+
+    // ── Indicador de velocidad (flecha sobre el bloque) ───
+    if (Math.abs(st.vx) > 0.1) {
+      const vDir  = Math.sign(st.vx);
+      const vLen  = Math.min(Math.abs(st.vx) * 4, 50);
+      const vx1   = bx;
+      const vy1   = by - BH / 2 - 14;
+      const vx2   = bx + tx * vLen * vDir;
+      const vy2   = vy1 + ty * vLen * vDir;
+      arrow(vx1, vy1, vx2, vy2, '#58a6ff', 2);
+      label(`v=${Engine.fmt(st.vx)} m/s`, vx2 + 6, vy2 - 2, '#58a6ff');
+    }
+
+    // ── Vectores de fuerza ────────────────────────────────
+    const scale = Math.min(W, H) * 0.2 / Math.max(st.w, st.F, st.n, Math.abs(st.sumFx), 1);
+
+    const vector = (dx, dy, name, color) => {
+      if (Math.hypot(dx, dy) < 1e-8) return;
+      const ex = bx + dx * scale;
+      const ey = by + dy * scale;
+      arrow(bx, by, ex, ey, color, 2.5);
+      label(name, ex + 5, ey - 5, color);
+    };
+
+    vector(0, st.w, `mg=${Engine.fmt(st.w)} N`, C.peso);
+    vector(nx * st.n, ny * st.n, `N=${Engine.fmt(st.n)} N`, C.normal);
+    vector(tx * st.Fx + nx * st.Fy, ty * st.Fx + ny * st.Fy, `F=${Engine.fmt(st.F)} N`, C.fApp);
+    vector(tx * st.fricSigned, ty * st.fricSigned, `f=${Engine.fmt(st.fricSigned)} N (${st.regime})`, C.fric);
+    vector(tx * st.sumFx + nx * st.sumFy, ty * st.sumFx + ny * st.sumFy, 'ΣF', C.sumF);
+
+    // ── Indicadores de posición actuales ─────────────────
+    label(`mg∥=${Engine.fmt(st.weightParallel)} N; mg⊥=${Engine.fmt(st.weightNormal)} N`, 12, 24, C.tx1);
+
+    // Indicador de posición con barra de progreso relativa
+    const xLabel = `x = ${Engine.fmt(st.x)} m`;
+    const aLabel = `a = ${Engine.fmt(st.ax)} m/s²`;
+    label(xLabel, 12, H - 42, C.tx1);
+    label(aLabel, 12, H - 26, C.tx1);
+
+    // Barra de desplazamiento (referencia visual de cuánto se ha movido)
+    const barW   = Math.min(W * 0.35, 160);
+    const barH   = 6;
+    const barX   = W - barW - 14;
+    const barY   = H - 24;
+    const tMax   = Engine.getState().tMax;
+    const tNorm  = Math.min(st.t / tMax, 1);
+    ctx.fillStyle = 'rgba(56,139,253,0.12)';
+    ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH, 3); ctx.fill();
+    if (tNorm > 0) {
+      ctx.fillStyle = '#58a6ff';
+      ctx.beginPath(); ctx.roundRect(barX, barY, barW * tNorm, barH, 3); ctx.fill();
+    }
+    label('t', barX - 12, barY + barH - 1, C.tx2);
+    label(`${Engine.fmt(tMax)}s`, barX + barW + 4, barY + barH - 1, C.tx3);
+
+    // Estado del movimiento
+    const moving   = Math.abs(st.vx) > 0.05;
+    const stateStr = st.y > 0
+      ? 'Sin contacto'
+      : moving
+        ? (st.vx > 0 ? '→ desliza (+x)' : '← desliza (−x)')
+        : st.regime === 'cinética' ? '→ desliza' : '◼ reposo';
+    label(stateStr, W - 14, H - 42, moving ? '#58a6ff' : C.tx2, 'right');
   }
 
+  // ══════════════════════════════════════════════════════════
+  //  MODO ELEVADOR
+  // ══════════════════════════════════════════════════════════
   function drawElevador(st) {
     const W  = canvas.logicalWidth;
     const H  = canvas.logicalHeight;
 
-    // Animar posición vertical del bloque según ay
-    // Ventana visual acotada, posición física consultable sin depender de frames.
     elevY = H * (0.4 - 0.25 * Math.tanh(st.x / 10));
 
     const bcx = W / 2;
@@ -143,18 +337,18 @@ const Renderer = (() => {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // ── Tensión T (hacia arriba) ──────────────────────────
+    // Tensión T (hacia arriba)
     const tLen = Math.min(st.T * 0.5, 120);
     arrow(bcx, by, bcx, by - tLen, C.normal, 3);
     label(`T=${Engine.fmt(st.T)}N`, bcx + 8, by - tLen * 0.5, C.normal);
 
-    // ── Peso W (hacia abajo) ──────────────────────────────
+    // Peso W (hacia abajo)
     const wLen = Math.min(st.w * 0.5, 120);
     arrow(bcx, by + BH, bcx, by + BH + wLen, C.peso, 3);
     label(`W=${Engine.fmt(st.w)}N`, bcx + 8, by + BH + wLen * 0.5, C.peso);
 
-    // ── Bloque ────────────────────────────────────────────
-    ctx.shadowColor = 'rgba(88,166,255,0.15)';
+    // Bloque
+    ctx.shadowColor = C.bloqueSh;
     ctx.shadowBlur  = 12;
     ctx.fillStyle   = C.bloque;
     ctx.strokeStyle = C.bloqueB;
@@ -170,10 +364,10 @@ const Renderer = (() => {
     ctx.textAlign = 'center';
     ctx.fillText(`${Engine.fmt(st.m)} kg`, bcx, bcy + 5);
 
-    // ── Indicador de estado ───────────────────────────────
+    // Indicador de estado
     let aStr, aColor;
     if (Math.abs(st.ay) < 0.1) {
-      aStr   = '⚖ Equilibrio  ay = 0';
+      aStr   = '⏸ Equilibrio  ay = 0';
       aColor = C.normal;
     } else if (st.ay > 0) {
       aStr   = `↑ Sube  ay = ${Engine.fmt(st.ay)} m/s²`;
@@ -187,15 +381,14 @@ const Renderer = (() => {
     ctx.textAlign = 'center';
     ctx.fillText(aStr, W / 2, H * 0.92);
 
-    // Fórmula de tensión en vivo
     ctx.font      = '10px Space Mono, monospace';
     ctx.fillStyle = C.tx2;
     ctx.fillText(`T = m(g + ay) = ${Engine.fmt(st.m)}(9.8 + ${Engine.fmt(st.ay)})`, W / 2, H * 0.92 + 18);
   }
 
-  // ════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════
   //  DRAW PRINCIPAL
-  // ════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════
   function draw(st) {
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, canvas.logicalWidth, canvas.logicalHeight);
@@ -207,28 +400,17 @@ const Renderer = (() => {
       drawElevador(st);
     }
 
-    if(st.modo==='elevador')drawHUD(st);
+    if (st.modo === 'elevador') drawHUD(st);
   }
 
-  // ── HUD ───────────────────────────────────────────────────
+  // ── HUD (solo elevador) ───────────────────────────────────
   function drawHUD(st) {
-    const lines = st.modo === 'plano'
-      ? [
-          { label: 'm',    val: Engine.fmt(st.m)     + ' kg',   color: '#e6edf3' },
-          { label: 'F',    val: Engine.fmt(st.F)      + ' N',    color: '#e3b341' },
-          { label: 'φ',    val: st.phi                + '°',     color: '#e3b341' },
-          { label: 'N',    val: Engine.fmt(st.n)      + ' N',    color: '#3fb950' },
-          { label: 'W',    val: Engine.fmt(st.w)      + ' N',    color: '#f85149' },
-          { label: 'fk',   val: Engine.fmt(st.fric)   + ' N',    color: '#a371f7' },
-          { label: 'ax',   val: Engine.fmt(st.ax)     + ' m/s²', color: '#e6edf3' },
-        ]
-      : [
-          { label: 'm',    val: Engine.fmt(st.m)  + ' kg',   color: '#e6edf3' },
-          { label: 'T',    val: Engine.fmt(st.T)  + ' N',    color: '#3fb950' },
-          { label: 'W',    val: Engine.fmt(st.w)  + ' N',    color: '#f85149' },
-          { label: 'ay',   val: Engine.fmt(st.ay) + ' m/s²', color: '#e6edf3' },
-        ];
-
+    const lines = [
+      { label: 'm',  val: Engine.fmt(st.m)  + ' kg',   color: '#e6edf3' },
+      { label: 'T',  val: Engine.fmt(st.T)  + ' N',    color: '#3fb950' },
+      { label: 'W',  val: Engine.fmt(st.w)  + ' N',    color: '#f85149' },
+      { label: 'ay', val: Engine.fmt(st.ay) + ' m/s²', color: '#e6edf3' },
+    ];
     const bx = 14;
     let   by = 22;
     ctx.font = '10px Space Mono, monospace';
