@@ -18,6 +18,10 @@ vm.runInContext(fs.readFileSync('js/sim-registry.js','utf8'),ctx);vm.runInContex
  await get('copy-code').events.click();
  assert.equal(clipboardWritten,'fake');
 
+ const contextBtn=get('group-sim-context-btn');
+ assert.equal(contextBtn.hidden,false);
+ assert.ok(contextBtn.textContent.includes('SIM 13'),'Context button updated with latest simulator');
+
  const card=get('saved').children[0];
  // Human-readable simulator name & date assertions
  assert.ok(card.textContent.includes('Momento de inercia compuesto'),'Contains human simulator name');

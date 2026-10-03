@@ -78,8 +78,8 @@
 
 <style>
 .pref-ref-table {
-  width: 100%; border-collapse: collapse;
-  font-family: var(--mono); font-size: 11px; margin-top: 8px;
+  width: 100%; max-width: 100%; overflow-x: auto; display: block;
+  border-collapse: collapse; font-family: var(--mono); font-size: 11px; margin-top: 8px;
 }
 .pref-ref-table th {
   text-align: left; color: var(--tx3);

@@ -1,12 +1,133 @@
 /* ============================================================
    Registros Locales y Panel
    ============================================================ */
-.registry-panel{padding:20px;max-height:calc(100vh - 52px);overflow:auto;max-width:100%;background:var(--bg, #0d1117);color:var(--tx1, #e6edf3)}
-.registry-panel p{margin:10px 0;line-height:1.5}.registry-actions{display:flex;gap:8px;flex-wrap:wrap}.registry-scroll{overflow:auto;max-width:100%;border:1px solid var(--border, #30363d);margin-top:14px}
-.registry-panel table{width:100%;border-collapse:collapse;min-width:550px;font-size:12px}.registry-panel th,.registry-panel td{padding:10px;border-bottom:1px solid var(--border, #30363d);text-align:left;vertical-align:top}.registry-panel caption{text-align:left;padding:10px;font-weight:bold}
-.registry-panel dt{font-weight:600}.registry-panel dd{margin:2px 0 8px;overflow-wrap:anywhere}.registry-panel button{cursor:pointer;background:var(--input, #21262d);color:var(--tx1, #e6edf3);padding:7px;border:1px solid var(--border, #30363d);border-radius:5px}
-.registry-panel th[scope=colgroup]{text-align:center;background:var(--input, #21262d)}.registry-panel td{min-width:100px;max-width:260px;overflow-wrap:anywhere}.registry-panel th{min-width:100px}.registry-panel th[rowspan]{min-width:60px}
-@media(max-width:1100px){.registry-panel{max-height:none;padding:12px}}
+.registry-panel {
+  padding: 20px;
+  max-height: calc(100vh - 52px);
+  overflow-y: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--bg, #0d1117);
+  color: var(--tx1, #e6edf3);
+}
+.registry-panel p {
+  margin: 8px 0 14px;
+  line-height: 1.5;
+  color: var(--tx2, #8b949e);
+  font-size: 13px;
+}
+.registry-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.registry-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  border: 1px solid var(--border, #30363d);
+  border-radius: 8px;
+  margin-top: 14px;
+  background: #161b22;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+.registry-panel table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 600px;
+  font-size: 12px;
+}
+.registry-panel caption {
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--tx1, #e6edf3);
+  background: #161b22;
+  border-bottom: 1px solid var(--border, #30363d);
+}
+.registry-panel th,
+.registry-panel td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #21262d;
+  text-align: left;
+  vertical-align: middle;
+}
+.registry-panel th {
+  background: #161b22;
+  color: var(--tx2, #8b949e);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.registry-panel th[scope=colgroup] {
+  text-align: center;
+  background: #21262d;
+  color: var(--tx1, #e6edf3);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-left: 1px solid var(--border, #30363d);
+  border-right: 1px solid var(--border, #30363d);
+}
+.registry-panel td {
+  min-width: 80px;
+  max-width: 220px;
+  overflow-wrap: break-word;
+  color: #c9d1d9;
+}
+.registry-panel tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+.registry-panel tbody tr:hover {
+  background: rgba(56, 139, 253, 0.06);
+}
+.registry-panel dt {
+  font-weight: 600;
+}
+.registry-panel dd {
+  margin: 2px 0 6px;
+  overflow-wrap: anywhere;
+}
+.registry-panel .registry-actions-cell {
+  white-space: nowrap;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 180px;
+}
+.btn-record-action {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn-record-group {
+  background: #21262d;
+  border: 1px solid #388bfd;
+  color: #58a6ff;
+}
+.btn-record-group:hover {
+  background: #1f6feb;
+  color: #ffffff;
+}
+.btn-record-delete {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+.btn-record-delete:hover {
+  background: rgba(248, 81, 73, 0.15);
+  border-color: #da3633;
+  color: #f85149;
+}
+@media(max-width:1100px){
+  .registry-panel { max-height: none; padding: 12px; }
+}
 
 /* ============================================================
    Barra superior (Toolbar) y Jerarquía Compartida
@@ -185,6 +306,10 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.sim-nav .nav-user-dropdown[hidden] {
+  display: none !important;
 }
 
 .sim-nav .nav-user-dropdown-item {

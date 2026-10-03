@@ -111,7 +111,7 @@
 
       <div class="group-links-bar">
         <a href="../../index.php" class="btn-link-action">Explorar simuladores</a>
-        <a href="../../simuladores/02_vectores/" class="btn-link-action">SIM 02 · Vectores</a>
+        <a id="group-sim-context-btn" class="btn-link-action" hidden></a>
       </div>
 
       <div class="members-block">

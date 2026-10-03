@@ -223,7 +223,27 @@ const SimGroups = (() => {
       return result;
     }
 
+    function closeUserMenu() {
+      userMenu.hidden = true;
+      userPill.setAttribute('aria-expanded', 'false');
+    }
+
+    function openUserMenu() {
+      userMenu.hidden = false;
+      userPill.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggleUserMenu(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      if (userMenu.hidden) {
+        openUserMenu();
+      } else {
+        closeUserMenu();
+      }
+    }
+
     function updateSessionUI(user) {
+      closeUserMenu();
       if (user && user.name) {
         userName.textContent = user.name;
         userPill.title = 'Sesión activa: ' + user.name + ' · Opciones de cuenta';
@@ -236,23 +256,34 @@ const SimGroups = (() => {
       }
     }
 
-    userPill.addEventListener('click', (e) => {
-      if (e && e.stopPropagation) e.stopPropagation();
-      const willOpen = userMenu.hidden;
-      userMenu.hidden = !willOpen;
-      userPill.setAttribute('aria-expanded', String(willOpen));
-    });
+    userPill.addEventListener('click', toggleUserMenu);
 
     if (typeof document.addEventListener === 'function') {
       document.addEventListener('click', (e) => {
         if (userWrap && userWrap.contains && !userWrap.contains(e.target)) {
-          userMenu.hidden = true;
-          userPill.setAttribute('aria-expanded', 'false');
+          closeUserMenu();
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !userMenu.hidden) {
+          closeUserMenu();
+          if (typeof userPill.focus === 'function') userPill.focus();
         }
       });
     }
 
+    if (nav) {
+      nav.addEventListener('click', (e) => {
+        if (userWrap && !userWrap.contains(e.target)) {
+          closeUserMenu();
+        }
+      });
+    }
+
+    menuGroupsLink.addEventListener('click', () => { closeUserMenu(); });
+
     menuLogoutBtn.addEventListener('click', async () => {
+      closeUserMenu();
       try {
         await request('logout', {});
         updateSessionUI(null);
@@ -279,7 +310,7 @@ const SimGroups = (() => {
       }
     }
 
-    button.addEventListener('click', async () => {
+    async function openSaveDialog(customSnapshot = null) {
       if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
       dialog.showModal();
       sending = false;
@@ -293,7 +324,11 @@ const SimGroups = (() => {
       label.hidden = submit.hidden = preview.hidden = true;
       login.textContent = 'Iniciar sesión';
       try {
-        snapshot = JSON.parse(JSON.stringify(capture()));
+        if (customSnapshot) {
+          snapshot = JSON.parse(JSON.stringify(customSnapshot));
+        } else {
+          snapshot = JSON.parse(JSON.stringify(capture()));
+        }
         const session = await request('session');
         csrf = session.csrf;
         updateSessionUI(session.user);
@@ -317,7 +352,9 @@ const SimGroups = (() => {
         status.textContent = e.message;
         status.className = 'status-error';
       }
-    });
+    }
+
+    button.addEventListener('click', () => openSaveDialog(null));
 
     submit.addEventListener('click', async () => {
       if (sending) return;
@@ -353,7 +390,16 @@ const SimGroups = (() => {
       if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
       dialog.close();
     });
+
+    SimGroups.openSaveDialog = openSaveDialog;
   }
 
-  return { bind, getSimTitle, SIMULATOR_NAMES, formatValue, renderPreview };
+  return {
+    bind,
+    getSimTitle,
+    SIMULATOR_NAMES,
+    formatValue,
+    renderPreview,
+    openSaveDialog: (s) => (SimGroups.openSaveDialog ? SimGroups.openSaveDialog(s) : null)
+  };
 })();

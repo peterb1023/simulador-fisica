@@ -74,17 +74,75 @@
   return String(val);
  }
 
+ const SIMULATOR_PATHS={
+  '01':'simuladores/01_energia/',
+  '02':'simuladores/02_vectores/',
+  '03':'simuladores/03_unidades/',
+  '04':'simuladores/04_cinematica_1d/',
+  '05':'simuladores/05_mru_mrua/',
+  '06':'simuladores/06_proyectiles/',
+  '07':'simuladores/07_circular/',
+  '08':'simuladores/08_newton/',
+  '09':'simuladores/09_trabajo/',
+  '10':'simuladores/10_potencia/',
+  '11':'simuladores/11_rotacional/',
+  '12':'simuladores/12_inercia/',
+  '13':'simuladores/13_llanta/'
+ };
+
  const returnPath=new URLSearchParams(location.search).get('return');
  const root=new URL('../../',location.href);
  let returnURL=null;
+
+ function resolveSimulatorFromUrl(u){
+  if(!u)return null;
+  const path=u.pathname||'';
+  for(const [id,relPath] of Object.entries(SIMULATOR_PATHS)){
+   const clean=relPath.replace(/\/$/,'');
+   if(path.includes(clean)||path.includes('/'+id+'_')){
+    return {id,name:getSimDisplayName(id),path:relPath};
+   }
+  }
+  return null;
+ }
+
+ function updateGroupContextLink(simulationsList=[]){
+  const btn=$('group-sim-context-btn');
+  if(!btn)return;
+  if(returnURL){
+   const sim=resolveSimulatorFromUrl(returnURL);
+   btn.href=returnURL.href;
+   btn.textContent=sim?`← Volver a SIM ${sim.id} · ${sim.name}`:'← Volver al simulador';
+   btn.title='Regresar al simulador desde donde accediste';
+   btn.hidden=false;
+   return;
+  }
+  if(simulationsList&&simulationsList.length>0&&simulationsList[0]?.simulador_id){
+   const latestId=String(simulationsList[0].simulador_id).padStart(2,'0');
+   const relPath=SIMULATOR_PATHS[latestId];
+   const simName=getSimDisplayName(latestId);
+   if(relPath){
+    btn.href='../../'+relPath;
+    btn.textContent=`Abrir SIM ${latestId} · ${simName}`;
+    btn.title='Último simulador compartido en este grupo';
+    btn.hidden=false;
+    return;
+   }
+  }
+  btn.hidden=true;
+ }
+
  try{
   const u=new URL(returnPath||'',root);
   if(returnPath&&u.origin===root.origin&&u.pathname.startsWith(root.pathname+'simuladores/')&&!u.username&&!u.password){
    returnURL=u;
+   const sim=resolveSimulatorFromUrl(returnURL);
    $('return-sim').href=u.href;
+   $('return-sim').textContent=sim?`← Volver a SIM ${sim.id} · ${sim.name}`:'← Volver al simulador';
    $('return-sim').hidden=false;
   }
  }catch{}
+ updateGroupContextLink([]);
 
  async function api(action,data){
   const r=await fetch('api.php?action='+action,{
@@ -355,6 +413,7 @@
   simulations=data.simulations||[];
   visibleSims=simPageSize;
   renderSimulations();
+  updateGroupContextLink(simulations);
  }
 
  // Toggle create/join panels
