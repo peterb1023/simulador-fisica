@@ -75,6 +75,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
   border-right: 1px solid var(--border);
   padding: 12px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex; flex-direction: column; gap: 2px;
 }
 .panel-right { border-right: none; border-left: 1px solid var(--border); gap: 0; padding: 0; }
@@ -131,7 +132,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
   margin-bottom: 5px;
 }
 .sl-row input[type=range] {
-  flex: 1; -webkit-appearance: none; height: 3px;
+  flex: 1; min-width: 0; -webkit-appearance: none; height: 3px;
   background: var(--input); border-radius: 2px; outline: none;
 }
 .sl-row input[type=range]::-webkit-slider-thumb {
@@ -141,7 +142,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
 }
 .sl-val {
   font-family: var(--mono); font-size: 10px; color: var(--tx2);
-  white-space: nowrap; min-width: 56px; text-align: right;
+  white-space: nowrap; min-width: 56px; text-align: right; flex-shrink: 0;
 }
 .sl-val b { color: var(--tx1); }
 .sl-label { font-family: var(--mono); font-size: 10px; color: var(--tx3); width: 10px; flex-shrink: 0; }

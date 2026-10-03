@@ -73,6 +73,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
   border-right: 1px solid var(--border);
   padding: 14px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex; flex-direction: column; gap: 2px;
 }
 .panel-right { border-right: none; border-left: 1px solid var(--border); }
@@ -101,7 +102,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
 /* Sliders */
 .sl-row { display: flex; align-items: center; gap: 8px; }
 .sl-row input[type=range] {
-  flex: 1; -webkit-appearance: none; height: 4px;
+  flex: 1; min-width: 0; -webkit-appearance: none; height: 4px;
   background: var(--input); border-radius: 2px; outline: none;
 }
 .sl-row input[type=range]::-webkit-slider-thumb {
@@ -109,7 +110,7 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
   border-radius: 50%; background: var(--accent); cursor: pointer;
   border: 2px solid var(--bg);
 }
-.sl-val { font-family: var(--mono); font-size: 11px; color: var(--tx2); white-space: nowrap; min-width: 52px; text-align: right; }
+.sl-val { font-family: var(--mono); font-size: 11px; color: var(--tx2); white-space: nowrap; min-width: 52px; text-align: right; flex-shrink: 0; }
 .sl-val b { color: var(--tx1); }
 
 /* Toggle */

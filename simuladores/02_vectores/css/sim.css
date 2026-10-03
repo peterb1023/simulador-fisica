@@ -285,8 +285,9 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
 
 /* ── Fórmulas tab ── */
 .formulas-page {
-  padding: 30px; overflow-y: auto;
-  height: calc(100vh - 52px);
+  padding: 30px;
+  /* overflow-y handled by #tab-formulas > .formulas-page rule in global.css */
+  height: auto;
 }
 .fp-header { margin-bottom: 28px; }
 .fp-header h2 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }

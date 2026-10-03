@@ -229,15 +229,31 @@ const Renderer = (() => {
 
     // ── Etiquetas de los vectores ─────────────────────────
     ctx.font = 'bold 10px Space Mono, monospace';
-    ctx.textAlign = 'left';
 
+    // Etiqueta vx: a la derecha del extremo de la flecha vx,
+    // un poco por debajo del eje horizontal.
     ctx.fillStyle = C.vx;
-    boundedLabel(`vx=${Engine.fmt(st.vx)}`, px + vxLen + 14, py + 18);
+    ctx.textAlign = 'left';
+    const vxLabelX = px + vxLen + 14;
+    const vxLabelY = py + 18;
+    boundedLabel(`vx=${Engine.fmt(st.vx)}`, vxLabelX, vxLabelY);
 
+    // Etiqueta vy: anclada al extremo de la flecha vy,
+    // desplazada horizontalmente para no coincidir con vx.
+    // Si vxLen es pequeño, vy se separa verticalmente del vx label.
     ctx.fillStyle = vyColor;
-    const vyLabelY = py + vyLen + (st.vy >= 0 ? -6 : 14);
-    ctx.textAlign = 'center';
-    boundedLabel(`vy=${Engine.fmt(st.vy)}`, px + 14, vyLabelY);
+    ctx.textAlign = 'left';
+    const vyTipX = px;         // vy es vertical, la punta está en px
+    const vyTipY = py + vyLen;
+    // Posición del label vy: derecha del proyectil, fuera de la zona vx
+    const vyLabelX = vyTipX - 60;
+    const vyLabelY = vyTipY + (st.vy >= 0 ? -8 : 16);
+    // Asegurar separación mínima con el label vx
+    const MIN_SEP = 18;
+    const actualVyY = (Math.abs(vyLabelY - vxLabelY) < MIN_SEP && Math.abs(vyLabelX - vxLabelX) < 80)
+      ? vxLabelY + MIN_SEP
+      : vyLabelY;
+    boundedLabel(`vy=${Engine.fmt(st.vy)}`, vyLabelX, actualVyY);
 
     // ── HUD: datos actuales (esquina superior) ────────────
     drawHUD(st, scale);

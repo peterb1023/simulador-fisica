@@ -151,9 +151,12 @@ function togglePause(btn) {
   btn.textContent = st.paused ? '▶ Reanudar' : '⏸ Pausar';
 }
 function resetSim() {
-  // Re-init con los parámetros actuales
-  Engine.setOmega(Engine.getState().omega);
+  // Reiniciar ángulo acumulado y reanudar si estaba pausado
+  const st = Engine.getState();
+  st.theta = 0;
+  if (st.paused) Engine.togglePause();
   document.getElementById('btn-pause').textContent = '⏸ Pausar';
+  Engine.setOmega(st.omega); // recalcula I/K con parámetros actuales
 }
 function setTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');

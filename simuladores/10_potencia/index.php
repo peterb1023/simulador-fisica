@@ -118,7 +118,26 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
           </div>
         </div>
 
-        <section class="ps"><h3>Eficiencia</h3><label for="eff-kind">Magnitud</label><select id="eff-kind"><option value="W">Potencia (W)</option><option value="J">Energía (J, mismo intervalo)</option></select><label for="eff-in">Entrada</label><input id="eff-in" type="number" min="0" value="1000"><label for="eff-out">Salida útil</label><input id="eff-out" type="number" min="0" value="800"><output id="eff-result" aria-live="polite"></output></section>
+
+        <section class="ps eff-section">
+          <div class="ps-label">Eficiencia</div>
+          <div class="eff-field">
+            <label class="eff-label" for="eff-kind">Magnitud</label>
+            <select id="eff-kind" class="eff-select">
+              <option value="W">Potencia (W)</option>
+              <option value="J">Energía (J, mismo intervalo)</option>
+            </select>
+          </div>
+          <div class="eff-field">
+            <label class="eff-label" for="eff-in">Entrada</label>
+            <input id="eff-in" type="number" min="0" value="1000" class="eff-num">
+          </div>
+          <div class="eff-field">
+            <label class="eff-label" for="eff-out">Salida útil</label>
+            <input id="eff-out" type="number" min="0" value="800" class="eff-num">
+          </div>
+          <output id="eff-result" aria-live="polite" class="eff-result"></output>
+        </section>
         <!-- Conversiones rápidas de referencia -->
         <div class="ps conv-ref">
           <div class="ps-label">Conversiones</div>
@@ -228,6 +247,29 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 }
 .inp-num:focus { border-color: var(--accent); }
 .inp-hint { font-size: 9px; color: var(--tx3); margin-top: 3px; }
+
+/* ── Eficiencia block (eff-kind, eff-in, eff-out) ── */
+.eff-section { display: flex; flex-direction: column; gap: 8px; }
+.eff-field   { display: flex; flex-direction: column; gap: 3px; }
+.eff-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--tx2);
+}
+.eff-select, .eff-num {
+  width: 100%; box-sizing: border-box;
+  padding: 7px 10px; border-radius: var(--rs);
+  background: var(--input); border: 1px solid var(--border);
+  color: var(--tx1); font-family: var(--mono); font-size: 12px;
+  outline: none; transition: border-color .15s;
+  -webkit-appearance: none; appearance: none;
+}
+.eff-select:focus, .eff-num:focus { border-color: var(--accent); }
+.eff-select:hover, .eff-num:hover { border-color: var(--borderL); }
+.eff-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b949e'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.eff-result {
+  display: block; font-family: var(--mono); font-size: 13px; font-weight: 700;
+  color: var(--ec); padding: 5px 0;
+}
 
 /* Conversiones de referencia */
 .conv-ref { margin-top: auto; }

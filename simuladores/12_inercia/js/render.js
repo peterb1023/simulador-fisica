@@ -76,42 +76,62 @@ const Renderer = (() => {
       const halfL = Math.min(dim * maxR / 2, maxR);
       const thick = 12;
 
-      // Sombra
       ctx.shadowColor = color;
       ctx.shadowBlur  = 10;
 
-      // Cuerpo de la varilla
-      ctx.fillStyle   = C.fill;
-      ctx.strokeStyle = color;
-      ctx.lineWidth   = 2;
-      ctx.beginPath();
-      ctx.roundRect(-halfL, -thick/2, halfL*2, thick, 4);
-      ctx.fill();
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Eje de rotación
       if (c.id === 'varilla_cm') {
-        // Punto en el centro
+        // ── VARILLA CENTRO: eje en el centro ──
+        // Varilla centrada en el origen (pivote = cx,cy)
+        ctx.fillStyle   = C.fill;
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 2;
+        ctx.beginPath();
+        ctx.roundRect(-halfL, -thick/2, halfL*2, thick, 4);
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Punto de eje en el centro
         ctx.fillStyle = C.eje;
         ctx.beginPath();
         ctx.arc(0, 0, 5, 0, Math.PI * 2);
         ctx.fill();
+
+        // Marcas de masa
+        ctx.fillStyle = color + '44';
+        [-halfL*0.5, 0, halfL*0.5].forEach(x => {
+          ctx.beginPath();
+          ctx.arc(x, 0, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
       } else {
-        // Punto en el extremo izquierdo
+        // ── VARILLA EXTREMO: eje en el extremo izquierdo ──
+        // La varilla va de x=0 a x=2*halfL.
+        // El origen (0,0) coincide con el pivote real (extremo).
+        ctx.fillStyle   = C.fill;
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 2;
+        ctx.beginPath();
+        ctx.roundRect(0, -thick/2, halfL*2, thick, 4);
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Punto de eje en el extremo (0,0)
         ctx.fillStyle = C.eje;
         ctx.beginPath();
-        ctx.arc(-halfL, 0, 5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
         ctx.fill();
-      }
 
-      // Marcas de masa cada cuarto
-      ctx.fillStyle = color + '44';
-      [-halfL*0.5, 0, halfL*0.5].forEach(x => {
-        ctx.beginPath();
-        ctx.arc(x, 0, 3, 0, Math.PI * 2);
-        ctx.fill();
-      });
+        // Marcas de masa a lo largo de la varilla
+        ctx.fillStyle = color + '44';
+        [halfL*0.5, halfL, halfL*1.5].forEach(x => {
+          ctx.beginPath();
+          ctx.arc(x, 0, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
 
     } else {
       // ── CUERPO CIRCULAR (disco, aro, esfera) ──
