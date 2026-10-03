@@ -220,15 +220,18 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
   border-radius: 50%; background: var(--accent); cursor: pointer;
   border: 2px solid var(--bg);
 }
-.sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 76px; text-align: right; }
+.sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 82px; text-align: right; font-variant-numeric: tabular-nums; }
 .sl-val b { color: var(--tx1); }
 .sl-val span { font-size: 9px; }
 
 /* ── Stats ── */
 .stat-grid-11 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.stat-cell { background: var(--card); border: 1px solid var(--border); border-radius: var(--rs); padding: 7px 9px; }
+.stat-cell {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--rs);
+  padding: 7px 9px; min-height: 52px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center;
+}
 .stat-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing:.07em; color: var(--tx3); margin-bottom:3px; }
-.stat-val { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--tx1); }
+.stat-val { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--tx1); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stat-val.accent-blue   { color: var(--accent); }
 .stat-val.accent-green  { color: #3fb950; }
 .stat-val.accent-gold   { color: #e3b341; }
@@ -242,6 +245,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
   background: rgba(88,166,255,.06); border: 1px solid rgba(88,166,255,.18);
   border-radius: 4px; padding: 5px 10px; text-align: center;
   transition: color .2s;
+  min-height: 28px; box-sizing: border-box; font-variant-numeric: tabular-nums;
 }
 
 /* ── Botones ── */
@@ -261,18 +265,24 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 .leg-c { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; display: inline-block; }
 
 /* ── Panel derecho ── */
+.panel-right {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .res-hint { font-size: 10px; color: var(--tx3); line-height: 1.4; margin-top: -4px; }
 .step-card {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--rs); padding: 10px 12px;
+  border-radius: var(--rs); padding: 9px 12px;
+  min-height: 84px; box-sizing: border-box;
+  contain: content;
 }
 .step-card.accent-blue   { border-color: rgba(88,166,255,.22); }
 .step-card.accent-green  { border-color: rgba(63,185,80,.2); }
 .step-card.accent-gold   { border-color: rgba(227,179,65,.2); }
 .step-card.accent-red    { border-color: rgba(248,81,73,.2); }
-.step-formula { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing:.08em; color: var(--tx3); margin-bottom:5px; }
-.step-sust    { font-family: var(--mono); font-size: 10px; color: var(--tx2); margin-bottom:5px; line-height:1.6; }
-.step-res     { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); }
+.step-formula { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing:.08em; color: var(--tx3); margin-bottom:4px; min-height: 13px; }
+.step-sust    { font-family: var(--mono); font-size: 10px; color: var(--tx2); margin-bottom:4px; line-height:1.5; font-variant-numeric: tabular-nums; min-height: 28px; word-break: break-word; }
+.step-res     { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; min-height: 18px; }
 
 /* ── Ref rápida ── */
 .ref-rapida-11 { }
@@ -280,6 +290,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 .ref-f-11 {
   font-family: var(--mono); font-size: 10px; color: var(--tx2);
   background: var(--input); padding: 3px 7px; border-radius: 4px; display: inline-block;
+  font-variant-numeric: tabular-nums;
 }
 </style>
 

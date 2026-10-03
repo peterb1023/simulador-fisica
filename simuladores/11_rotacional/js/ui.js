@@ -15,9 +15,9 @@ const UI = (() => {
   }
 
   function bindControls() {
-    bind('sl-R',     v => { Engine.setR(+v);     syncVal('val-R',     v, 'm');      });
-    bind('sl-alpha', v => { Engine.setAlpha(+v); syncVal('val-alpha', v, 'rad/s²'); });
-    bind('sl-w0',    v => { Engine.setW0(+v);    syncVal('val-w0',    v, 'rad/s');  });
+    bind('sl-R',     v => { Engine.setR(+v);     syncVal('val-R',     v, 'm');      updatePanel(Engine.getSustitucion()); });
+    bind('sl-alpha', v => { Engine.setAlpha(+v); syncVal('val-alpha', v, 'rad/s²'); updatePanel(Engine.getSustitucion()); });
+    bind('sl-w0',    v => { Engine.setW0(+v);    syncVal('val-w0',    v, 'rad/s');  updatePanel(Engine.getSustitucion()); });
   }
 
   function bind(id, fn) {
@@ -31,6 +31,7 @@ const UI = (() => {
     sv('sl-alpha', st.alpha, 'val-alpha', 'rad/s²');
     sv('sl-w0',    st.w0,    'val-w0',    'rad/s');
     updateStats();
+    updatePanel(Engine.getSustitucion());
   }
 
   function sv(slId, val, valId, unit) {
@@ -88,7 +89,7 @@ const UI = (() => {
     const el = document.getElementById(id); if (el) el.innerHTML = html;
   }
 
-  return { boot, updatePanel };
+  return { boot, updatePanel, syncAll };
 
 })();
 
@@ -97,10 +98,12 @@ function togglePause(btn) {
   Engine.togglePause();
   const st = Engine.getState();
   btn.textContent = st.paused ? '▶ Reanudar' : '⏸ Pausar';
+  UI.updatePanel(Engine.getSustitucion());
 }
 function resetSim() {
   Engine.init();
   document.getElementById('btn-pause').textContent = '⏸ Pausar';
+  UI.syncAll();
 }
 function setTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');

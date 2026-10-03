@@ -55,4 +55,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   update();setInterval(update,500);
  }
+ const tabFormulas=document.getElementById('tab-formulas');
+ if(tabFormulas){
+  const syncFormulasState=()=>{
+   const active=tabFormulas.classList.contains('active')||(tabFormulas.style.display!=='none'&&tabFormulas.style.display!=='');
+   document.body.classList.toggle('formulas-active',!!active);
+  };
+  syncFormulasState();
+  new MutationObserver(syncFormulasState).observe(tabFormulas,{attributes:true,attributeFilter:['style','class']});
+ }
 });

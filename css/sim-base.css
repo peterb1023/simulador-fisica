@@ -197,11 +197,36 @@ body { background: var(--bg); color: var(--tx1); font-family: var(--font); font-
 }
 
 /* ── Fórmulas tab ── */
-.formulas-page {
-  padding: 30px;
+#tab-formulas.active,
+#tab-formulas[style*="display: block"] {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  height: calc(100vh - 52px);
+  height: calc(100dvh - 52px);
+  max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 52px);
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+#tab-formulas > .formulas-page,
+#tab-formulas > .formulas-wrap,
+#tab-formulas > .formulas-tab {
+  height: auto;
+  min-height: 100%;
+  overflow-y: visible;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding-bottom: 64px;
+}
+
+.formulas-page {
+  padding: 30px 30px 64px;
+  overflow-y: auto;
+  overflow-x: hidden;
   max-width: 100vw;
   box-sizing: border-box;
 }

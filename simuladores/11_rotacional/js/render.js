@@ -334,16 +334,24 @@ const Renderer = (() => {
   }
 
   // ── Frame loop ───────────────────────────────────────────
+  let lastPanelTime = 0;
+  const PANEL_INTERVAL_MS = 100; // ~10 Hz throttle para DOM sin reducir FPS del canvas
+
   function frame() {
     Engine.step(clock.tick());
     const st = Engine.getState();
     draw(st);
-    UI.updatePanel(Engine.getSustitucion());
+    const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    if (now - lastPanelTime >= PANEL_INTERVAL_MS || st.paused) {
+      UI.updatePanel(Engine.getSustitucion());
+      lastPanelTime = now;
+    }
     animId = requestAnimationFrame(frame);
   }
 
   function start() {
     clock.reset();
+    lastPanelTime = 0;
     if (animId) cancelAnimationFrame(animId);
     animId = requestAnimationFrame(frame);
   }

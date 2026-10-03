@@ -96,7 +96,7 @@
         for(const [i,key]of (keys.length?keys:['Sin datos']).entries()){const th=make('th',key);th.scope='col';th.id='registry-'+field+'-'+i;labels.append(th);}
         if(columns[field].extra){const th=make('th','Otros campos');th.scope='col';labels.append(th);}
       }
-      const actionHeader=make('th','Acciones');actionHeader.scope='col';actionHeader.rowSpan=2;groups.append(actionHeader);thead.append(groups,labels);
+      const actionHeader=make('th','Acciones','registry-actions-header');actionHeader.scope='col';actionHeader.rowSpan=2;groups.append(actionHeader);thead.append(groups,labels);
       for(const r of records){const tr=make('tr');tr.append(make('td',String(r.id)),make('td',new Date(r.savedAt).toLocaleString('es')));
         for(const field of ['parameters','results']){
           const keys=columns[field].shown;
@@ -114,6 +114,7 @@
           if(columns[field].extra){const td=make('td');td.append(listFields(Object.fromEntries(Object.entries(r.snapshot[field]).filter(([key])=>!keys.includes(key)))));tr.append(td);}
         }
         const td=make('td',null,'registry-actions-cell');
+        const wrapActions=make('div',null,'registry-actions-wrap');
         const saveGroup=make('button','Guardar en grupo','btn-record-action btn-record-group');
         saveGroup.type='button';
         saveGroup.setAttribute('aria-label','Guardar registro '+r.id+' en grupo');
@@ -128,7 +129,8 @@
         remove.setAttribute('aria-label','Eliminar registro '+r.id);
         remove.setAttribute('title','Eliminar este registro local');
         remove.addEventListener('click',()=>{store.remove(r.id);render();});
-        td.append(saveGroup,remove);
+        wrapActions.append(saveGroup,remove);
+        td.append(wrapActions);
         tr.append(td);
         tbody.append(tr);
       }
