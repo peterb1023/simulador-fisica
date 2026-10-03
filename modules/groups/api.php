@@ -15,7 +15,6 @@ try {
  }
  if($method!=='POST'){header('Allow: GET, POST');fail(405,'Método no permitido.');}
  csrf();
- if($action==='login')rateLimit('login',10);
  if($action==='register')fail(403,'Las cuentas se crean por el administrador; no hay registro público.');
  if($action==='join'){uid();rateLimit('join',20);}
  if(!str_starts_with(strtolower($_SERVER['CONTENT_TYPE']??''),'application/json'))fail(415,'Se requiere JSON.');
@@ -25,8 +24,14 @@ try {
  if($action==='login'){
   $email=strtolower(textField($data,'email',3,254));$password=$data['password']??null;
   if(!filter_var($email,FILTER_VALIDATE_EMAIL)||!is_string($password)||strlen($password)<5||strlen($password)>72||str_contains($password,"\0"))fail(400,'Email inválido o contraseña fuera de 5–72 bytes.');
+  $accountKey=hash('sha256',trim(strtolower($email)));
+  checkRateLimit('login',10,$accountKey);
   $user=query('SELECT id,nombre,password_hash,activo FROM usuarios WHERE email=?',[$email])->fetch();
-  if(!$user||!(bool)$user['activo']||!password_verify($password,$user['password_hash']))fail(401,'Credenciales incorrectas.');
+  if(!$user||!(bool)$user['activo']||!password_verify($password,$user['password_hash'])){
+   recordRateLimitHit('login',$accountKey);
+   fail(401,'Credenciales incorrectas.');
+  }
+  clearRateLimit('login',$accountKey);
   session_regenerate_id(true);$_SESSION=['uid'=>(int)$user['id'],'name'=>$user['nombre'],'csrf'=>bin2hex(random_bytes(32)),'last_seen'=>time()];ok(['csrf'=>$_SESSION['csrf']]);
  }
  $u=uid();
