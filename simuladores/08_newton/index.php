@@ -200,9 +200,13 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 /* ── Layout 08 ── */
 .sim-layout-08 {
   display: grid;
-  grid-template-columns: 220px 1fr 240px;
+  grid-template-columns: 250px 1fr 240px;
   height: calc(100vh - 52px);
   overflow: hidden;
+}
+.sim-layout-08 .panel-left {
+  min-width: 0;
+  overflow-x: hidden;
 }
 .panel-center-08 {
   position: relative; background: #0a1628; overflow: hidden;
@@ -244,6 +248,23 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 .sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 64px; text-align: right; }
 .sl-val b { color: var(--tx1); }
 .sl-val span { font-size: 9px; }
+
+/* ── Incline controls containment ── */
+#incline-controls label {
+  display: block; font-size: 10px; color: var(--tx2);
+  white-space: normal; word-break: break-word;
+  margin-top: 6px; margin-bottom: 2px;
+}
+#incline-controls input[type=range] {
+  width: 100%; max-width: 100%; box-sizing: border-box;
+}
+#incline-controls output {
+  font-family: var(--mono); font-size: 10px; color: var(--tx1);
+}
+#incline-controls p {
+  font-size: 10px; color: var(--tx3); margin-top: 6px;
+  word-break: break-word; line-height: 1.4;
+}
 
 /* ── Stats ── */
 .stat-grid-08 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }

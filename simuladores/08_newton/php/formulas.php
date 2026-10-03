@@ -362,6 +362,25 @@
     </svg>
   </div>
 
+  <!-- ══ PLANO INCLINADO Y TRANSICIÓN DE FRICCIÓN ══ -->
+  <div class="fml-section-title">Plano Inclinado y Fricción</div>
+  <div class="fml-card fml-card-agr" style="margin-top: 12px; margin-bottom: 24px;">
+    <div class="fml-card-header">
+      <span class="fml-card-num" style="color: #a371f7; border-color: rgba(163,113,247,.3); background: rgba(163,113,247,.08);">▲</span>
+      <div>
+        <div class="fml-card-title">Plano Inclinado y Transición de Fricción</div>
+        <div class="fml-card-sub">Dinámica con componentes paralela y perpendicular</div>
+      </div>
+    </div>
+    <div class="fml-eq-block">
+      <div class="fml-eq-desc" style="color: var(--tx2); line-height: 1.6; font-size: 12px;">
+        <p style="margin-bottom: 8px;"><b>Eje x ascendente sobre el plano:</b> mg<sub>∥</sub> = −mg sen θ; mg<sub>⊥</sub> = −mg cos θ. φ se mide desde el plano. N = max(0, mg cos θ − F sen φ).</p>
+        <p style="margin-bottom: 8px;"><b>Desde reposo:</b> D = F cos φ − mg sen θ. Si |D| ≤ μ<sub>s</sub>N, f<sub>s</sub> = −D y a = 0. <b>Al deslizar:</b> f<sub>k</sub> = −sign(v)μ<sub>k</sub>N. Al detenerse se evalúa otra vez el umbral estático; puede quedarse en reposo o invertir el sentido.</p>
+        <p><b>Fuerza neta:</b> ΣF<sub>x</sub> = D + f; a = ΣF<sub>x</sub> / m. Se requiere m &gt; 0 y 0 ≤ μ<sub>k</sub> ≤ μ<sub>s</sub>. Si F sen φ &gt; mg cos θ el bloque se separa: N = f = 0 y se muestra aceleración normal.</p>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /formulas-wrap -->
 
 

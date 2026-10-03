@@ -391,6 +391,21 @@ const SimGroups = (() => {
       dialog.close();
     });
 
+    dialog.addEventListener('cancel', () => {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+    });
+
+    dialog.addEventListener('close', () => {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+    });
+
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) {
+        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+        dialog.close();
+      }
+    });
+
     SimGroups.openSaveDialog = openSaveDialog;
   }
 

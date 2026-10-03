@@ -395,18 +395,32 @@
 /* ============================================================
    Modal Guardar en grupo
    ============================================================ */
-.group-dialog {
+/* Cuando el dialog está cerrado: NUNCA se dibuja, no ocupa espacio ni altera scrollHeight */
+dialog.group-dialog:not([open]),
+.group-dialog:not([open]) {
+  display: none !important;
+}
+
+/* Cuando el dialog está abierto (top-layer vía showModal()): modal fijo centrado en viewport */
+dialog.group-dialog[open],
+.group-dialog[open] {
+  display: grid;
+  position: fixed;
+  inset: 0;
   margin: auto;
   width: min(92vw, 680px);
-  max-height: 88vh;
+  max-width: calc(100vw - 24px);
+  max-height: min(88vh, 88dvh);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
   padding: 24px;
   background: #161b22;
   color: #e6edf3;
   border: 1px solid #30363d;
   border-radius: 12px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
-  display: grid;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75);
+  z-index: 1000;
   grid-template-columns: auto auto 1fr;
   grid-template-areas:
     "title title title"
@@ -420,8 +434,10 @@
 }
 
 .group-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(2px);
+  position: fixed;
+  inset: 0;
 }
 
 .group-dialog > h2 {
@@ -660,7 +676,11 @@
    Responsive (1366 / 800 / 360)
    ============================================================ */
 @media (max-width: 680px) {
-  .group-dialog {
+  .group-dialog[open] {
+    width: min(94vw, 540px);
+    max-width: calc(100vw - 16px);
+    padding: 20px 16px;
+    gap: 12px;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       "title title"
@@ -715,9 +735,11 @@
   .sim-nav .nav-btn-login {
     margin-left: 0;
   }
-  .group-dialog {
+  .group-dialog[open] {
     padding: 16px 14px;
-    width: 95vw;
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 20px);
     gap: 10px;
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -728,5 +750,33 @@
       "submit"
       "close"
       "login";
+  }
+  .group-dialog-preview {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
+/* Landscape móvil (altura <= 550px): modal compacto con scroll interno */
+@media (orientation: landscape) and (max-height: 550px) {
+  .group-dialog[open] {
+    width: min(92vw, 560px);
+    max-width: calc(100vw - 20px);
+    max-height: calc(100dvh - 16px);
+    max-height: calc(100vh - 16px);
+    padding: 12px 16px;
+    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "title title"
+      "status status"
+      "label label"
+      "preview preview"
+      "submit close"
+      "login login";
+  }
+  .group-dialog-preview {
+    max-height: 120px;
+    overflow-y: auto;
   }
 }

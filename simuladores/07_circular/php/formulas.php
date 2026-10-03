@@ -167,6 +167,8 @@
     </div>
   </section>
 
+  <p class="fp-note">MCUV: v_t=v₀+a_t t es una componente tangencial con signo; puede detenerse y cambiar de sentido. θ=(v₀t+½a_t t²)/R. La rapidez es |v_t| y T=2πR/|v_t| es un período instantáneo; solo es el tiempo de una vuelta completa cuando a_t=0. En reposo T no es finito y f=0.</p>
+
 </div>
 
 <style>
@@ -248,4 +250,3 @@
 .accent-green { color: #3fb950; }
 .accent-gold  { color: var(--et); }
 </style>
-<p class="fp-note">MCUV: v_t=v₀+a_t t es una componente tangencial con signo; puede detenerse y cambiar de sentido. θ=(v₀t+½a_t t²)/R. La rapidez es |v_t| y T=2πR/|v_t| es un período instantáneo; solo es el tiempo de una vuelta completa cuando a_t=0. En reposo T no es finito y f=0.</p>

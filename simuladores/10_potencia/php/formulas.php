@@ -150,6 +150,12 @@
     </div>
   </section>
 
+  <!-- ══ Eficiencia ══ -->
+  <section class="fp-card">
+    <h3>Eficiencia</h3>
+    <p>η=P_útil/P_entrada=E_útil/E_entrada para el mismo intervalo. 0≤η≤1; porcentaje=100η. La entrada debe ser positiva y la salida no puede excederla.</p>
+  </section>
+
 </div>
 
 <style>
@@ -226,4 +232,4 @@
 .accent-gold   { color: var(--et); }
 .accent-blue   { color: #58a6ff; }
 .accent-purple { color: #a371f7; }
-</style><section class="fp-card"><h3>Eficiencia</h3><p>η=P_útil/P_entrada=E_útil/E_entrada para el mismo intervalo. 0≤η≤1; porcentaje=100η. La entrada debe ser positiva y la salida no puede excederla.</p></section>
+</style>

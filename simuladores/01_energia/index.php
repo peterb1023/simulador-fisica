@@ -24,6 +24,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
       <span>Conservación de Energía Mecánica</span>
     </div>
     <nav class="sim-nav">
+      <a href="../../index.php" class="nav-btn" style="text-decoration:none">← Portal</a>
       <button class="nav-btn active" onclick="setTab('sim',this)">▶ Simulador</button>
       <button class="nav-btn" onclick="setTab('formulas',this)">∑ Fórmulas</button>
     </nav>

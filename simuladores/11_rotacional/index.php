@@ -190,7 +190,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
 /* ── Layout 11 ── */
 .sim-layout-11 {
   display: grid;
-  grid-template-columns: 220px 1fr 240px;
+  grid-template-columns: 260px 1fr 240px;
   height: calc(100vh - 52px);
   overflow: hidden;
 }
@@ -220,7 +220,7 @@ $js_cfg = json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_H
   border-radius: 50%; background: var(--accent); cursor: pointer;
   border: 2px solid var(--bg);
 }
-.sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 82px; text-align: right; font-variant-numeric: tabular-nums; }
+.sl-val { font-family: var(--mono); font-size: 10px; color: var(--tx2); min-width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
 .sl-val b { color: var(--tx1); }
 .sl-val span { font-size: 9px; }
 
